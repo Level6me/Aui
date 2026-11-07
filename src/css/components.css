@@ -1,0 +1,532 @@
+/**
+ * AUI Design System — Interactive Components, Controls, Badges & Overlays
+ */
+
+/* 1. Primary & Semantic Rectangular Buttons (.btn) */
+.btn {
+    padding: 10px 18px;
+    border-radius: 14px;
+    border: none;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    background: var(--accent);
+    color: #ffffff;
+    transition: opacity 0.15s ease, transform 0.12s var(--ease-spring), background 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+.btn:hover { opacity: 0.92; }
+.btn:active { transform: scale(0.97); }
+.btn.secondary {
+    background: rgba(120, 120, 128, 0.14);
+    color: var(--text);
+}
+.btn.danger {
+    background: var(--danger);
+    color: #ffffff;
+}
+.btn.success {
+    background: var(--success);
+    color: #ffffff;
+}
+.btn.w-full { width: 100%; }
+
+/* 2. Signature Capsule Pill Buttons (.pill-btn) */
+.pill-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: var(--radius-pill);
+    background: var(--card);
+    border: 1px solid var(--border);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s var(--ease-spring);
+    white-space: nowrap;
+    text-decoration: none;
+}
+.pill-btn:hover {
+    background: var(--card-hover);
+    border-color: rgba(120, 120, 128, 0.28);
+}
+.pill-btn:active { transform: scale(0.95); }
+.pill-btn.active,
+.pill-btn.accent {
+    background: var(--accent);
+    color: #ffffff;
+    border-color: var(--accent);
+}
+.pill-btn.danger {
+    background: var(--danger-bg);
+    color: var(--danger);
+    border-color: rgba(255, 59, 48, 0.3);
+}
+.pill-btn.danger:hover {
+    background: var(--danger);
+    color: #ffffff;
+}
+.pill-btn.success {
+    background: var(--success-bg);
+    color: var(--success);
+    border-color: rgba(52, 199, 89, 0.3);
+}
+.pill-btn.success:hover {
+    background: var(--success);
+    color: #ffffff;
+}
+.pill-btn.warning {
+    background: var(--warning);
+    color: #ffffff;
+    border-color: var(--warning);
+    box-shadow: 0 0 12px rgba(255, 149, 0, 0.35);
+}
+
+/* 3. Circular Icon Button & Compact Table Action Button */
+.icon-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(120, 120, 128, 0.08);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text);
+    transition: background 0.15s ease, transform 0.1s var(--ease-spring);
+    flex-shrink: 0;
+}
+.icon-btn:hover { background: rgba(120, 120, 128, 0.18); }
+.icon-btn:active { transform: scale(0.92); }
+.icon-btn.danger { color: var(--danger); }
+.icon-btn.danger:hover { background: var(--danger-bg); }
+.icon-btn.accent { color: var(--accent); }
+.icon-btn.accent:hover { background: var(--accent-bg); }
+.icon-btn svg { width: 16px; height: 16px; fill: currentColor; }
+
+.action-btn {
+    background: var(--card-sec);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+.action-btn:hover { background: var(--card-hover); }
+.action-btn.danger:hover { background: var(--danger-bg); color: var(--danger); border-color: var(--danger); }
+.action-btn.success:hover { background: var(--success-bg); color: var(--success); border-color: var(--success); }
+
+/* 4. Live Pulsing Status Dot */
+.status-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 8px rgba(52, 199, 89, 0.55);
+    animation: auiPulse 2s infinite;
+    flex-shrink: 0;
+}
+.status-dot.warning,
+.status-dot.paused {
+    background: var(--warning);
+    box-shadow: 0 0 8px rgba(255, 149, 0, 0.6);
+    animation: none;
+}
+.status-dot.offline,
+.status-dot.danger {
+    background: var(--danger);
+    box-shadow: 0 0 8px rgba(255, 59, 48, 0.55);
+    animation: none;
+}
+@keyframes auiPulse {
+    0%, 100% { opacity: 0.45; }
+    50% { opacity: 1; }
+}
+
+/* 5. Segmented Control & Capsule Switcher */
+.segmented-control {
+    display: flex;
+    background: rgba(120, 120, 128, 0.12);
+    padding: 3px;
+    border-radius: 12px;
+    gap: 2px;
+    overflow-x: auto;
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
+}
+.segment-btn {
+    flex: 1;
+    white-space: nowrap;
+    border: none;
+    background: none;
+    padding: 6px 12px;
+    border-radius: 9px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-sec);
+    cursor: pointer;
+    transition: all 0.18s var(--ease-spring);
+}
+.segment-btn:hover { color: var(--text); }
+.segment-btn.active {
+    background: var(--card);
+    color: var(--text);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Capsule Sub-Tab Switcher */
+.capsule-switcher {
+    background: var(--card-sec);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 2px;
+    display: inline-flex;
+    gap: 2px;
+    width: fit-content;
+}
+.capsule-switcher .pill-btn {
+    padding: 4px 14px;
+    font-size: 11px;
+    border-radius: 99px;
+    font-weight: 700;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+}
+.capsule-switcher .pill-btn.active,
+.capsule-switcher .pill-btn.accent {
+    background: var(--accent);
+    color: #ffffff;
+}
+
+/* Sub-Navigation Tab Bar */
+.tab-bar {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    width: 100%;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+}
+.tab-item {
+    padding: 7px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-sec);
+    cursor: pointer;
+    border-radius: 12px;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    background: transparent;
+    border: none;
+}
+.tab-item:hover {
+    color: var(--text);
+    background: rgba(120, 120, 128, 0.08);
+}
+.tab-item.active {
+    color: var(--accent);
+    background: var(--accent-bg);
+}
+
+/* Sort Pill */
+.sort-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    background: var(--card-sec);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-sec);
+    cursor: pointer;
+    border: 1px solid var(--border-subtle);
+    transition: all 0.15s ease;
+}
+.sort-pill:hover { color: var(--text); background: var(--card-hover); }
+.sort-pill.active {
+    background: var(--accent-bg);
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+/* 6. Inputs, Search Box & Custom Selects */
+.input-box,
+.form-control {
+    width: 100%;
+    border: 1px solid var(--border);
+    background: var(--card-sec);
+    border-radius: 11px;
+    padding: 9px 13px;
+    font-size: 13px;
+    color: var(--text);
+    outline: none;
+    font-family: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+.input-box:focus,
+.form-control:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-bg);
+    background: var(--card);
+}
+
+.search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: var(--card-sec);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0 10px;
+    min-width: 200px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.search-box:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-bg);
+    background: var(--card);
+}
+.search-box svg {
+    width: 15px;
+    height: 15px;
+    fill: var(--text-sec);
+    margin-right: 6px;
+    flex-shrink: 0;
+}
+.search-box input {
+    border: none;
+    background: none;
+    color: var(--text);
+    font-size: 13px;
+    outline: none;
+    padding: 8px 0;
+    width: 100%;
+    font-family: inherit;
+}
+
+.select-custom {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+.select-custom:focus {
+    border-color: var(--accent);
+}
+
+/* 7. Semantic Tags & Badges (.badge & .tag) */
+.badge,
+.tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: var(--radius-tag);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.badge, .badge.accent, .tag.accent { background: var(--accent-bg); color: var(--accent); }
+.badge.success, .badge.completed, .tag.success { background: var(--success-bg); color: var(--success); }
+.badge.warning, .badge.queued, .tag.warning { background: var(--warning-bg); color: var(--warning); }
+.badge.danger, .badge.error, .tag.danger { background: var(--danger-bg); color: var(--danger); }
+.badge.purple, .badge.category, .tag.purple { background: var(--purple-bg); color: var(--purple); }
+.badge.neutral, .badge.paused, .tag.neutral {
+    background: rgba(120, 120, 128, 0.14);
+    color: var(--text-sec);
+}
+
+/* 8. iOS Tactile Toggle Switch */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+}
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: rgba(120, 120, 128, 0.25);
+    transition: 0.25s var(--ease-spring);
+    border-radius: 24px;
+}
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: #ffffff;
+    transition: 0.25s var(--ease-spring);
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.22);
+}
+input:checked + .slider { background-color: var(--accent); }
+input:checked + .slider:before { transform: translateX(20px); }
+
+/* 9. Progress Bar */
+.progress-track {
+    height: 6px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+    margin: 8px 0;
+}
+.progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 99px;
+    transition: width 0.3s var(--ease-spring);
+}
+.progress-fill.success { background: var(--success); }
+.progress-fill.warning { background: var(--warning); }
+.progress-fill.danger { background: var(--danger); }
+
+/* 10. Top Frosted Toast Pill Notification */
+.toast-container {
+    position: fixed;
+    top: max(18px, env(safe-area-inset-top, 18px));
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    pointer-events: none;
+    width: max-content;
+    max-width: 90vw;
+}
+.toast-pill,
+.toast {
+    background: var(--dock);
+    backdrop-filter: blur(28px) saturate(190%);
+    -webkit-backdrop-filter: blur(28px) saturate(190%);
+    border: 1px solid var(--border);
+    padding: 9px 18px;
+    border-radius: 24px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    box-shadow: var(--shadow-lg);
+    animation: auiToastIn 0.28s var(--ease-spring);
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+@keyframes auiToastIn {
+    from { opacity: 0; transform: translateY(-14px) scale(0.94); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* 11. Batch Action Bar */
+.batch-bar {
+    background: var(--card);
+    border: 1px solid var(--accent);
+    border-radius: 16px;
+    padding: 10px 16px;
+    margin-bottom: 14px;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    box-shadow: 0 8px 24px var(--accent-bg);
+}
+.batch-bar.active { display: flex; }
+
+/* 12. Pagination Controller */
+.pagination-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 13px 18px;
+    border-top: 1px solid var(--border-subtle);
+}
+.page-pill {
+    min-width: 30px;
+    height: 30px;
+    padding: 0 8px;
+    border-radius: 9px;
+    border: 1px solid transparent;
+    background: rgba(120, 120, 128, 0.08);
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+}
+.page-pill:hover:not(:disabled) { background: rgba(120, 120, 128, 0.18); }
+.page-pill.active {
+    background: var(--accent);
+    color: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.35);
+}
+
+/* 13. Mini Floating HUD (Picture-in-Picture / Desktop Mini Card) */
+.mini-floating-hud {
+    position: fixed;
+    bottom: 88px;
+    right: 20px;
+    z-index: 1500;
+    background: var(--card-translucent);
+    backdrop-filter: blur(28px) saturate(190%);
+    -webkit-backdrop-filter: blur(28px) saturate(190%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 12px 14px;
+    box-shadow: var(--shadow-lg);
+    min-width: 190px;
+    user-select: none;
+}
+.mini-hud-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+.mini-hud-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 4px;
+}
+.mini-hud-speed {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+}

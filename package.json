@@ -1,0 +1,14 @@
+{
+  "name": "aui-design-system",
+  "version": "1.0.0",
+  "description": "Apple-Style Frosted Glass WebUI Design System & AI Agent Starter Kit",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Level6me/Aui.git"
+  },
+  "homepage": "https://github.com/Level6me/Aui",
+  "scripts": {
+    "build": "node scripts/build.js"
+  },
+  "license": "MIT"
+}

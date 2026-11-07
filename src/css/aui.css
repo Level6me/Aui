@@ -1,0 +1,12 @@
+/**
+ * AUI Design System — Unified CSS Entrypoint
+ * Import order: Variables -> Base -> Layout -> Components -> Data Display -> Dock -> Modal
+ */
+
+@import url('./variables.css');
+@import url('./base.css');
+@import url('./layout.css');
+@import url('./components.css');
+@import url('./data-display.css');
+@import url('./dock.css');
+@import url('./modal.css');

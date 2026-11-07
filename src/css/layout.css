@@ -1,0 +1,309 @@
+/**
+ * AUI Design System — Spatial Layout, Header, Grids & Cards
+ * Principle: "Avoid unnecessary secondary labels and descriptions. Let the layout do the explaining."
+ */
+
+/* Adaptive Top Header Bar */
+.header {
+    margin: 4px 0 16px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 8px;
+    min-height: 50px;
+    width: 100%;
+}
+
+/* Desktop PWA Window Controls Overlay Support */
+@media (display-mode: window-controls-overlay) {
+    .header {
+        padding-top: env(titlebar-area-y, 0);
+        padding-left: env(titlebar-area-x, 0);
+        padding-right: calc(100vw - env(titlebar-area-x, 0) - env(titlebar-area-width, 100vw));
+        app-region: drag;
+        -webkit-app-region: drag;
+    }
+    .header-actions, .header-actions *, .btn, .pill-btn, .icon-btn, input, button, select, a {
+        app-region: no-drag;
+        -webkit-app-region: no-drag;
+    }
+}
+
+.header-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+    flex-shrink: 1;
+}
+
+.date-badge {
+    font-size: 11px;
+    color: var(--text-sec);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.title {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: nowrap;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.btn-text-mobile {
+    display: none;
+}
+
+@media (max-width: 640px) {
+    .header {
+        margin: 2px 0 12px 0;
+        min-height: 42px;
+    }
+    .title {
+        font-size: 22px;
+    }
+    .date-badge {
+        font-size: 10px;
+    }
+    .header-actions {
+        gap: 6px;
+    }
+    .header-actions .pill-btn .pill-text,
+    .header-actions .pill-btn .btn-text-full {
+        display: none !important;
+    }
+    .header-actions .pill-btn .btn-text-mobile {
+        display: inline;
+    }
+}
+
+.subtitle {
+    font-size: 12px;
+    color: var(--text-sec);
+    font-weight: 700;
+    margin: 16px 0 10px 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Responsive Grid System (minmax(0, 1fr) prevents overflow blowout) */
+.grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 14px;
+}
+@media (max-width: 768px) {
+    .grid-2 { grid-template-columns: 1fr; }
+}
+
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 14px;
+}
+@media (max-width: 960px) {
+    .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+    .grid-3 { grid-template-columns: 1fr; }
+}
+
+.grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 14px;
+}
+@media (max-width: 860px) {
+    .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+}
+
+.grid-6 {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 14px;
+}
+@media (max-width: 1100px) {
+    .grid-6 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+    .grid-6 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+}
+
+/* Elevated Surface Cards */
+.card {
+    background: var(--card);
+    border-radius: var(--radius-card);
+    padding: 16px 18px;
+    margin-bottom: 14px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.18s var(--ease-spring), box-shadow 0.18s ease, border-color 0.18s ease;
+    position: relative;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.grid-2 > .card,
+.grid-3 > .card,
+.grid-4 > .card,
+.grid-6 > .card {
+    margin-bottom: 0;
+}
+
+.card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.card.interactive {
+    cursor: pointer;
+    user-select: none;
+}
+.card.interactive:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: rgba(120, 120, 128, 0.28);
+}
+.card.interactive:active {
+    transform: scale(0.98);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 10px;
+}
+
+.card-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    letter-spacing: -0.01em;
+}
+
+/* KPI Metric Typography */
+.val-big {
+    font-size: 28px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    margin: 2px 0;
+}
+
+.val-sub {
+    font-size: 11px;
+    color: var(--text-sec);
+    font-weight: 600;
+}
+
+@media (max-width: 480px) {
+    .val-big { font-size: 24px; }
+    .card { padding: 13px 14px; border-radius: 15px; }
+}
+
+/* Interactive Summary Stat Cell */
+.stat-interactive {
+    cursor: pointer;
+    border-radius: 14px;
+    padding: 8px 10px;
+    transition: all 0.18s var(--ease-spring);
+    user-select: none;
+}
+.stat-interactive:hover {
+    background: var(--card-hover);
+    transform: translateY(-2px);
+}
+.stat-interactive:active {
+    transform: scale(0.95);
+}
+
+/* Sticky Frosted Glass Toolbar */
+.sticky-toolbar {
+    position: sticky;
+    top: max(10px, env(safe-area-inset-top, 10px));
+    z-index: 500;
+    background: var(--dock);
+    backdrop-filter: blur(28px) saturate(190%);
+    -webkit-backdrop-filter: blur(28px) saturate(190%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card-lg);
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.controls-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+@media (min-width: 768px) {
+    .controls-bar {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+
+.filter-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.chart-box {
+    height: 200px;
+    width: 100%;
+    position: relative;
+}
+
+.chart-mini {
+    height: 115px;
+    width: 100%;
+    margin-top: 10px;
+    position: relative;
+}
+
+.bottom-spacer {
+    height: calc(70px + env(safe-area-inset-bottom, 16px));
+    width: 100%;
+}

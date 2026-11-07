@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="auto">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>AUI App Starter</title>
+    <meta name="theme-color" content="#007aff" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#1c1c1e" media="(prefers-color-scheme: dark)">
+    <link rel="stylesheet" href="../src/css/aui.css">
+</head>
+<body>
+<!-- Top Toast Notification Container -->
+<div class="toast-container" id="toast-container"></div>
+
+<div class="container">
+    <!-- Adaptive Top Header -->
+    <header class="header">
+        <div class="header-left">
+            <div class="date-badge">
+                <span class="status-dot"></span>
+                <span>AUI SYSTEM · ONLINE</span>
+            </div>
+            <h1 class="title" id="page-title">系统概览</h1>
+        </div>
+        <div class="header-actions">
+            <button class="pill-btn" onclick="cycleTheme()" title="切换主题 (自动 / 浅色 / 深色)">
+                <span id="theme-icon">🌓</span>
+                <span id="theme-label" class="pill-text">自动</span>
+            </button>
+            <button class="pill-btn accent" onclick="openModal('modal-action')">
+                <span>➕</span>
+                <span class="pill-text">新建项目</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Page 1: Overview -->
+    <main id="p-overview" class="page active">
+        <div class="grid-4">
+            <div class="card interactive" onclick="showToast('已筛选在线实例')">
+                <div class="val-sub" style="color: var(--success);">● 在线实例</div>
+                <div class="val-big" style="color: var(--success);">128</div>
+                <div class="val-sub">服务可用率 99.9%</div>
+            </div>
+            <div class="card interactive" onclick="showToast('已切换至实时吞吐监控')">
+                <div class="val-sub" style="color: var(--accent);">↑ 实时吞吐</div>
+                <div class="val-big" style="color: var(--accent);">1.42 GB/s</div>
+                <div class="val-sub">峰值 2.10 GB/s</div>
+            </div>
+            <div class="card interactive">
+                <div class="val-sub" style="color: var(--warning);">⚡ 队列作业</div>
+                <div class="val-big" style="color: var(--warning);">14</div>
+                <div class="val-sub">平均延迟 18 ms</div>
+            </div>
+            <div class="card interactive">
+                <div class="val-sub" style="color: var(--purple);">📦 已完成作业</div>
+                <div class="val-big" style="color: var(--purple);">3,842</div>
+                <div class="val-sub">24h 自动处理</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">📋 实例运行列表</div>
+                <div class="search-box">
+                    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                    <input type="text" placeholder="过滤名称 / 地址 / 状态...">
+                </div>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>节点标识</th>
+                            <th>服务类型</th>
+                            <th>运行状态</th>
+                            <th>响应延迟</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="ip-text">node-ap-southeast-01</div>
+                                <div class="geo-subline">🇸🇬 亚太一区 · 核心计算节点</div>
+                            </td>
+                            <td><span class="tag accent">核心引擎</span></td>
+                            <td><span class="tag success">● 正常 (24%)</span></td>
+                            <td class="mono tabular">12.4 ms</td>
+                            <td><button class="action-btn" onclick="showToast('已打开节点详情')">详情</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="bottom-spacer"></div>
+    </main>
+
+    <!-- Page 2: Settings -->
+    <section id="p-settings" class="page">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">⚙️ 系统偏好设置</div>
+            </div>
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label">启用实时状态推送</div>
+                    <div class="setting-desc">状态变更时自动刷新视图指标</div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" checked onchange="showToast('设置已更新')">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+        <div class="bottom-spacer"></div>
+    </section>
+</div>
+
+<!-- Floating Glass Dock -->
+<nav class="dock">
+    <button class="dock-btn active" onclick="switchPage('p-overview', '系统概览', this)">
+        <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+        <span>系统概览</span>
+    </button>
+    <button class="dock-btn" onclick="switchPage('p-settings', '系统设置', this)">
+        <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+        <span>系统设置</span>
+    </button>
+</nav>
+
+<!-- Example Modal Sheet -->
+<div class="modal-overlay" id="modal-action">
+    <div class="modal-sheet">
+        <div class="card-header">
+            <h3 class="card-title">➕ 新建配置项</h3>
+            <button class="icon-btn" onclick="closeModal('modal-action')">✕</button>
+        </div>
+        <div class="form-group">
+            <label class="form-label">资源端点标识</label>
+            <input type="text" class="form-control mono" placeholder="例如：endpoint-01 或 8080">
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px;">
+            <button class="pill-btn" onclick="closeModal('modal-action')">取消</button>
+            <button class="pill-btn accent" onclick="closeModal('modal-action'); showToast('✅ 配置已保存')">保存生效</button>
+        </div>
+    </div>
+</div>
+
+<script src="../src/js/aui-core.js"></script>
+</body>
+</html>

@@ -1,0 +1,3 @@
+Always follow AGENTS.md and DESIGN_SPEC.md when creating or modifying Web UI files.
+Core principle: "Avoid unnecessary secondary labels and descriptions. Let the layout do the explaining."
+Use the AUI CSS variables, Apple frosted-glass surfaces (--dock, backdrop-filter: blur(28px) saturate(190%)), tabular-nums KPI cards (.val-big, .val-sub), pill buttons (.pill-btn), and Floating Glass Dock (.dock) defined in src/css/ and templates/.
