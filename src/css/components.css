@@ -1,5 +1,5 @@
 /**
- * AUI Design System — Interactive Components, Controls, Badges & Overlays
+ * AUI Design System — Interactive Components, Controls, Badges, Lists, Popovers & Overlays (v2.0)
  */
 
 /* 1. Primary & Semantic Rectangular Buttons (.btn) */
@@ -19,10 +19,9 @@
     gap: 6px;
     white-space: nowrap;
 }
-.btn:hover { opacity: 0.92; }
 .btn:active { transform: scale(0.97); }
 .btn.secondary {
-    background: rgba(120, 120, 128, 0.14);
+    background: var(--fill-tertiary);
     color: var(--text);
 }
 .btn.danger {
@@ -53,10 +52,6 @@
     white-space: nowrap;
     text-decoration: none;
 }
-.pill-btn:hover {
-    background: var(--card-hover);
-    border-color: rgba(120, 120, 128, 0.28);
-}
 .pill-btn:active { transform: scale(0.95); }
 .pill-btn.active,
 .pill-btn.accent {
@@ -64,35 +59,21 @@
     color: #ffffff;
     border-color: var(--accent);
 }
-.pill-btn.active:hover,
-.pill-btn.accent:hover {
-    background: var(--accent-hover);
-    border-color: var(--accent-hover);
-}
 .pill-btn.danger {
     background: var(--danger-bg);
     color: var(--danger);
-    border-color: rgba(255, 59, 48, 0.3);
-}
-.pill-btn.danger:hover {
-    background: var(--danger);
-    color: #ffffff;
+    border-color: rgba(255, 59, 48, 0.30);
 }
 .pill-btn.success {
     background: var(--success-bg);
     color: var(--success);
-    border-color: rgba(52, 199, 89, 0.3);
-}
-.pill-btn.success:hover {
-    background: var(--success);
-    color: #ffffff;
+    border-color: rgba(52, 199, 89, 0.30);
 }
 .pill-btn.warning {
     background: var(--warning-bg);
     color: var(--warning);
     border-color: rgba(255, 149, 0, 0.35);
 }
-.pill-btn.warning:hover,
 .pill-btn.warning.active {
     background: var(--warning);
     color: #ffffff;
@@ -102,11 +83,12 @@
 
 /* 3. Circular Icon Button & Compact Table Action Button */
 .icon-btn {
+    position: relative;
     width: 32px;
     height: 32px;
     border-radius: 50%;
     border: none;
-    background: rgba(120, 120, 128, 0.08);
+    background: var(--fill-quaternary);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -115,13 +97,11 @@
     transition: background 0.15s ease, transform 0.1s var(--ease-spring);
     flex-shrink: 0;
 }
-.icon-btn:hover { background: rgba(120, 120, 128, 0.18); }
 .icon-btn:active { transform: scale(0.92); }
 .icon-btn.danger { color: var(--danger); }
-.icon-btn.danger:hover { background: var(--danger-bg); }
 .icon-btn.accent { color: var(--accent); }
-.icon-btn.accent:hover { background: var(--accent-bg); }
 .icon-btn svg { width: 16px; height: 16px; fill: currentColor; }
+.icon-btn svg.aui-icon { fill: none; stroke: currentColor; }
 
 .action-btn {
     background: var(--card-sec);
@@ -135,9 +115,51 @@
     transition: all 0.15s ease;
     white-space: nowrap;
 }
-.action-btn:hover { background: var(--card-hover); }
-.action-btn.danger:hover { background: var(--danger-bg); color: var(--danger); border-color: var(--danger); }
-.action-btn.success:hover { background: var(--success-bg); color: var(--success); border-color: var(--success); }
+.action-btn:active { transform: scale(0.96); }
+
+/* Desktop-Only Fine Pointer Hover States (Prevents Sticky Hover on Touch) */
+@media (hover: hover) and (pointer: fine) {
+    .btn:hover { opacity: 0.92; }
+    .pill-btn:hover {
+        background: var(--card-hover);
+        border-color: var(--fill-primary);
+    }
+    .pill-btn.active:hover,
+    .pill-btn.accent:hover {
+        background: var(--accent-hover);
+        border-color: var(--accent-hover);
+    }
+    .pill-btn.danger:hover {
+        background: var(--danger);
+        color: #ffffff;
+    }
+    .pill-btn.success:hover {
+        background: var(--success);
+        color: #ffffff;
+    }
+    .pill-btn.warning:hover {
+        background: var(--warning);
+        color: #ffffff;
+        border-color: var(--warning);
+        box-shadow: 0 0 12px rgba(255, 149, 0, 0.35);
+    }
+    .icon-btn:hover { background: var(--fill-secondary); }
+    .icon-btn.danger:hover { background: var(--danger-bg); }
+    .icon-btn.accent:hover { background: var(--accent-bg); }
+    .action-btn:hover { background: var(--card-hover); }
+    .action-btn.danger:hover { background: var(--danger-bg); color: var(--danger); border-color: var(--danger); }
+    .action-btn.success:hover { background: var(--success-bg); color: var(--success); border-color: var(--success); }
+}
+
+/* Apple HIG 44x44pt Minimum Touch Target Expansion on Coarse Pointers */
+@media (pointer: coarse) {
+    .icon-btn::after,
+    .page-pill::after {
+        content: "";
+        position: absolute;
+        inset: -6px;
+    }
+}
 
 /* 4. Live Pulsing Status Dot */
 .status-dot {
@@ -167,35 +189,55 @@
     50% { opacity: 1; }
 }
 
-/* 5. Segmented Control & Capsule Switcher */
+/* 5. Segmented Control (with Optional Spring Sliding Indicator) & Capsule Switcher */
 .segmented-control {
+    position: relative;
+    isolation: isolate;
     display: flex;
-    background: rgba(120, 120, 128, 0.12);
+    background: var(--fill-tertiary);
     padding: 3px;
-    border-radius: 12px;
+    border-radius: var(--radius-control);
     gap: 2px;
     overflow-x: auto;
     max-width: 100%;
     -webkit-overflow-scrolling: touch;
 }
+.segment-indicator {
+    position: absolute;
+    top: 3px;
+    bottom: 3px;
+    left: 0;
+    border-radius: var(--radius-control-inner);
+    background: var(--card);
+    box-shadow: var(--shadow-sm);
+    z-index: 0;
+    pointer-events: none;
+    transition: transform 0.28s var(--ease-spring), width 0.28s var(--ease-spring), opacity 0.15s ease;
+}
 .segment-btn {
+    position: relative;
+    z-index: 1;
     flex: 1;
     white-space: nowrap;
     border: none;
     background: none;
     padding: 6px 12px;
-    border-radius: 9px;
+    border-radius: var(--radius-control-inner);
     font-size: 12px;
     font-weight: 600;
     color: var(--text-sec);
     cursor: pointer;
-    transition: all 0.18s var(--ease-spring);
+    transition: color 0.18s var(--ease-spring), background-color 0.18s var(--ease-spring);
 }
 .segment-btn:hover { color: var(--text); }
 .segment-btn.active {
     background: var(--card);
     color: var(--text);
     box-shadow: var(--shadow-sm);
+}
+.segmented-control.has-indicator .segment-btn.active {
+    background: transparent;
+    box-shadow: none;
 }
 
 /* Capsule Sub-Tab Switcher */
@@ -250,7 +292,7 @@
 }
 .tab-item:hover {
     color: var(--text);
-    background: rgba(120, 120, 128, 0.08);
+    background: var(--fill-quaternary);
 }
 .tab-item.active {
     color: var(--accent);
@@ -311,7 +353,7 @@
     border-radius: 12px;
     padding: 0 10px;
     min-width: 200px;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 .search-box:focus-within {
     border-color: var(--accent);
@@ -324,6 +366,10 @@
     fill: var(--text-sec);
     margin-right: 6px;
     flex-shrink: 0;
+}
+.search-box svg.aui-icon {
+    fill: none;
+    stroke: var(--text-sec);
 }
 .search-box input {
     border: none;
@@ -354,7 +400,7 @@
     box-shadow: 0 0 0 3px var(--accent-bg);
 }
 
-/* 7. Semantic Tags & Badges (.badge & .tag) */
+/* 7. Semantic Tags & Badges (.badge & .tag — Full Apple Palette) */
 .badge,
 .tag {
     display: inline-flex;
@@ -373,17 +419,21 @@
 .badge.warning, .badge.queued, .tag.warning { background: var(--warning-bg); color: var(--warning); }
 .badge.danger, .badge.error, .tag.danger { background: var(--danger-bg); color: var(--danger); }
 .badge.purple, .badge.category, .tag.purple { background: var(--purple-bg); color: var(--purple); }
+.badge.indigo, .tag.indigo { background: var(--indigo-bg); color: var(--indigo); }
+.badge.teal, .tag.teal { background: var(--teal-bg); color: var(--teal); }
+.badge.pink, .tag.pink { background: var(--pink-bg); color: var(--pink); }
+.badge.yellow, .tag.yellow { background: var(--yellow-bg); color: var(--warning); }
 .badge.neutral, .badge.paused, .tag.neutral {
-    background: rgba(120, 120, 128, 0.14);
+    background: var(--fill-tertiary);
     color: var(--text-sec);
 }
 
-/* 8. iOS Tactile Toggle Switch */
+/* 8. iOS Tactile Toggle Switch (Apple HIG Green Default + Squishy Thumb) */
 .switch {
     position: relative;
     display: inline-block;
-    width: 44px;
-    height: 24px;
+    width: 46px;
+    height: 26px;
     flex-shrink: 0;
 }
 .switch input { opacity: 0; width: 0; height: 0; }
@@ -391,25 +441,30 @@
     position: absolute;
     cursor: pointer;
     inset: 0;
-    background-color: rgba(120, 120, 128, 0.25);
-    transition: 0.25s var(--ease-spring);
-    border-radius: 24px;
+    background-color: var(--fill-primary);
+    transition: background-color 0.25s var(--ease-spring), box-shadow 0.2s ease;
+    border-radius: 26px;
 }
 .slider:before {
     position: absolute;
     content: "";
-    height: 18px;
-    width: 18px;
+    height: 20px;
+    width: 20px;
     left: 3px;
     bottom: 3px;
     background-color: #ffffff;
-    transition: 0.25s var(--ease-spring);
-    border-radius: 50%;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.22);
+    transition: transform 0.25s var(--ease-spring), width 0.16s var(--ease-spring), left 0.16s var(--ease-spring);
+    border-radius: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.22), 0 0 1px rgba(0, 0, 0, 0.08);
 }
-input:checked + .slider { background-color: var(--accent); }
-input:checked + .slider:before { transform: translateX(20px); }
-input:focus-visible + .slider {
+.switch:active .slider:before {
+    width: 24px;
+}
+.switch input:checked + .slider { background-color: var(--success); }
+.switch.accent input:checked + .slider { background-color: var(--accent); }
+.switch input:checked + .slider:before { transform: translateX(20px); }
+.switch:active input:checked + .slider:before { transform: translateX(16px); }
+.switch input:focus-visible + .slider {
     box-shadow: 0 0 0 3px var(--accent-bg), 0 0 0 1.5px var(--accent);
 }
 
@@ -431,7 +486,7 @@ input:focus-visible + .slider {
 .progress-fill.warning { background: var(--warning); }
 .progress-fill.danger { background: var(--danger); }
 
-/* 10. Top Frosted Toast Pill Notification */
+/* 10. Top Frosted Toast Pill Notification (Semantic Variants + Glass Rim) */
 .toast-container {
     position: fixed;
     top: max(18px, env(safe-area-inset-top, 18px));
@@ -449,15 +504,15 @@ input:focus-visible + .slider {
 .toast-pill,
 .toast {
     background: var(--dock);
-    backdrop-filter: blur(28px) saturate(190%);
-    -webkit-backdrop-filter: blur(28px) saturate(190%);
+    backdrop-filter: var(--glass-regular);
+    -webkit-backdrop-filter: var(--glass-regular);
     border: 1px solid var(--border);
     padding: 9px 18px;
     border-radius: 24px;
     font-size: 13px;
     font-weight: 700;
     color: var(--text);
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-lg), var(--glass-rim);
     animation: auiToastIn 0.28s var(--ease-spring);
     pointer-events: auto;
     display: flex;
@@ -466,6 +521,19 @@ input:focus-visible + .slider {
     max-width: 100%;
     word-break: break-word;
 }
+.toast-pill.success { border-color: rgba(52, 199, 89, 0.35); }
+.toast-pill.warning { border-color: rgba(255, 149, 0, 0.40); }
+.toast-pill.danger { border-color: rgba(255, 59, 48, 0.40); }
+.toast-pill .toast-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: var(--accent);
+}
+.toast-pill.success .toast-dot { background: var(--success); }
+.toast-pill.warning .toast-dot { background: var(--warning); }
+.toast-pill.danger .toast-dot { background: var(--danger); }
 @keyframes auiToastIn {
     from { opacity: 0; transform: translateY(-14px) scale(0.94); }
     to { opacity: 1; transform: translateY(0) scale(1); }
@@ -497,12 +565,13 @@ input:focus-visible + .slider {
     border-top: 1px solid var(--border-subtle);
 }
 .page-pill {
+    position: relative;
     min-width: 30px;
     height: 30px;
     padding: 0 8px;
     border-radius: 9px;
     border: 1px solid transparent;
-    background: rgba(120, 120, 128, 0.08);
+    background: var(--fill-quaternary);
     color: var(--text);
     font-size: 12px;
     font-weight: 600;
@@ -512,7 +581,10 @@ input:focus-visible + .slider {
     justify-content: center;
     transition: all 0.15s ease;
 }
-.page-pill:hover:not(:disabled) { background: rgba(120, 120, 128, 0.18); }
+.page-pill:disabled { opacity: 0.42; cursor: not-allowed; }
+@media (hover: hover) and (pointer: fine) {
+    .page-pill:hover:not(:disabled) { background: var(--fill-secondary); }
+}
 .page-pill.active {
     background: var(--accent);
     color: #ffffff;
@@ -527,13 +599,13 @@ input:focus-visible + .slider {
     right: 16px;
     z-index: 1100;
     background: var(--card-translucent);
-    backdrop-filter: blur(28px) saturate(190%);
-    -webkit-backdrop-filter: blur(28px) saturate(190%);
+    backdrop-filter: var(--glass-regular);
+    -webkit-backdrop-filter: var(--glass-regular);
     border: 1px solid var(--border);
     border-radius: 16px;
     padding: 12px 14px;
-    box-shadow: var(--shadow-lg);
-    min-width: 190px;
+    box-shadow: var(--shadow-lg), var(--glass-rim);
+    min-width: 196px;
     max-width: calc(100vw - 32px);
     user-select: none;
 }
@@ -556,7 +628,229 @@ input:focus-visible + .slider {
     font-variant-numeric: tabular-nums;
 }
 
-/* 14. Accessible Focus Ring for Interactive Controls */
+/* 14. Apple Inset Grouped List (.list-group-header + .list-group + .list-row) */
+.list-group-header {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-sec);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 4px 14px 7px 14px;
+}
+.list-group {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow-sm);
+}
+.list-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    position: relative;
+    transition: background-color 0.15s ease;
+    width: 100%;
+    border: none;
+    background: transparent;
+    text-align: left;
+    font-family: inherit;
+    color: var(--text);
+}
+.list-row + .list-row::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 16px;
+    right: 0;
+    height: 1px;
+    background: var(--border-subtle);
+}
+.list-row.interactive {
+    cursor: pointer;
+    user-select: none;
+}
+@media (hover: hover) and (pointer: fine) {
+    .list-row.interactive:hover { background: var(--card-hover); }
+}
+.list-row.interactive:active { background: var(--fill-quaternary); }
+.list-row-main {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    min-width: 0;
+    flex: 1;
+}
+.list-row-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: var(--accent-bg);
+    color: var(--accent);
+}
+.list-row-icon.success { background: var(--success-bg); color: var(--success); }
+.list-row-icon.warning { background: var(--warning-bg); color: var(--warning); }
+.list-row-icon.danger { background: var(--danger-bg); color: var(--danger); }
+.list-row-icon.purple { background: var(--purple-bg); color: var(--purple); }
+.list-row-icon.indigo { background: var(--indigo-bg); color: var(--indigo); }
+.list-row-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+}
+.list-row-sub {
+    font-size: 11px;
+    color: var(--text-sec);
+    margin-top: 1px;
+}
+.list-row-end {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+.list-row-value {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-sec);
+    font-variant-numeric: tabular-nums;
+}
+.list-chevron {
+    color: var(--text-ter);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+/* 15. Frosted Popover / Context Menu */
+.popover-menu {
+    position: fixed;
+    z-index: 2600;
+    min-width: 196px;
+    max-width: min(260px, calc(100vw - 24px));
+    background: var(--dock);
+    backdrop-filter: var(--glass-thick);
+    -webkit-backdrop-filter: var(--glass-thick);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 5px;
+    box-shadow: var(--shadow-lg), var(--glass-rim);
+    display: none;
+    flex-direction: column;
+    gap: 2px;
+    transform-origin: top right;
+}
+.popover-menu.active {
+    display: flex;
+    animation: auiPopoverIn 0.18s var(--ease-spring);
+}
+@keyframes auiPopoverIn {
+    from { opacity: 0; transform: scale(0.94) translateY(-4px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.popover-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 10px;
+    border: none;
+    border-radius: 9px;
+    background: transparent;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 0.12s ease, color 0.12s ease;
+}
+.popover-item:hover {
+    background: var(--fill-quaternary);
+}
+.popover-item:active {
+    background: var(--fill-tertiary);
+}
+.popover-item.danger {
+    color: var(--danger);
+}
+.popover-item.danger:hover {
+    background: var(--danger-bg);
+}
+.popover-divider {
+    height: 1px;
+    background: var(--border-subtle);
+    margin: 4px 6px;
+}
+
+/* 16. Live Activity Pill, Inline Copy Chip & Keyboard Shortcut Badge */
+.live-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 11px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 700;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    box-shadow: var(--shadow-sm);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+.live-pill.accent { background: var(--accent-bg); border-color: rgba(0, 122, 255, 0.25); color: var(--accent); }
+.live-pill.success { background: var(--success-bg); border-color: rgba(52, 199, 89, 0.25); color: var(--success); }
+.live-pill.warning { background: var(--warning-bg); border-color: rgba(255, 149, 0, 0.28); color: var(--warning); }
+
+.copy-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 9px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--card-sec);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.16s var(--ease-spring);
+}
+.copy-chip:active { transform: scale(0.95); }
+.copy-chip.copied {
+    background: var(--success-bg);
+    border-color: var(--success);
+    color: var(--success);
+}
+
+.kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 19px;
+    padding: 0 5px;
+    border-radius: 5px;
+    background: var(--fill-quaternary);
+    border: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-sec);
+    line-height: 1;
+}
+
+/* 17. Accessible Focus Ring for Interactive Controls */
 .btn:focus-visible,
 .pill-btn:focus-visible,
 .icon-btn:focus-visible,
@@ -564,7 +858,10 @@ input:focus-visible + .slider {
 .segment-btn:focus-visible,
 .tab-item:focus-visible,
 .sort-pill:focus-visible,
-.page-pill:focus-visible {
+.page-pill:focus-visible,
+.list-row.interactive:focus-visible,
+.popover-item:focus-visible,
+.copy-chip:focus-visible {
     outline: none;
     box-shadow: 0 0 0 3px var(--accent-bg), 0 0 0 1.5px var(--accent);
 }

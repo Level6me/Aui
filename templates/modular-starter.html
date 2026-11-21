@@ -1,16 +1,17 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="auto">
+<html lang="zh-CN" data-theme="auto" data-aui-hash>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>AUI 控制台起步模板</title>
-    <meta name="theme-color" content="#007aff" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#1c1c1e" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+    <script>try{var t=localStorage.getItem('aui_theme_mode');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
     <link rel="stylesheet" href="../src/css/aui.css">
 </head>
 <body>
 <!-- Top Toast Notification Container -->
-<div class="toast-container" id="toast-container"></div>
+<div class="toast-container" id="toast-container" role="status" aria-live="polite"></div>
 
 <div class="container">
     <!-- Adaptive Top Header -->
@@ -23,12 +24,17 @@
             <h1 class="title" id="page-title">系统概览</h1>
         </div>
         <div class="header-actions">
+            <button class="pill-btn" data-aui-cmd title="快捷命令面板 (⌘K)" aria-label="快捷命令面板">
+                <svg class="aui-icon sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.65" y1="16.65" x2="21" y2="21"/></svg>
+                <span class="pill-text">搜索</span>
+                <span class="kbd">⌘K</span>
+            </button>
             <button class="pill-btn" onclick="cycleTheme()" title="切换主题 (自动 / 浅色 / 深色)" aria-label="切换主题">
                 <span id="theme-icon">🌓</span>
                 <span id="theme-label" class="pill-text">自动</span>
             </button>
-            <button class="pill-btn accent" onclick="openModal('modal-action')" title="新建配置项" aria-label="新建配置项">
-                <span>➕</span>
+            <button class="pill-btn accent" data-aui-modal="modal-action" title="新建配置项" aria-label="新建配置项">
+                <svg class="aui-icon sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 <span class="pill-text">新建项目</span>
             </button>
         </div>
@@ -37,23 +43,23 @@
     <!-- Page 1: Overview -->
     <main id="p-overview" class="page active">
         <div class="grid-4">
-            <div class="card interactive" onclick="switchPage('p-nodes', '节点列表')">
+            <div class="card interactive" tabindex="0" onclick="switchPage('p-nodes', '节点列表')">
                 <div class="val-sub" style="color: var(--success);">● 在线实例</div>
                 <div class="val-big" style="color: var(--success);">128</div>
                 <div class="val-sub">服务可用率 99.9%</div>
             </div>
-            <div class="card interactive" onclick="switchPage('p-nodes', '节点列表')">
+            <div class="card interactive" tabindex="0" onclick="switchPage('p-nodes', '节点列表')">
                 <div class="val-sub" style="color: var(--accent);">↑ 实时吞吐</div>
                 <div class="val-big" style="color: var(--accent);">1.42 GB/s</div>
                 <div class="val-sub">峰值 2.10 GB/s</div>
             </div>
-            <div class="card interactive" onclick="switchPage('p-nodes', '节点列表')">
+            <div class="card interactive" tabindex="0" onclick="switchPage('p-nodes', '节点列表')">
                 <div class="val-sub" style="color: var(--warning);">⚡ 队列作业</div>
                 <div class="val-big" style="color: var(--warning);">14</div>
                 <div class="val-sub">平均延迟 18 ms</div>
             </div>
-            <div class="card interactive" onclick="switchPage('p-nodes', '节点列表')">
-                <div class="val-sub" style="color: var(--purple);">📦 已完成作业</div>
+            <div class="card interactive" tabindex="0" onclick="switchPage('p-nodes', '节点列表')">
+                <div class="val-sub" style="color: var(--purple);">● 已完成作业</div>
                 <div class="val-big" style="color: var(--purple);">3,842</div>
                 <div class="val-sub">24h 自动处理</div>
             </div>
@@ -61,7 +67,7 @@
 
         <div class="card">
             <div class="card-header">
-                <div class="card-title">📋 活跃节点摘要</div>
+                <div class="card-title">活跃节点摘要</div>
                 <button class="pill-btn" onclick="switchPage('p-nodes', '节点列表')">查看全部</button>
             </div>
             <div class="table-wrap">
@@ -78,13 +84,13 @@
                     <tbody>
                         <tr>
                             <td>
-                                <div class="ip-text">node-ap-southeast-01</div>
+                                <div class="ip-text" data-aui-copy="node-ap-southeast-01">node-ap-southeast-01</div>
                                 <div class="geo-subline">🇸🇬 亚太一区 · 核心计算节点</div>
                             </td>
                             <td><span class="tag accent">核心引擎</span></td>
                             <td><span class="tag success">● 正常 (24%)</span></td>
                             <td class="mono tabular">12.4 ms</td>
-                            <td><button class="action-btn" onclick="showToast('已打开节点详情')">详情</button></td>
+                            <td><button class="action-btn" onclick="showToast('节点运行正常', { type: 'success' })">详情</button></td>
                         </tr>
                     </tbody>
                 </table>
@@ -98,8 +104,8 @@
         <div class="sticky-toolbar">
             <div class="controls-bar">
                 <div class="search-box" style="flex: 1;">
-                    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-                    <input type="text" placeholder="过滤名称 / 地址 / 状态..." oninput="filterStarterNodes(this.value)">
+                    <svg class="aui-icon sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.65" y1="16.65" x2="21" y2="21"/></svg>
+                    <input type="text" id="starter-search-input" placeholder="过滤名称 / 地址 / 状态..." oninput="filterStarterNodes(this.value)">
                 </div>
                 <div class="segmented-control">
                     <button class="segment-btn active" onclick="switchSubView('.noop', 'none', this); filterStarterStatus('all')">全部</button>
@@ -124,26 +130,30 @@
                     <tbody id="starter-node-tbody">
                         <tr data-status="online">
                             <td>
-                                <div class="ip-text">node-ap-southeast-01</div>
+                                <div class="ip-text" data-aui-copy="node-ap-southeast-01">node-ap-southeast-01</div>
                                 <div class="geo-subline">🇸🇬 亚太一区 · 核心计算节点</div>
                             </td>
                             <td><span class="tag accent">核心引擎</span></td>
                             <td><span class="tag success">● 在线</span></td>
                             <td class="mono tabular">12.4 ms</td>
-                            <td><button class="action-btn" onclick="showToast('节点 node-ap-southeast-01 运行正常')">详情</button></td>
+                            <td><button class="action-btn" onclick="showToast('节点 node-ap-southeast-01 运行正常', { type: 'success' })">详情</button></td>
                         </tr>
                         <tr data-status="maintenance">
                             <td>
-                                <div class="ip-text">node-us-west-02</div>
+                                <div class="ip-text" data-aui-copy="node-us-west-02">node-us-west-02</div>
                                 <div class="geo-subline">🇺🇸 美西二区 · 边缘缓存节点</div>
                             </td>
                             <td><span class="tag neutral">边缘网关</span></td>
                             <td><span class="tag warning">⏸ 维护中</span></td>
                             <td class="mono tabular">--</td>
-                            <td><button class="action-btn success" onclick="showToast('已恢复节点调度')">恢复</button></td>
+                            <td><button class="action-btn success" onclick="showToast('已恢复节点调度', { type: 'success' })">恢复</button></td>
                         </tr>
                     </tbody>
                 </table>
+            </div>
+            <div id="starter-empty" class="empty-state" style="display: none;">
+                <div class="empty-state-title">无匹配节点</div>
+                <button class="pill-btn" onclick="resetStarterFilter()">重置筛选</button>
             </div>
         </div>
         <div class="bottom-spacer"></div>
@@ -151,55 +161,72 @@
 
     <!-- Page 3: Settings -->
     <section id="p-settings" class="page">
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title">⚙️ 系统偏好设置</div>
-            </div>
-            <div class="setting-row">
-                <div>
-                    <div class="setting-label">启用实时状态推送</div>
-                    <div class="setting-desc">状态变更时自动刷新视图指标</div>
+        <div class="list-group-header">系统偏好</div>
+        <div class="list-group">
+            <div class="list-row">
+                <div class="list-row-main">
+                    <span class="list-row-icon success">
+                        <svg class="aui-icon sm" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                    </span>
+                    <div>
+                        <div class="list-row-title">启用实时状态推送</div>
+                        <div class="list-row-sub">状态变更时自动刷新视图指标</div>
+                    </div>
                 </div>
                 <label class="switch">
-                    <input type="checkbox" checked onchange="showToast('设置已更新')">
+                    <input type="checkbox" checked onchange="showToast('设置已更新', { type: 'success' })">
                     <span class="slider"></span>
                 </label>
             </div>
+            <button type="button" class="list-row interactive" onclick="confirmStarterReset()">
+                <div class="list-row-main">
+                    <span class="list-row-icon danger">
+                        <svg class="aui-icon sm" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                    </span>
+                    <div>
+                        <div class="list-row-title">重置默认配置</div>
+                    </div>
+                </div>
+                <div class="list-row-end">
+                    <span class="list-chevron">›</span>
+                </div>
+            </button>
         </div>
         <div class="bottom-spacer"></div>
     </section>
 </div>
 
 <!-- Floating Glass Dock -->
-<nav class="dock">
-    <button class="dock-btn active" onclick="switchPage('p-overview', '系统概览', this)">
-        <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+<nav class="dock" aria-label="主导航">
+    <button class="dock-btn active" data-page="p-overview" onclick="switchPage('p-overview', '系统概览', this)">
+        <svg class="aui-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg>
         <span>系统概览</span>
     </button>
-    <button class="dock-btn" onclick="switchPage('p-nodes', '节点列表', this)">
-        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+    <button class="dock-btn" data-page="p-nodes" onclick="switchPage('p-nodes', '节点列表', this)">
+        <svg class="aui-icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="10" x2="9" y2="20"/></svg>
         <span>节点列表</span>
     </button>
-    <button class="dock-btn" onclick="switchPage('p-settings', '系统设置', this)">
-        <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39-.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+    <button class="dock-btn" data-page="p-settings" onclick="switchPage('p-settings', '系统设置', this)">
+        <svg class="aui-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.604.852.997 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         <span>系统设置</span>
     </button>
 </nav>
 
-<!-- Example Modal Sheet -->
+<!-- Example Modal Sheet (Adaptive Bottom Sheet on Mobile) -->
 <div class="modal-overlay" id="modal-action">
     <div class="modal-sheet">
+        <div class="sheet-grabber" aria-hidden="true"></div>
         <div class="card-header">
-            <h3 class="card-title">➕ 新建配置项</h3>
-            <button class="icon-btn" onclick="closeModal('modal-action')" aria-label="关闭弹窗">✕</button>
+            <h3 class="card-title">新建配置项</h3>
+            <button class="icon-btn" data-aui-close-modal="modal-action" aria-label="关闭弹窗">✕</button>
         </div>
         <div class="form-group">
             <label class="form-label">资源端点标识</label>
             <input type="text" class="form-control mono" placeholder="例如：endpoint-01 或 8080">
         </div>
         <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px;">
-            <button class="pill-btn" onclick="closeModal('modal-action')">取消</button>
-            <button class="pill-btn accent" onclick="closeModal('modal-action'); showToast('✅ 配置已保存')">保存生效</button>
+            <button class="pill-btn" data-aui-close-modal="modal-action">取消</button>
+            <button class="pill-btn accent" onclick="closeModal('modal-action'); showToast('配置已保存', { type: 'success' })">保存生效</button>
         </div>
     </div>
 </div>
@@ -212,11 +239,16 @@
     function applyStarterFilter() {
         const rows = document.querySelectorAll('#starter-node-tbody tr');
         const q = starterSearch.trim().toLowerCase();
+        let count = 0;
         rows.forEach(row => {
             const matchStatus = starterStatus === 'all' || row.dataset.status === starterStatus;
             const matchText = !q || row.textContent.toLowerCase().includes(q);
-            row.style.display = (matchStatus && matchText) ? '' : 'none';
+            const show = matchStatus && matchText;
+            row.style.display = show ? '' : 'none';
+            if (show) count++;
         });
+        const empty = document.getElementById('starter-empty');
+        if (empty) empty.style.display = count === 0 ? 'flex' : 'none';
     }
 
     function filterStarterNodes(val) {
@@ -227,6 +259,26 @@
     function filterStarterStatus(status) {
         starterStatus = status;
         applyStarterFilter();
+    }
+
+    function resetStarterFilter() {
+        starterSearch = '';
+        starterStatus = 'all';
+        const input = document.getElementById('starter-search-input');
+        if (input) input.value = '';
+        const firstSeg = document.querySelector('#p-nodes .segmented-control .segment-btn');
+        if (firstSeg) switchSubView('.noop', 'none', firstSeg);
+        applyStarterFilter();
+    }
+
+    async function confirmStarterReset() {
+        const ok = await auiConfirm('所有本地偏好将恢复至初始状态。', {
+            title: '重置默认配置',
+            confirmText: '确认重置',
+            cancelText: '取消',
+            danger: true
+        });
+        if (ok) showToast('已恢复默认配置', { type: 'warning' });
     }
 </script>
 </body>

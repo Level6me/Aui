@@ -1,4 +1,4 @@
-# AI Agent Web UI Development Rules (AUI Design System)
+# AI Agent Web UI Development Rules (AUI 2.0 Design System)
 
 > **Target AI Agents**: Antigravity, Claude Code, Cursor, Windsurf, Codex, Copilot.
 > **Design Philosophy**: Apple HIG Frosted-Glass Aesthetic + High-Density Self-Explanatory Layout.
@@ -15,7 +15,7 @@ When the user asks you to build, redesign, or scaffold a Web UI / Dashboard / Co
 - **NO** introductory welcome banners or explanatory paragraphs above dashboards or tables.
 - **NO** verbose helper descriptions under every card title or form input when the label + placeholder or visual layout already makes the purpose obvious.
 - **NO** third-party UI frameworks (Bootstrap, Material UI, Ant Design, Chakra) that override the Apple HIG frosted-glass aesthetic.
-- **ALWAYS** use the exact CSS variables, class names, border radii, frosted-glass blur (`backdrop-filter: blur(28px) saturate(190%)`), and spring transitions (`cubic-bezier(0.1, 0.8, 0.25, 1)`) provided in `src/css/`.
+- **ALWAYS** use the exact CSS variables, class names, concentric border radii, frosted-glass blur tiers (`--glass-regular` + `--glass-rim`), and spring transitions (`cubic-bezier(0.1, 0.8, 0.25, 1)`) provided in `src/css/`.
 
 ---
 
@@ -31,42 +31,47 @@ Depending on the backend/deployment requirements of the new project, select one 
 - **When to use**: Standalone WebUIs, PWAs, or complex multi-module frontend applications.
 - **Starter Structure**:
   - Copy `src/css/*.css` (`variables.css`, `base.css`, `layout.css`, `components.css`, `data-display.css`, `dock.css`, `modal.css`) and `src/js/aui-core.js`.
-  - Use [`templates/modular-starter.html`](./templates/modular-starter.html) as the entry HTML and [`scripts/build.js`](./scripts/build.js) to bundle into `dist/`.
+  - Use [`templates/modular-starter.html`](./templates/modular-starter.html) as the entry HTML and [`scripts/build.js`](./scripts/build.js) (`npm run build` / `npm run check`) to bundle into `dist/`.
 
 ---
 
 ## 3. Mandatory Visual & Structural Checklist
 
-1. **Theme Engine (`auto` / `light` / `dark`)**:
-   - Root element: `<html lang="zh-CN" data-theme="auto">`.
-   - Light mode background MUST be `#f2f2f7` with `#ffffff` cards; Dark mode background MUST be pure OLED black `#000000` with `#1c1c1e` primary cards and `#2c2c2e` secondary blocks.
+1. **Theme Engine (`auto` / `light` / `dark`) + Dark Mode Luminance Calibration**:
+   - Root element: `<html lang="zh-CN" data-theme="auto">`; include the 1-line `<head>` theme init snippet to prevent FOUC.
+   - Light mode background MUST be `#f2f2f7` with `#ffffff` cards; Dark mode background MUST be pure OLED black `#000000` with `#1c1c1e` primary cards, `#2c2c2e` secondary blocks, and HIG-brightened semantic colors (`#0a84ff`, `#30d158`, `#ff9f0a`, `#ff453a`, `#bf5af2`).
    - Include the theme toggle pill button in `.header-actions` calling `cycleTheme()`.
 2. **Adaptive Header (`.header`)**:
    - Left (`.header-left`): `.date-badge` (with pulsing `.status-dot` + uppercase system status) stacked above `.title` (`28px–32px`, `font-weight: 800`, `letter-spacing: -0.03em`).
-   - Right (`.header-actions`): Compact `.pill-btn` actions. Wrap button text in `<span class="pill-text">...</span>` so mobile screens (`≤ 640px`) automatically collapse buttons into clean icon pills.
+   - Right (`.header-actions`): Compact `.pill-btn` actions (including optional `⌘K` Command Palette trigger via `data-aui-cmd`). Wrap button text in `<span class="pill-text">...</span>` so mobile screens (`≤ 640px`) automatically collapse buttons into clean icon pills.
 3. **KPI Stat Cards (`.grid-4` / `.grid-6` + `.card`)**:
    - Always use `minmax(0, 1fr)` grids (`.grid-4` collapses to `2x2` on mobile, never `1x4`).
-   - Big numbers (`.val-big`) MUST use `font-variant-numeric: tabular-nums` and semantic colors (`var(--accent)`, `var(--success)`, `var(--warning)`, `var(--danger)`, `var(--purple)`).
+   - Big numbers (`.val-big`) MUST use `font-variant-numeric: tabular-nums` and semantic colors (`var(--accent)`, `var(--success)`, `var(--warning)`, `var(--danger)`, `var(--purple)`, `var(--indigo)`, `var(--teal)`).
    - Make KPI cards clickable (`.card.interactive` or `.stat-interactive`) to jump directly to filtered views whenever applicable.
-4. **Navigation — Floating Glass Dock (`.dock`)**:
-   - Primary top-level navigation (3 to 6 pages) MUST live in the bottom centered Floating Glass Dock (`<nav class="dock">`), NOT in a traditional left sidebar or top navbar.
+4. **Navigation — Floating Glass Dock (`.dock`) & Spotlight (`⌘K`)**:
+   - Primary top-level navigation (3 to 6 pages) MUST live in the bottom centered Floating Glass Dock (`<nav class="dock">`) with concentric `.dock-btn` (`border-radius: 24px`) and SF Symbols-style linear `.aui-icon` SVGs.
    - Always place `<div class="bottom-spacer"></div>` at the bottom of each `.page` so the floating dock never obscures content.
-   - Secondary switching within a page uses either `.sticky-toolbar` + `.tab-bar` / `.segmented-control` or `.sticky-toolbar.bare` + `.sticky-toolbar-row` + `.capsule-switcher` (lightweight frameless sticky switcher bar with subtle perimeter ambient shadow).
-5. **Tables, Card Grids & Modals**:
-   - Wrap tables in `.table-wrap` for horizontal touch scrolling. Combine primary identifier (`.ip-text` in monospace) and secondary metadata (`.geo-subline`) into a single stacked cell to keep tables compact.
-   - Use `.modal-overlay` + `.modal-sheet` for dialogs, `await auiConfirm('...')` for confirmations (never `window.confirm`), and `showToast('...')` for non-blocking top pill notifications (never use `window.alert`).
+   - Secondary switching uses `.sticky-toolbar` + `.segmented-control` (auto-enhanced with spring sliding `.segment-indicator`) / `.tab-bar`, or `.sticky-toolbar.bare` + `.sticky-toolbar-row` + `.capsule-switcher`.
+   - Use `AUI.registerCommands([...])` to expose quick actions via `⌘K` / `Ctrl+K`.
+5. **Tables, Card Grids, Grouped Lists & Adaptive Overlays**:
+   - Wrap tables in `.table-wrap` for horizontal touch scrolling. Combine primary identifier (`.ip-text` in monospace) and secondary metadata (`.geo-subline`) into a single stacked cell. Use `.popover-menu` (`togglePopover`) instead of crowding rows with many buttons.
+   - Use `.list-group-header` + `.list-group` + `.list-row` for Apple Inset Grouped Settings lists, and `.skeleton` / `.empty-state` for loading & empty states.
+   - Use `.modal-overlay` + `.modal-sheet` (auto-adapts into a mobile Bottom Sheet with `.sheet-grabber` below `640px`), `await auiConfirm('...', { title, danger })` for destructive confirmations (never `window.confirm`), and `showToast('...', { type })` for non-blocking top pill notifications (never `window.alert`).
+   - Respect Apple HIG accessibility: keep pinch-zoom enabled (never `user-scalable=no`), preserve `:focus-visible`, `prefers-reduced-motion`, `prefers-reduced-transparency`, and `prefers-contrast`.
 
 ---
 
-## 4. Quick Reference: Core CSS Classes
+## 4. Quick Reference: Core CSS Classes & Runtime APIs
 
-| Category | Classes |
+| Category | Classes / APIs |
 | :--- | :--- |
 | **Layout & Grids** | `.container` (`.wide`, `.compact`), `.header`, `.header-left`, `.date-badge`, `.title`, `.header-actions`, `.btn-text-mobile`, `.btn-text-full`, `.sticky-toolbar` (`.bare`, `.sticky-toolbar-row`), `.controls-bar`, `.filter-row`, `.grid-2`, `.grid-3`, `.grid-4`, `.grid-6`, `.card` (`.interactive`, `.card-flush`), `.card-header`, `.card-title`, `.chart-box`, `.chart-mini`, `.bottom-spacer` |
-| **KPI & Typography** | `.val-big`, `.val-sub`, `.stat-interactive`, `.mono`, `.tabular` |
-| **Buttons** | `.btn` (`.secondary`, `.danger`, `.success`, `.w-full`), `.pill-btn` (`.accent`, `.danger`, `.success`, `.warning`, `.active`), `.icon-btn`, `.action-btn` |
-| **Switchers & Tabs** | `.segmented-control` + `.segment-btn`, `.capsule-switcher` + `.pill-btn`, `.tab-bar` + `.tab-item`, `.sort-pill`, `.batch-bar` |
-| **Inputs & Forms** | `.input-box` / `.form-control` / `.input-field`, `.search-box`, `.select-custom`, `.switch` + `.slider`, `.form-group`, `.form-label`, `.setting-row`, `.setting-label`, `.setting-desc` |
-| **Status & Badges** | `.status-dot` (`.warning`, `.danger`), `.badge` / `.tag` (`.accent`, `.success`, `.warning`, `.danger`, `.purple`, `.neutral`), `.progress-track` + `.progress-fill` |
-| **Data Display** | `.table-wrap`, `.ip-text`, `.geo-subline`, `.item-grid-container`, `.item-card` (`.item-card-header`, `.item-card-title`, `.item-card-meta`, `.item-card-footer`), `.rank-item`, `.rank-num` (`.top1`, `.top2`, `.top3`, `.normal`), `.rank-bar-bg`, `.rank-bar-fill`, `.diag-row-item` (`.diag-row-header`, `.diag-bar-track`, `.diag-bar-fill`), `.pagination-wrapper`, `.page-pill` |
-| **Navigation & Overlays** | `.dock`, `.dock-btn`, `.page`, `.modal-overlay` (`.forced-login`), `.modal-sheet` / `.modal-card` (`.wide`), `.toast-container`, `.toast-pill`, `.mini-floating-hud` |
+| **KPI & Icons** | `.val-big`, `.val-sub`, `.stat-interactive`, `.mono`, `.tabular`, `.aui-icon` (`.sm`, `.lg`), `.kbd` |
+| **Buttons** | `.btn` (`.secondary`, `.danger`, `.success`, `.w-full`), `.pill-btn` (`.accent`, `.danger`, `.success`, `.warning`, `.active`), `.icon-btn` (`.accent`, `.danger`), `.action-btn`, `.copy-chip` (`.copied`) |
+| **Switchers & Tabs** | `.segmented-control` + `.segment-btn` (+ auto `.segment-indicator`), `.capsule-switcher` + `.pill-btn`, `.tab-bar` + `.tab-item`, `.sort-pill`, `.batch-bar` |
+| **Inputs & Lists** | `.input-box` / `.form-control` / `.input-field`, `.search-box`, `.select-custom`, `.switch` (`.accent`) + `.slider`, `.form-group`, `.form-label`, `.setting-row`, `.list-group-header`, `.list-group`, `.list-row` (`.interactive`, `.list-row-icon`, `.list-row-value`, `.list-chevron`) |
+| **Status & Badges** | `.status-dot` (`.warning`, `.danger`), `.badge` / `.tag` (`.accent`, `.success`, `.warning`, `.danger`, `.purple`, `.indigo`, `.teal`, `.pink`, `.yellow`, `.neutral`), `.live-pill` (`.accent`, `.success`, `.warning`), `.progress-track` + `.progress-fill` |
+| **Data Display** | `.table-wrap`, `.ip-text`, `.geo-subline`, `.item-grid-container`, `.item-card`, `.rank-item`, `.rank-num` (`.top1`, `.top2`, `.top3`, `.normal`), `.rank-bar-bg`, `.rank-bar-fill`, `.diag-row-item`, `.pagination-wrapper`, `.page-pill`, `.skeleton` (`.skeleton-line`), `.empty-state` |
+| **Navigation & Overlays** | `.dock`, `.dock-btn`, `.page`, `.modal-overlay` (`.forced-login`, `.alert-overlay`), `.modal-sheet` (`.wide`, `.alert-sheet`, `.sheet-grabber`), `.popover-menu` (`.popover-item`, `.popover-divider`), `.cmd-overlay` / `.cmd-sheet`, `.toast-container`, `.toast-pill` (`.success`, `.warning`, `.danger`), `.mini-floating-hud` |
+| **Runtime (`window.AUI`)** | `setTheme`, `cycleTheme`, `getThemeMode`, `isDarkEffective`, `onThemeChange`, `switchPage`, `switchSubView`, `refreshSegmentedControls`, `openModal`, `closeModal`, `confirm` (`auiConfirm`), `registerCommands`, `openCommandPalette`, `togglePopover`, `closePopovers`, `copyText`, `showToast`, `getChartThemeTokens` |
+| **Declarative Triggers** | `data-aui-hash` (on `<html>`), `data-aui-modal="id"`, `data-aui-close-modal="id"`, `data-aui-popover="id"`, `data-aui-copy="text"`, `data-aui-cmd` |

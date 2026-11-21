@@ -1,24 +1,25 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="auto">
+<html lang="zh-CN" data-theme="auto" data-aui-hash>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>AUI — Apple Frosted Glass WebUI Design System</title>
-    <meta name="theme-color" content="#007aff" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#1c1c1e" media="(prefers-color-scheme: dark)">
+    <title>AUI 2.0 — Apple HIG Frosted Glass WebUI Design System</title>
+    <meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+    <script>try{var t=localStorage.getItem('aui_theme_mode');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
     <link rel="stylesheet" href="src/css/aui.css">
 </head>
 <body>
 <!-- Top Frosted Toast Container -->
-<div class="toast-container" id="toast-container"></div>
+<div class="toast-container" id="toast-container" role="status" aria-live="polite"></div>
 
 <!-- Floating Mini Speed HUD -->
 <div id="demo-mini-hud" class="mini-floating-hud" style="display: none;">
     <div class="mini-hud-header">
-        <span style="font-weight: 800; font-size: 10px; letter-spacing: 0.5px; color: var(--text-sec);">🍏 AUI LIVE MONITOR</span>
+        <span style="font-weight: 800; font-size: 10px; letter-spacing: 0.5px; color: var(--text-sec);">AUI LIVE MONITOR</span>
         <div style="display: flex; align-items: center; gap: 6px;">
             <span style="font-size: 10px; font-weight: 700; color: var(--accent);">16 节点</span>
-            <button class="icon-btn" onclick="toggleMiniHud()" style="width: 18px; height: 18px; font-size: 10px;" title="关闭悬浮窗" aria-label="关闭悬浮窗">✕</button>
+            <button class="icon-btn" onclick="toggleMiniHud()" style="width: 20px; height: 20px; font-size: 10px;" title="关闭悬浮窗" aria-label="关闭悬浮窗">✕</button>
         </div>
     </div>
     <div class="mini-hud-row">
@@ -31,31 +32,55 @@
     </div>
 </div>
 
+<!-- Shared Frosted Context Popover Menu -->
+<div class="popover-menu" id="node-context-menu" role="menu">
+    <button class="popover-item" role="menuitem" onclick="openIpDetail(currentPopoverNode)">
+        <span>节点运行详情</span>
+        <span class="kbd">↵</span>
+    </button>
+    <button class="popover-item" role="menuitem" onclick="copyText(currentPopoverNode.ip, '已复制节点标识')">
+        <span>复制节点标识</span>
+        <span class="kbd">C</span>
+    </button>
+    <button class="popover-item" role="menuitem" onclick="showToast('已触发节点健康检查', { type: 'info' })">
+        <span>执行健康检查</span>
+    </button>
+    <div class="popover-divider"></div>
+    <button class="popover-item danger" role="menuitem" onclick="demoConfirmDialog()">
+        <span>切入维护模式</span>
+    </button>
+</div>
+
 <div class="container">
     <!-- Adaptive Header Bar -->
     <header class="header">
         <div class="header-left">
             <div class="date-badge">
                 <span class="status-dot" id="header-dot"></span>
-                <span>AUI DESIGN SYSTEM · APPLE HIG GLASS</span>
+                <span>AUI 2.0 · APPLE HIG FROSTED GLASS</span>
             </div>
             <h1 class="title" id="page-title">系统总览</h1>
         </div>
         <div class="header-actions">
+            <button class="pill-btn" data-aui-cmd title="打开快捷命令面板 (⌘K)" aria-label="打开快捷命令面板">
+                <svg class="aui-icon sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.65" y1="16.65" x2="21" y2="21"/></svg>
+                <span class="pill-text">搜索</span>
+                <span class="kbd">⌘K</span>
+            </button>
             <button class="pill-btn" id="btn-speed-mode" onclick="toggleSpeedLimitDemo()" title="切换限流保护状态" aria-label="切换限流保护状态">
                 <span id="speed-mode-icon">⚡</span>
                 <span id="speed-mode-text" class="pill-text">全速模式</span>
             </button>
             <button class="pill-btn" onclick="toggleMiniHud()" title="切换悬浮监控小窗" aria-label="切换悬浮监控小窗">
-                <span>🖥️</span>
+                <svg class="aui-icon sm" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="18" x2="12" y2="21"/></svg>
                 <span class="pill-text">悬浮窗</span>
             </button>
             <button class="pill-btn" onclick="cycleTheme()" title="切换主题 (自动 / 浅色 / 深色)" aria-label="切换主题">
                 <span id="theme-icon">🌓</span>
                 <span id="theme-label" class="pill-text">自动</span>
             </button>
-            <button class="pill-btn accent" onclick="openModal('modal-demo-form')" title="新建配置" aria-label="新建配置">
-                <span>➕</span>
+            <button class="pill-btn accent" data-aui-modal="modal-demo-form" title="新建配置" aria-label="新建配置">
+                <svg class="aui-icon sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 <span class="pill-text">新建项目</span>
             </button>
         </div>
@@ -68,13 +93,13 @@
             <div class="sticky-toolbar-row">
                 <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
                     <div class="capsule-switcher">
-                        <button class="pill-btn accent" onclick="switchSubView('.overview-sub', 'sub-dash', this, 'accent')">📊 核心看板</button>
-                        <button class="pill-btn" onclick="switchSubView('.overview-sub', 'sub-deep', this, 'accent')">🔬 6维矩阵</button>
+                        <button class="pill-btn accent" onclick="switchSubView('.overview-sub', 'sub-dash', this, 'accent')">核心看板</button>
+                        <button class="pill-btn" onclick="switchSubView('.overview-sub', 'sub-deep', this, 'accent')">6维矩阵</button>
                     </div>
-                    <div onclick="showToast('✅ 核心调度服务健康度 99.98%')" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; background: var(--success-bg); color: var(--success); cursor: pointer;">
+                    <button type="button" class="live-pill success" onclick="showToast('核心调度服务健康度 99.98%', { type: 'success' })" style="cursor: pointer;">
                         <span class="status-dot" style="width: 6px; height: 6px;"></span>
-                        <span>服务健康: 99.98%</span>
-                    </div>
+                        <span>服务健康 99.98%</span>
+                    </button>
                 </div>
                 <div class="segmented-control">
                     <button class="segment-btn" onclick="switchSubView('.noop', 'none', this); showToast('已切换至 24 小时视图')">24h</button>
@@ -87,23 +112,23 @@
         <!-- SubView 1: 4-Column KPI + Live Trend + Rank Bars -->
         <div id="sub-dash" class="overview-sub">
             <div class="grid-4">
-                <div class="card interactive" onclick="jumpToDataPage()">
+                <div class="card interactive" tabindex="0" onclick="jumpToDataPage()">
                     <div class="val-sub" style="color: var(--success);">↓ 实时下行吞吐</div>
                     <div class="val-big" id="kpi-dl" style="color: var(--success);">84.6 MB/s</div>
                     <div class="val-sub">活跃工作流: 42</div>
                 </div>
-                <div class="card interactive" onclick="jumpToDataPage()">
+                <div class="card interactive" tabindex="0" onclick="jumpToDataPage()">
                     <div class="val-sub" style="color: var(--accent);">↑ 实时上行吞吐</div>
                     <div class="val-big" id="kpi-up" style="color: var(--accent);">31.2 MB/s</div>
                     <div class="val-sub">并发连接数: 1,284</div>
                 </div>
-                <div class="card interactive" onclick="jumpToDataPage()">
+                <div class="card interactive" tabindex="0" onclick="jumpToDataPage()">
                     <div class="val-sub" style="color: var(--warning);">⚡ 队列等待作业</div>
                     <div class="val-big" style="color: var(--warning);">18</div>
                     <div class="val-sub">平均调度耗时 12 ms</div>
                 </div>
-                <div class="card interactive" onclick="jumpToDataPage()">
-                    <div class="val-sub" style="color: var(--purple);">🌐 在线集群节点</div>
+                <div class="card interactive" tabindex="0" onclick="jumpToDataPage()">
+                    <div class="val-sub" style="color: var(--purple);">● 在线集群节点</div>
                     <div class="val-big" style="color: var(--purple);">16</div>
                     <div class="val-sub">多地域负载均衡</div>
                 </div>
@@ -112,7 +137,7 @@
             <!-- Live Smooth Area Chart Card -->
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">📈 实时网络吞吐趋势 <span class="val-sub">(MB/s)</span></div>
+                    <div class="card-title">实时网络吞吐趋势 <span class="val-sub">(MB/s)</span></div>
                     <div style="font-size: 12px; display: flex; gap: 12px;">
                         <span style="color: var(--success); font-weight: 700;">● 下行速率</span>
                         <span style="color: var(--accent); font-weight: 700;">● 上行速率</span>
@@ -126,31 +151,31 @@
             <!-- Interactive Status Summary Grid -->
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">📊 作业状态汇总</div>
+                    <div class="card-title">作业状态汇总</div>
                     <span class="val-sub">点击指标联动过滤列表</span>
                 </div>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(76px, 1fr)); text-align: center; gap: 8px;">
-                    <div class="stat-interactive" onclick="jumpToDataPage()">
+                    <div class="stat-interactive" tabindex="0" onclick="jumpToDataPage()">
                         <div class="val-big" style="color: var(--accent);">186</div>
                         <div class="val-sub">全部作业</div>
                     </div>
-                    <div class="stat-interactive" onclick="jumpToDataPage()">
+                    <div class="stat-interactive" tabindex="0" onclick="jumpToDataPage()">
                         <div class="val-big" style="color: var(--success);">42</div>
                         <div class="val-sub">运行中</div>
                     </div>
-                    <div class="stat-interactive" onclick="jumpToDataPage()">
+                    <div class="stat-interactive" tabindex="0" onclick="jumpToDataPage()">
                         <div class="val-big" style="color: var(--purple);">98</div>
                         <div class="val-sub">同步分发</div>
                     </div>
-                    <div class="stat-interactive" onclick="jumpToDataPage()">
+                    <div class="stat-interactive" tabindex="0" onclick="jumpToDataPage()">
                         <div class="val-big" style="color: var(--text);">31</div>
                         <div class="val-sub">已完成</div>
                     </div>
-                    <div class="stat-interactive" onclick="jumpToDataPage()">
+                    <div class="stat-interactive" tabindex="0" onclick="jumpToDataPage()">
                         <div class="val-big" style="color: var(--warning);">12</div>
                         <div class="val-sub">排队中</div>
                     </div>
-                    <div class="stat-interactive" onclick="jumpToDataPage()">
+                    <div class="stat-interactive" tabindex="0" onclick="jumpToDataPage()">
                         <div class="val-big" style="color: var(--danger);">3</div>
                         <div class="val-sub">异常告警</div>
                     </div>
@@ -161,38 +186,38 @@
             <div class="grid-2">
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">🌍 区域流量分布 Top 5</div>
+                        <div class="card-title">区域流量分布 Top 5</div>
                         <span class="tag neutral mono">Region Metrics</span>
                     </div>
                     <div>
                         <div class="rank-item">
                             <span class="rank-num top1">1</span>
-                            <span style="width: 90px; font-weight: 600;">🇺🇸 美东弗吉尼亚</span>
+                            <span style="width: 96px; font-weight: 600;">🇺🇸 美东弗吉尼亚</span>
                             <div class="rank-bar-bg"><div class="rank-bar-fill" style="width: 88%; background: var(--danger);"></div></div>
                             <span class="mono tabular" style="font-weight: 700; width: 48px; text-align: right;">4,812</span>
                         </div>
                         <div class="rank-item">
                             <span class="rank-num top2">2</span>
-                            <span style="width: 90px; font-weight: 600;">🇩🇪 欧洲法兰克福</span>
+                            <span style="width: 96px; font-weight: 600;">🇩🇪 欧洲法兰克福</span>
                             <div class="rank-bar-bg"><div class="rank-bar-fill" style="width: 64%; background: var(--warning);"></div></div>
                             <span class="mono tabular" style="font-weight: 700; width: 48px; text-align: right;">3,190</span>
                         </div>
                         <div class="rank-item">
                             <span class="rank-num top3">3</span>
-                            <span style="width: 90px; font-weight: 600;">🇸🇬 亚太新加坡</span>
+                            <span style="width: 96px; font-weight: 600;">🇸🇬 亚太新加坡</span>
                             <div class="rank-bar-bg"><div class="rank-bar-fill" style="width: 49%; background: var(--accent);"></div></div>
                             <span class="mono tabular" style="font-weight: 700; width: 48px; text-align: right;">2,405</span>
                         </div>
                         <div class="rank-item">
                             <span class="rank-num normal">4</span>
-                            <span style="width: 90px; font-weight: 600;">🇯🇵 亚太东京</span>
-                            <div class="rank-bar-bg"><div class="rank-bar-fill" style="width: 32%;"></div></div>
+                            <span style="width: 96px; font-weight: 600;">🇯🇵 亚太东京</span>
+                            <div class="rank-bar-bg"><div class="rank-bar-fill" style="width: 32%; background: var(--indigo);"></div></div>
                             <span class="mono tabular" style="font-weight: 700; width: 48px; text-align: right;">1,520</span>
                         </div>
                         <div class="rank-item">
                             <span class="rank-num normal">5</span>
-                            <span style="width: 90px; font-weight: 600;">🇭🇰 亚太香港</span>
-                            <div class="rank-bar-bg"><div class="rank-bar-fill" style="width: 21%;"></div></div>
+                            <span style="width: 96px; font-weight: 600;">🇭🇰 亚太香港</span>
+                            <div class="rank-bar-bg"><div class="rank-bar-fill" style="width: 21%; background: var(--teal);"></div></div>
                             <span class="mono tabular" style="font-weight: 700; width: 48px; text-align: right;">980</span>
                         </div>
                     </div>
@@ -200,7 +225,7 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">🔍 接口调用热点排行</div>
+                        <div class="card-title">接口调用热点排行</div>
                         <span class="tag accent">实时采样</span>
                     </div>
                     <div>
@@ -234,32 +259,32 @@
         <div id="sub-deep" class="overview-sub" style="display: none;">
             <div class="grid-6">
                 <div class="card">
-                    <div class="val-sub" style="color: var(--accent);">⚡ 请求总量</div>
+                    <div class="val-sub" style="color: var(--accent);">请求总量</div>
                     <div class="val-big" style="color: var(--accent); font-size: 24px;">92,410</div>
                     <div class="val-sub">全链路网关统计</div>
                 </div>
                 <div class="card">
-                    <div class="val-sub" style="color: var(--success);">✓ 成功响应</div>
+                    <div class="val-sub" style="color: var(--success);">成功响应</div>
                     <div class="val-big" style="color: var(--success); font-size: 24px;">91,855</div>
                     <div class="val-sub">HTTP 2xx 状态</div>
                 </div>
                 <div class="card">
-                    <div class="val-sub" style="color: var(--warning);">⏳ 限流队列</div>
+                    <div class="val-sub" style="color: var(--warning);">限流队列</div>
                     <div class="val-big" style="color: var(--warning); font-size: 24px;">512</div>
                     <div class="val-sub">平滑削峰保护</div>
                 </div>
                 <div class="card">
-                    <div class="val-sub" style="color: var(--success);">🎯 缓存命中率</div>
-                    <div class="val-big" style="color: var(--success); font-size: 24px;">96.4%</div>
+                    <div class="val-sub" style="color: var(--teal);">缓存命中率</div>
+                    <div class="val-big" style="color: var(--teal); font-size: 24px;">96.4%</div>
                     <div class="val-sub">边缘节点加速</div>
                 </div>
                 <div class="card">
-                    <div class="val-sub" style="color: var(--purple);">🌍 覆盖可用区</div>
-                    <div class="val-big" style="color: var(--purple); font-size: 24px;">24</div>
+                    <div class="val-sub" style="color: var(--indigo);">覆盖可用区</div>
+                    <div class="val-big" style="color: var(--indigo); font-size: 24px;">24</div>
                     <div class="val-sub">全球边缘集群</div>
                 </div>
                 <div class="card">
-                    <div class="val-sub" style="color: var(--danger);">🚨 异常重试</div>
+                    <div class="val-sub" style="color: var(--danger);">异常重试</div>
                     <div class="val-big" style="color: var(--danger); font-size: 24px;">43</div>
                     <div class="val-sub">自动故障转移</div>
                 </div>
@@ -275,16 +300,16 @@
             <div class="controls-bar">
                 <div class="filter-row">
                     <div class="search-box" style="flex: 1;">
-                        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                        <svg class="aui-icon sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.65" y1="16.65" x2="21" y2="21"/></svg>
                         <input type="text" id="data-search-input" placeholder="实时过滤节点名称 / 地址 / 标识..." oninput="setDataSearch(this.value)">
                     </div>
                     <select class="select-custom" id="data-category-select" onchange="setDataCategory(this.value)" aria-label="分组筛选">
-                        <option value="all">📁 全部分组</option>
-                        <option value="core">⚡ 核心计算</option>
-                        <option value="edge">🌐 边缘存储</option>
+                        <option value="all">全部分组</option>
+                        <option value="core">核心计算</option>
+                        <option value="edge">边缘存储</option>
                     </select>
                     <button class="pill-btn accent" id="btn-toggle-view" onclick="toggleDataViewMode()">
-                        <span id="view-mode-label">🗂️ 切换网格视图</span>
+                        <span id="view-mode-label">切换网格视图</span>
                     </button>
                 </div>
             </div>
@@ -311,7 +336,7 @@
                         </tr>
                     </thead>
                     <tbody id="data-table-body">
-                        <tr data-category="core" data-status="running" onclick="openIpDetail({ip:'edge-us-east-01',geo:'🇺🇸 美东弗吉尼亚 · Zone A',asn:'AS14618 Core Backbone',risk:'低负载 (28%)',riskType:'success',status:'⚡ 主力承载中',statusType:'accent'})" style="cursor: pointer;">
+                        <tr data-category="core" data-status="running" onclick="openIpDetail({ip:'edge-us-east-01',geo:'🇺🇸 美东弗吉尼亚 · Zone A',asn:'AS14618 Core Backbone',risk:'低负载 (28%)',riskType:'success',status:'主力承载中',statusType:'accent'})" style="cursor: pointer;">
                             <td>
                                 <div class="ip-text">edge-us-east-01</div>
                                 <div class="geo-subline">🇺🇸 美东弗吉尼亚 · 核心可用区 A</div>
@@ -319,13 +344,13 @@
                             <td><span class="tag neutral mono">gRPC / HTTP3</span></td>
                             <td class="mono tabular" style="font-weight: 700; color: var(--success);">↓ 52.4 MB/s</td>
                             <td><span class="tag success">低负载 (28%)</span></td>
-                            <td><span class="tag accent">⚡ 主力承载</span></td>
-                            <td onclick="event.stopPropagation();">
-                                <button class="action-btn" onclick="openIpDetail({ip:'edge-us-east-01',geo:'🇺🇸 美东弗吉尼亚 · Zone A',asn:'AS14618 Core Backbone',risk:'低负载 (28%)',riskType:'success',status:'⚡ 主力承载中',statusType:'accent'})">详情</button>
-                                <button class="action-btn" onclick="showToast('🔄 已触发健康检查')">重检</button>
+                            <td><span class="tag accent">● 主力承载</span></td>
+                            <td onclick="event.stopPropagation();" style="display: flex; align-items: center; gap: 6px;">
+                                <button class="action-btn" onclick="openIpDetail({ip:'edge-us-east-01',geo:'🇺🇸 美东弗吉尼亚 · Zone A',asn:'AS14618 Core Backbone',risk:'低负载 (28%)',riskType:'success',status:'主力承载中',statusType:'accent'})">详情</button>
+                                <button class="icon-btn" aria-label="更多操作" onclick="openNodeMenu(this, {ip:'edge-us-east-01',geo:'🇺🇸 美东弗吉尼亚 · Zone A',asn:'AS14618 Core Backbone',risk:'低负载 (28%)',riskType:'success',status:'主力承载中',statusType:'accent'})">⋯</button>
                             </td>
                         </tr>
-                        <tr data-category="edge" data-status="syncing" onclick="openIpDetail({ip:'edge-ap-sg-04',geo:'🇸🇬 亚太新加坡 · Zone B',asn:'AS14061 Edge Relay',risk:'中高负载 (74%)',riskType:'warning',status:'● 在线同步中',statusType:'success'})" style="cursor: pointer;">
+                        <tr data-category="edge" data-status="syncing" onclick="openIpDetail({ip:'edge-ap-sg-04',geo:'🇸🇬 亚太新加坡 · Zone B',asn:'AS14061 Edge Relay',risk:'中高负载 (74%)',riskType:'warning',status:'在线同步中',statusType:'success'})" style="cursor: pointer;">
                             <td>
                                 <div class="ip-text">edge-ap-sg-04</div>
                                 <div class="geo-subline">🇸🇬 亚太新加坡 · 高速中继网关</div>
@@ -334,12 +359,12 @@
                             <td class="mono tabular" style="font-weight: 700; color: var(--accent);">↑ 31.2 MB/s</td>
                             <td><span class="tag warning">中高负载 (74%)</span></td>
                             <td><span class="tag success">● 在线同步</span></td>
-                            <td onclick="event.stopPropagation();">
-                                <button class="action-btn" onclick="openIpDetail({ip:'edge-ap-sg-04',geo:'🇸🇬 亚太新加坡 · Zone B',asn:'AS14061 Edge Relay',risk:'中高负载 (74%)',riskType:'warning',status:'● 在线同步中',statusType:'success'})">详情</button>
-                                <button class="action-btn danger" onclick="showToast('⏸ 已下线维护')">维护</button>
+                            <td onclick="event.stopPropagation();" style="display: flex; align-items: center; gap: 6px;">
+                                <button class="action-btn" onclick="openIpDetail({ip:'edge-ap-sg-04',geo:'🇸🇬 亚太新加坡 · Zone B',asn:'AS14061 Edge Relay',risk:'中高负载 (74%)',riskType:'warning',status:'在线同步中',statusType:'success'})">详情</button>
+                                <button class="icon-btn" aria-label="更多操作" onclick="openNodeMenu(this, {ip:'edge-ap-sg-04',geo:'🇸🇬 亚太新加坡 · Zone B',asn:'AS14061 Edge Relay',risk:'中高负载 (74%)',riskType:'warning',status:'在线同步中',statusType:'success'})">⋯</button>
                             </td>
                         </tr>
-                        <tr data-category="edge" data-status="maintenance" onclick="openIpDetail({ip:'edge-eu-fra-02',geo:'🇩🇪 欧洲法兰克福 · Zone C',asn:'AS24940 Europe Edge',risk:'维护窗口',riskType:'warning',status:'⏸ 计划维护中',statusType:'warning'})" style="cursor: pointer;">
+                        <tr data-category="edge" data-status="maintenance" onclick="openIpDetail({ip:'edge-eu-fra-02',geo:'🇩🇪 欧洲法兰克福 · Zone C',asn:'AS24940 Europe Edge',risk:'维护窗口',riskType:'warning',status:'计划维护中',statusType:'warning'})" style="cursor: pointer;">
                             <td>
                                 <div class="ip-text">edge-eu-fra-02</div>
                                 <div class="geo-subline">🇩🇪 欧洲法兰克福 · 边缘缓存网关</div>
@@ -348,29 +373,36 @@
                             <td class="mono tabular" style="font-weight: 700;">--</td>
                             <td><span class="tag warning">维护窗口</span></td>
                             <td><span class="tag warning">⏸ 维护中</span></td>
-                            <td onclick="event.stopPropagation();">
-                                <button class="action-btn" onclick="openIpDetail({ip:'edge-eu-fra-02',geo:'🇩🇪 欧洲法兰克福 · Zone C',asn:'AS24940 Europe Edge',risk:'维护窗口',riskType:'warning',status:'⏸ 计划维护中',statusType:'warning'})">详情</button>
-                                <button class="action-btn success" onclick="showToast('▶ 已恢复在线调度')">恢复</button>
+                            <td onclick="event.stopPropagation();" style="display: flex; align-items: center; gap: 6px;">
+                                <button class="action-btn success" onclick="showToast('已恢复在线调度', { type: 'success' })">恢复</button>
+                                <button class="icon-btn" aria-label="更多操作" onclick="openNodeMenu(this, {ip:'edge-eu-fra-02',geo:'🇩🇪 欧洲法兰克福 · Zone C',asn:'AS24940 Europe Edge',risk:'维护窗口',riskType:'warning',status:'计划维护中',statusType:'warning'})">⋯</button>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
+            <div id="data-empty-state" class="empty-state" style="display: none;">
+                <div class="empty-state-icon">
+                    <svg class="aui-icon lg" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.65" y1="16.65" x2="21" y2="21"/></svg>
+                </div>
+                <div class="empty-state-title">无匹配节点</div>
+                <button class="pill-btn" onclick="resetDataFilters()">重置筛选</button>
+            </div>
             <div class="pagination-wrapper">
                 <div class="val-sub">共 <b style="color: var(--text);">186</b> 条记录 · 每页 50 条 · 当前第 <b style="color: var(--accent);">1 / 4</b> 页</div>
                 <div style="display: flex; gap: 6px;">
-                    <button class="page-pill" disabled>‹</button>
+                    <button class="page-pill" disabled aria-label="上一页">‹</button>
                     <button class="page-pill active">1</button>
                     <button class="page-pill" onclick="showToast('切换至第 2 页')">2</button>
                     <button class="page-pill" onclick="showToast('切换至第 3 页')">3</button>
-                    <button class="page-pill" onclick="showToast('切换至下一页')">›</button>
+                    <button class="page-pill" onclick="showToast('切换至下一页')" aria-label="下一页">›</button>
                 </div>
             </div>
         </div>
 
         <!-- View B: Responsive Card Grid -->
         <div id="data-view-cards" class="item-grid-container" style="display: none;">
-            <div class="item-card" data-category="core" data-status="running" onclick="openIpDetail({ip:'cluster-snapshot-ap-southeast-202611.tar.zst',geo:'亚太快照存储池 · 4.28 / 4.80 GB',asn:'SHA256 已校验',risk:'传输正常 (89.2%)',riskType:'success',status:'↓ 52.4 MB/s 传输中',statusType:'accent'})">
+            <div class="item-card" tabindex="0" data-category="core" data-status="running" onclick="openIpDetail({ip:'cluster-snapshot-ap-southeast-202611.tar.zst',geo:'亚太快照存储池 · 4.28 / 4.80 GB',asn:'SHA256 已校验',risk:'传输正常 (89.2%)',riskType:'success',status:'↓ 52.4 MB/s 传输中',statusType:'accent'})">
                 <div>
                     <div class="item-card-header">
                         <div class="item-card-title">cluster-snapshot-ap-southeast-202611.tar.zst</div>
@@ -385,15 +417,15 @@
                     </div>
                 </div>
                 <div class="item-card-footer">
-                    <span class="badge purple">📁 集群快照</span>
+                    <span class="badge purple">集群快照</span>
                     <div style="display: flex; gap: 6px;" onclick="event.stopPropagation();">
-                        <button class="icon-btn" onclick="showToast('⏸ 已暂停作业')">⏸</button>
-                        <button class="icon-btn danger" onclick="showToast('🗑 已移除作业')">✕</button>
+                        <button class="icon-btn" aria-label="暂停" onclick="showToast('已暂停作业', { type: 'warning' })">⏸</button>
+                        <button class="icon-btn danger" aria-label="移除" onclick="demoConfirmDialog()">✕</button>
                     </div>
                 </div>
             </div>
 
-            <div class="item-card selected" data-category="edge" data-status="syncing" onclick="openIpDetail({ip:'global-edge-routing-table-v4.2.bundle',geo:'边缘配置分发池 · 1.12 GB',asn:'节点覆盖 16/16',risk:'已校验签名',riskType:'accent',status:'↑ 31.2 MB/s 分发中',statusType:'accent'})">
+            <div class="item-card selected" tabindex="0" data-category="edge" data-status="syncing" onclick="openIpDetail({ip:'global-edge-routing-table-v4.2.bundle',geo:'边缘配置分发池 · 1.12 GB',asn:'节点覆盖 16/16',risk:'已校验签名',riskType:'accent',status:'↑ 31.2 MB/s 分发中',statusType:'accent'})">
                 <div>
                     <div class="item-card-header">
                         <div class="item-card-title">global-edge-routing-table-v4.2.bundle</div>
@@ -408,15 +440,15 @@
                     </div>
                 </div>
                 <div class="item-card-footer">
-                    <span class="badge accent">🌐 路由配置</span>
+                    <span class="badge teal">路由配置</span>
                     <div style="display: flex; gap: 6px;" onclick="event.stopPropagation();">
-                        <button class="icon-btn" onclick="showToast('🔍 已触发校验')">🔍</button>
-                        <button class="icon-btn danger" onclick="showToast('🗑 已移除作业')">✕</button>
+                        <button class="icon-btn" aria-label="校验" onclick="showToast('校验通过 SHA256', { type: 'success' })">✓</button>
+                        <button class="icon-btn danger" aria-label="移除" onclick="demoConfirmDialog()">✕</button>
                     </div>
                 </div>
             </div>
 
-            <div class="item-card" data-category="core" data-status="maintenance" onclick="openIpDetail({ip:'region-telemetry-archive-202611.parquet',geo:'离线指标归档 · 128.5 / 310.0 MB',asn:'Parquet Snapshot',risk:'排队等待中',riskType:'warning',status:'ETA 02:15',statusType:'neutral'})">
+            <div class="item-card" tabindex="0" data-category="core" data-status="maintenance" onclick="openIpDetail({ip:'region-telemetry-archive-202611.parquet',geo:'离线指标归档 · 128.5 / 310.0 MB',asn:'Parquet Snapshot',risk:'排队等待中',riskType:'warning',status:'ETA 02:15',statusType:'neutral'})">
                 <div>
                     <div class="item-card-header">
                         <div class="item-card-title">region-telemetry-archive-202611.parquet</div>
@@ -431,10 +463,10 @@
                     </div>
                 </div>
                 <div class="item-card-footer">
-                    <span class="badge neutral">📦 指标归档</span>
+                    <span class="badge indigo">指标归档</span>
                     <div style="display: flex; gap: 6px;" onclick="event.stopPropagation();">
-                        <button class="icon-btn accent" onclick="showToast('▶ 已优先恢复')">▶</button>
-                        <button class="icon-btn danger" onclick="showToast('🗑 已移除作业')">✕</button>
+                        <button class="icon-btn accent" aria-label="优先恢复" onclick="showToast('已优先恢复调度', { type: 'info' })">▶</button>
+                        <button class="icon-btn danger" aria-label="移除" onclick="demoConfirmDialog()">✕</button>
                     </div>
                 </div>
             </div>
@@ -448,52 +480,62 @@
             <!-- Buttons & Pills -->
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">🔘 按钮体系 (.btn / .pill-btn / .icon-btn)</div>
+                    <div class="card-title">按钮体系 (.btn / .pill-btn / .icon-btn)</div>
                 </div>
                 <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px;">
-                    <button class="btn" onclick="showToast('主操作按钮 (.btn)')">主按钮 (.btn)</button>
+                    <button class="btn" onclick="showToast('主操作按钮 (.btn)', { type: 'info' })">主按钮 (.btn)</button>
                     <button class="btn secondary" onclick="showToast('次级按钮 (.btn.secondary)')">次级按钮</button>
-                    <button class="btn danger" onclick="showToast('危险按钮 (.btn.danger)')">危险操作</button>
-                    <button class="btn success" onclick="showToast('成功按钮 (.btn.success)')">确认通过</button>
+                    <button class="btn danger" onclick="showToast('危险按钮 (.btn.danger)', { type: 'danger' })">危险操作</button>
+                    <button class="btn success" onclick="showToast('成功按钮 (.btn.success)', { type: 'success' })">确认通过</button>
                 </div>
                 <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px;">
-                    <button class="pill-btn" onclick="showToast('标准胶囊按钮')">标准胶囊 (.pill-btn)</button>
-                    <button class="pill-btn accent" onclick="showToast('强调胶囊按钮')">⚡ 强调胶囊 (.accent)</button>
-                    <button class="pill-btn success" onclick="showToast('成功胶囊按钮')">✓ 正常状态 (.success)</button>
-                    <button class="pill-btn warning active" onclick="showToast('限流发光胶囊')">⏳ 限流保护 (.warning)</button>
-                    <button class="pill-btn danger" onclick="showToast('危险操作胶囊')">✕ 异常阻断 (.danger)</button>
+                    <button class="pill-btn" onclick="showToast('标准胶囊按钮')">标准胶囊</button>
+                    <button class="pill-btn accent" onclick="showToast('强调胶囊按钮', { type: 'info' })">强调胶囊</button>
+                    <button class="pill-btn success" onclick="showToast('正常状态', { type: 'success' })">正常状态</button>
+                    <button class="pill-btn warning active" onclick="showToast('限流保护已激活', { type: 'warning' })">限流保护</button>
+                    <button class="pill-btn danger" onclick="showToast('异常阻断', { type: 'danger' })">异常阻断</button>
                 </div>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <button class="icon-btn" title="圆形图标按钮">⚙️</button>
-                    <button class="icon-btn accent" title="主色圆形按钮">➕</button>
-                    <button class="icon-btn danger" title="危险圆形按钮">🗑</button>
+                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                    <button class="icon-btn" title="设置" aria-label="设置">
+                        <svg class="aui-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.604.852.997 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    </button>
+                    <button class="icon-btn accent" title="新增" aria-label="新增">
+                        <svg class="aui-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </button>
+                    <button class="icon-btn danger" title="删除" aria-label="删除" onclick="demoConfirmDialog()">
+                        <svg class="aui-icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+                    </button>
                     <button class="action-btn" onclick="showToast('表格紧凑操作按钮')">表格操作 (.action-btn)</button>
+                    <button class="copy-chip" data-aui-copy="edge-us-east-01:8443">edge-us-east-01:8443</button>
                 </div>
             </div>
 
-            <!-- Badges, Tags & Status Dots -->
+            <!-- Badges, Overlays & New HIG Controls -->
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">🏷️ 语义徽标与呼吸状态灯 (.badge / .tag)</div>
+                    <div class="card-title">语义徽标、毛玻璃弹层与实时胶囊</div>
                 </div>
-                <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px;">
-                    <span class="badge accent">● 运行中 / Accent</span>
-                    <span class="badge success">✓ 已完成 / Success</span>
-                    <span class="badge warning">⏳ 排队中 / Warning</span>
-                    <span class="badge danger">✕ 异常告警 / Danger</span>
-                    <span class="badge purple">📁 分类标签 / Purple</span>
-                    <span class="badge neutral">⏸ 已暂停 / Neutral</span>
+                <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px;">
+                    <span class="badge accent">Accent</span>
+                    <span class="badge success">Success</span>
+                    <span class="badge warning">Warning</span>
+                    <span class="badge danger">Danger</span>
+                    <span class="badge purple">Purple</span>
+                    <span class="badge indigo">Indigo</span>
+                    <span class="badge teal">Teal</span>
+                    <span class="badge pink">Pink</span>
+                    <span class="badge neutral">Neutral</span>
                 </div>
-                <div style="display: flex; flex-wrap: wrap; gap: 14px; align-items: center; margin-bottom: 14px;">
-                    <span class="date-badge"><span class="status-dot"></span> 运行正常</span>
-                    <span class="date-badge"><span class="status-dot warning"></span> 限流保护</span>
-                    <span class="date-badge"><span class="status-dot danger"></span> 离线告警</span>
+                <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px;">
+                    <span class="live-pill accent"><span class="status-dot" style="background: var(--accent);"></span>同步进度 84%</span>
+                    <span class="live-pill success"><span class="status-dot"></span>在线 16/16</span>
+                    <span class="live-pill warning"><span class="status-dot warning"></span>限流中</span>
                 </div>
                 <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-                    <button class="pill-btn" onclick="openModal('modal-demo-form')">🪟 打开表单弹窗 (.modal-sheet)</button>
-                    <button class="pill-btn accent" onclick="openModal('modal-ip-detail')">🔍 打开节点详情弹窗</button>
-                    <button class="pill-btn danger" onclick="demoConfirmDialog()">⚠️ 触发确认弹窗 (auiConfirm)</button>
-                    <button class="pill-btn" onclick="showToast('🎉 顶部毛玻璃胶囊通知 (Toast Pill)')">🔔 触发 Toast</button>
+                    <button class="pill-btn" data-aui-modal="modal-demo-form">Bottom Sheet 弹窗</button>
+                    <button class="pill-btn danger" onclick="demoConfirmDialog()">Alert 确认框</button>
+                    <button class="pill-btn accent" data-aui-cmd>命令面板 <span class="kbd" style="background: rgba(255,255,255,0.2); color: #fff; border-color: transparent;">⌘K</span></button>
+                    <button class="pill-btn" onclick="openNodeMenu(this, currentPopoverNode)">Popover 菜单 ⋯</button>
                 </div>
             </div>
         </div>
@@ -501,11 +543,11 @@
         <!-- Progress Bars & Navigation Switchers -->
         <div class="card">
             <div class="card-header">
-                <div class="card-title">🎛️ 导航切换器与进度条 (.segmented-control / .capsule-switcher / .tab-bar)</div>
+                <div class="card-title">弹簧滑块分段器与导航切换器</div>
             </div>
             <div class="grid-2" style="margin-bottom: 12px;">
                 <div>
-                    <div class="val-sub" style="margin-bottom: 6px;">iOS 分段控制器 (.segmented-control)</div>
+                    <div class="val-sub" style="margin-bottom: 6px;">物理弹簧滑块 (.segmented-control)</div>
                     <div class="segmented-control">
                         <button class="segment-btn active" onclick="switchSubView('.noop', 'none', this)">全部</button>
                         <button class="segment-btn" onclick="switchSubView('.noop', 'none', this)">活跃</button>
@@ -516,22 +558,45 @@
                 <div>
                     <div class="val-sub" style="margin-bottom: 6px;">跑道胶囊切换器 (.capsule-switcher)</div>
                     <div class="capsule-switcher">
-                        <button class="pill-btn accent" onclick="switchSubView('.noop', 'none', this, 'accent')">⚡ 核心节点</button>
-                        <button class="pill-btn" onclick="switchSubView('.noop', 'none', this, 'accent')">🌐 边缘网关</button>
-                        <button class="pill-btn" onclick="switchSubView('.noop', 'none', this, 'accent')">📦 存储集群</button>
+                        <button class="pill-btn accent" onclick="switchSubView('.noop', 'none', this, 'accent')">核心节点</button>
+                        <button class="pill-btn" onclick="switchSubView('.noop', 'none', this, 'accent')">边缘网关</button>
+                        <button class="pill-btn" onclick="switchSubView('.noop', 'none', this, 'accent')">存储集群</button>
                     </div>
                 </div>
             </div>
             <div class="tab-bar" style="margin-bottom: 12px;">
-                <button class="tab-item active" onclick="switchSubView('.noop', 'none', this)">⚡ 性能调度</button>
-                <button class="tab-item" onclick="switchSubView('.noop', 'none', this)">📁 存储卷</button>
-                <button class="tab-item" onclick="switchSubView('.noop', 'none', this)">🌐 网络策略</button>
-                <button class="tab-item" onclick="switchSubView('.noop', 'none', this)">🛡️ 访问控制</button>
-                <button class="tab-item" onclick="switchSubView('.noop', 'none', this)">🍏 PWA 桌面端</button>
+                <button class="tab-item active" onclick="switchSubView('.noop', 'none', this)">性能调度</button>
+                <button class="tab-item" onclick="switchSubView('.noop', 'none', this)">存储卷</button>
+                <button class="tab-item" onclick="switchSubView('.noop', 'none', this)">网络策略</button>
+                <button class="tab-item" onclick="switchSubView('.noop', 'none', this)">访问控制</button>
+                <button class="tab-item" onclick="switchSubView('.noop', 'none', this)">PWA 桌面端</button>
             </div>
             <div class="progress-track"><div class="progress-fill" style="width: 72%;"></div></div>
             <div class="progress-track"><div class="progress-fill success" style="width: 100%;"></div></div>
             <div class="progress-track"><div class="progress-fill danger" style="width: 36%;"></div></div>
+        </div>
+
+        <!-- Skeleton & Minimal Empty State -->
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">骨架屏占位 (.skeleton)</div>
+                    <span class="tag neutral">Zero-Jank Loading</span>
+                </div>
+                <div class="skeleton skeleton-line sm"></div>
+                <div class="skeleton skeleton-line lg"></div>
+                <div class="skeleton skeleton-line" style="width: 78%;"></div>
+                <div class="skeleton skeleton-line" style="width: 55%;"></div>
+            </div>
+            <div class="card">
+                <div class="empty-state" style="padding: 18px 12px;">
+                    <div class="empty-state-icon">
+                        <svg class="aui-icon lg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    </div>
+                    <div class="empty-state-title">暂无活跃任务</div>
+                    <button class="pill-btn accent" data-aui-modal="modal-demo-form">新建任务</button>
+                </div>
+            </div>
         </div>
         <div class="bottom-spacer"></div>
     </section>
@@ -540,41 +605,63 @@
     <section id="p-tokens" class="page">
         <div class="card">
             <div class="card-header">
-                <div class="card-title">🎨 Apple HIG 语义色板与毛玻璃表面 Token</div>
+                <div class="card-title">Apple HIG Light / OLED Dark 自适应语义色板</div>
                 <span class="val-sub">点击色块直接复制 CSS 变量</span>
             </div>
             <div class="grid-4">
-                <div class="card interactive" onclick="copyToken('--accent')" style="background: var(--accent-bg); border-color: var(--accent);">
-                    <div class="val-sub" style="color: var(--accent);">PRIMARY ACCENT</div>
-                    <div class="val-big mono" style="color: var(--accent); font-size: 20px;">#007AFF</div>
+                <div class="card interactive" tabindex="0" onclick="copyToken('--accent')" style="background: var(--accent-bg); border-color: var(--accent);">
+                    <div class="val-sub" style="color: var(--accent);">SYSTEM BLUE</div>
+                    <div class="val-big mono" style="color: var(--accent); font-size: 18px;">#007AFF / #0A84FF</div>
                     <div class="val-sub mono">var(--accent)</div>
                 </div>
-                <div class="card interactive" onclick="copyToken('--success')" style="background: var(--success-bg); border-color: var(--success);">
-                    <div class="val-sub" style="color: var(--success);">SEMANTIC SUCCESS</div>
-                    <div class="val-big mono" style="color: var(--success); font-size: 20px;">#34C759</div>
+                <div class="card interactive" tabindex="0" onclick="copyToken('--success')" style="background: var(--success-bg); border-color: var(--success);">
+                    <div class="val-sub" style="color: var(--success);">SYSTEM GREEN</div>
+                    <div class="val-big mono" style="color: var(--success); font-size: 18px;">#34C759 / #30D158</div>
                     <div class="val-sub mono">var(--success)</div>
                 </div>
-                <div class="card interactive" onclick="copyToken('--warning')" style="background: var(--warning-bg); border-color: var(--warning);">
-                    <div class="val-sub" style="color: var(--warning);">SEMANTIC WARNING</div>
-                    <div class="val-big mono" style="color: var(--warning); font-size: 20px;">#FF9500</div>
+                <div class="card interactive" tabindex="0" onclick="copyToken('--warning')" style="background: var(--warning-bg); border-color: var(--warning);">
+                    <div class="val-sub" style="color: var(--warning);">SYSTEM ORANGE</div>
+                    <div class="val-big mono" style="color: var(--warning); font-size: 18px;">#FF9500 / #FF9F0A</div>
                     <div class="val-sub mono">var(--warning)</div>
                 </div>
-                <div class="card interactive" onclick="copyToken('--danger')" style="background: var(--danger-bg); border-color: var(--danger);">
-                    <div class="val-sub" style="color: var(--danger);">SEMANTIC DANGER</div>
-                    <div class="val-big mono" style="color: var(--danger); font-size: 20px;">#FF3B30</div>
+                <div class="card interactive" tabindex="0" onclick="copyToken('--danger')" style="background: var(--danger-bg); border-color: var(--danger);">
+                    <div class="val-sub" style="color: var(--danger);">SYSTEM RED</div>
+                    <div class="val-big mono" style="color: var(--danger); font-size: 18px;">#FF3B30 / #FF453A</div>
                     <div class="val-sub mono">var(--danger)</div>
+                </div>
+            </div>
+            <div class="grid-4" style="margin-top: 12px; margin-bottom: 0;">
+                <div class="card interactive" tabindex="0" onclick="copyToken('--purple')" style="background: var(--purple-bg); border-color: var(--purple);">
+                    <div class="val-sub" style="color: var(--purple);">SYSTEM PURPLE</div>
+                    <div class="val-big mono" style="color: var(--purple); font-size: 17px;">#AF52DE / #BF5AF2</div>
+                    <div class="val-sub mono">var(--purple)</div>
+                </div>
+                <div class="card interactive" tabindex="0" onclick="copyToken('--indigo')" style="background: var(--indigo-bg); border-color: var(--indigo);">
+                    <div class="val-sub" style="color: var(--indigo);">SYSTEM INDIGO</div>
+                    <div class="val-big mono" style="color: var(--indigo); font-size: 17px;">#5856D6 / #5E5CE6</div>
+                    <div class="val-sub mono">var(--indigo)</div>
+                </div>
+                <div class="card interactive" tabindex="0" onclick="copyToken('--teal')" style="background: var(--teal-bg); border-color: var(--teal);">
+                    <div class="val-sub" style="color: var(--teal);">SYSTEM TEAL</div>
+                    <div class="val-big mono" style="color: var(--teal); font-size: 17px;">#30B0C7 / #40C8E0</div>
+                    <div class="val-sub mono">var(--teal)</div>
+                </div>
+                <div class="card interactive" tabindex="0" onclick="copyToken('--pink')" style="background: var(--pink-bg); border-color: var(--pink);">
+                    <div class="val-sub" style="color: var(--pink);">SYSTEM PINK</div>
+                    <div class="val-big mono" style="color: var(--pink); font-size: 17px;">#FF2D55 / #FF375F</div>
+                    <div class="val-sub mono">var(--pink)</div>
                 </div>
             </div>
         </div>
 
         <div class="card">
             <div class="card-header">
-                <div class="card-title">🔤 排版层级与等宽数字防抖规范 (SF Pro + Tabular Nums)</div>
+                <div class="card-title">排版层级与等宽数字防抖 (SF Pro + Tabular Nums)</div>
             </div>
             <div class="setting-row">
                 <div>
                     <div class="date-badge"><span class="status-dot"></span><span>.date-badge · 11px / 700 / Uppercase</span></div>
-                    <div class="title" style="margin-top: 4px;">页面一级标题 (.title · 28px~32px / 800)</div>
+                    <div class="title" style="margin-top: 4px;">页面一级标题 (.title · 28px / 800)</div>
                 </div>
                 <span class="tag neutral mono">letter-spacing: -0.03em</span>
             </div>
@@ -588,7 +675,7 @@
             <div class="setting-row">
                 <div>
                     <div class="card-title">.card-title · 卡片区块标题 (15px / 700)</div>
-                    <div class="val-sub">.val-sub · 紧凑辅助微标签 (11px~12px / 600)</div>
+                    <div class="val-sub">.val-sub · 紧凑辅助微标签 (11px / 600)</div>
                 </div>
                 <span class="tag neutral mono">Self-Explanatory</span>
             </div>
@@ -600,83 +687,113 @@
     <section id="p-settings" class="page">
         <div class="card">
             <div class="card-header">
-                <div class="card-title">🤖 交给 AI Agent 开发新 Web 项目的使用方式</div>
-                <button class="pill-btn accent" onclick="copyAiPrompt()">📋 一键复制 AI 提示词</button>
+                <div class="card-title">AI Agent 接入指令</div>
+                <button class="pill-btn accent" onclick="copyAiPrompt()">一键复制提示词</button>
             </div>
             <div style="background: var(--card-sec); border: 1px solid var(--border); border-radius: 12px; padding: 14px; font-family: var(--font-mono); font-size: 12px; line-height: 1.6; color: var(--text);">
-                请拉取并阅读 https://github.com/Level6me/Aui 仓库中的 AGENTS.md 与 DESIGN_SPEC.md，严格遵循 AUI 苹果毛玻璃设计规范与“Avoid unnecessary secondary labels and descriptions. Let the layout do the explaining.”原则，直接复用 src/css/aui.css 与 src/js/aui-core.js（或 templates/single-file-starter.html）来开发本项目的 Web 界面。
+                请拉取并阅读 https://github.com/Level6me/Aui 仓库中的 AGENTS.md 与 DESIGN_SPEC.md，严格遵循 AUI 2.0 苹果 HIG 毛玻璃设计规范与“Avoid unnecessary secondary labels and descriptions. Let the layout do the explaining.”原则，直接复用 src/css/aui.css 与 src/js/aui-core.js（或 templates/single-file-starter.html）来开发本项目的 Web 界面。
             </div>
         </div>
 
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title">⚙️ Apple 设置列表行范式 (.setting-row + .switch)</div>
-            </div>
-            <div class="setting-row">
-                <div>
-                    <div class="setting-label">布局自解释精简模式 (Self-Explanatory Layout)</div>
-                    <div class="setting-desc">禁止输出冗余副标题与解释段落，通过字重对比与色彩语义直接传达信息</div>
-                </div>
-                <label class="switch">
-                    <input type="checkbox" checked onchange="showToast('已更新配置')">
-                    <span class="slider"></span>
-                </label>
-            </div>
-            <div class="setting-row">
-                <div>
-                    <div class="setting-label">动态数字等宽对齐 (Tabular Nums)</div>
-                    <div class="setting-desc">所有实时速率与计数器强制启用等宽数字排版，防止数值刷新时布局抖动</div>
-                </div>
-                <label class="switch">
-                    <input type="checkbox" checked onchange="showToast('已更新配置')">
-                    <span class="slider"></span>
-                </label>
-            </div>
-            <div class="setting-row">
-                <div>
-                    <div class="setting-label">自动跟随系统深浅色 (prefers-color-scheme)</div>
-                    <div class="setting-desc">支持 Auto / Light (#f2f2f7) / Pure OLED Dark (#000000) 三态切换</div>
+        <!-- Apple Inset Grouped List -->
+        <div class="list-group-header">外观与交互偏好 (.list-group)</div>
+        <div class="list-group">
+            <div class="list-row">
+                <div class="list-row-main">
+                    <span class="list-row-icon success">
+                        <svg class="aui-icon sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/></svg>
+                    </span>
+                    <div>
+                        <div class="list-row-title">自动跟随系统深浅色</div>
+                        <div class="list-row-sub">Auto / Light (#f2f2f7) / Pure OLED Dark (#000000)</div>
+                    </div>
                 </div>
                 <label class="switch">
                     <input type="checkbox" id="setting-auto-theme" checked onchange="toggleAutoThemeSetting(this.checked)">
                     <span class="slider"></span>
                 </label>
             </div>
+            <div class="list-row">
+                <div class="list-row-main">
+                    <span class="list-row-icon">
+                        <svg class="aui-icon sm" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+                    </span>
+                    <div>
+                        <div class="list-row-title">布局自解释精简模式</div>
+                        <div class="list-row-sub">以空间结构、字重与语义色直接传达状态</div>
+                    </div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" checked onchange="showToast('已更新配置', { type: 'success' })">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <button type="button" class="list-row interactive" data-aui-cmd>
+                <div class="list-row-main">
+                    <span class="list-row-icon indigo">
+                        <svg class="aui-icon sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.65" y1="16.65" x2="21" y2="21"/></svg>
+                    </span>
+                    <div>
+                        <div class="list-row-title">快捷命令面板</div>
+                        <div class="list-row-sub">全局唤醒 Spotlight 视图跳转与动作执行</div>
+                    </div>
+                </div>
+                <div class="list-row-end">
+                    <span class="kbd">⌘K</span>
+                    <span class="list-chevron">›</span>
+                </div>
+            </button>
+            <button type="button" class="list-row interactive" onclick="demoConfirmDialog()">
+                <div class="list-row-main">
+                    <span class="list-row-icon danger">
+                        <svg class="aui-icon sm" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    </span>
+                    <div>
+                        <div class="list-row-title">重置演练场状态</div>
+                        <div class="list-row-sub">触发 Apple HIG 居中破坏性确认弹窗</div>
+                    </div>
+                </div>
+                <div class="list-row-end">
+                    <span class="list-row-value">v2.0</span>
+                    <span class="list-chevron">›</span>
+                </div>
+            </button>
         </div>
         <div class="bottom-spacer"></div>
     </section>
 </div>
 
-<!-- ==================== FLOATING GLASS DOCK ==================== -->
-<nav class="dock">
-    <button class="dock-btn active" onclick="switchPage('p-overview', '系统总览', this)">
-        <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+<!-- ==================== FLOATING GLASS DOCK (SF SYMBOLS STYLE) ==================== -->
+<nav class="dock" aria-label="主导航">
+    <button class="dock-btn active" data-page="p-overview" onclick="switchPage('p-overview', '系统总览', this)">
+        <svg class="aui-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg>
         <span>系统总览</span>
     </button>
-    <button class="dock-btn" id="dock-btn-data" onclick="switchPage('p-data', '双视图列表', this)">
-        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+    <button class="dock-btn" id="dock-btn-data" data-page="p-data" onclick="switchPage('p-data', '双视图列表', this)">
+        <svg class="aui-icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="10" x2="9" y2="20"/></svg>
         <span>数据视图</span>
     </button>
-    <button class="dock-btn" onclick="switchPage('p-components', '组件与控件', this)">
-        <svg viewBox="0 0 24 24"><path d="M12 2l-5.5 9h11L12 2zm0 3.84L13.93 9h-3.87L12 5.84zM17.5 13c-2.49 0-4.5 2.01-4.5 4.5s2.01 4.5 4.5 4.5 4.5-2.01 4.5-4.5-2.01-4.5-4.5-4.5zm0 7c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5zM3 21.5h8v-8H3v8zm2-6h4v4H5v-4z"/></svg>
+    <button class="dock-btn" data-page="p-components" onclick="switchPage('p-components', '组件与控件', this)">
+        <svg class="aui-icon" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 12 12 17 22 12"/><polyline points="2 17 12 22 22 17"/></svg>
         <span>组件画廊</span>
     </button>
-    <button class="dock-btn" onclick="switchPage('p-tokens', '色板与排版', this)">
-        <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+    <button class="dock-btn" data-page="p-tokens" onclick="switchPage('p-tokens', '色板与排版', this)">
+        <svg class="aui-icon" viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r=".8"/><circle cx="17.5" cy="10.5" r=".8"/><circle cx="8.5" cy="7.5" r=".8"/><circle cx="6.5" cy="12.5" r=".8"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.6-.7 1.6-1.6 0-.4-.2-.8-.4-1.1-.3-.3-.4-.7-.4-1.1 0-.9.7-1.6 1.6-1.6H16c3.3 0 6-2.7 6-6 0-4.9-4.5-8.6-10-8.6z"/></svg>
         <span>设计Token</span>
     </button>
-    <button class="dock-btn" onclick="switchPage('p-settings', '设置与规范', this)">
-        <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+    <button class="dock-btn" data-page="p-settings" onclick="switchPage('p-settings', '设置与规范', this)">
+        <svg class="aui-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.604.852.997 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         <span>接入指南</span>
     </button>
 </nav>
 
-<!-- ==================== MODAL 1: FORM SHEET ==================== -->
+<!-- ==================== MODAL 1: ADAPTIVE BOTTOM SHEET FORM ==================== -->
 <div class="modal-overlay" id="modal-demo-form">
     <div class="modal-sheet">
+        <div class="sheet-grabber" aria-hidden="true"></div>
         <div class="card-header">
-            <h3 class="card-title">➕ 新建服务节点配置</h3>
-            <button class="icon-btn" onclick="closeModal('modal-demo-form')">✕</button>
+            <h3 class="card-title">新建服务节点配置</h3>
+            <button class="icon-btn" data-aui-close-modal="modal-demo-form" aria-label="关闭">✕</button>
         </div>
         <div class="form-group">
             <label class="form-label">节点标识或端口范围</label>
@@ -685,13 +802,13 @@
         <div class="form-group">
             <label class="form-label">节点类型</label>
             <select class="form-control">
-                <option value="core">⚡ 核心计算节点 (高优先级队列)</option>
-                <option value="edge">🌐 边缘分发网关 (智能缓存加速)</option>
+                <option value="core">核心计算节点 (高优先级队列)</option>
+                <option value="edge">边缘分发网关 (智能缓存加速)</option>
             </select>
         </div>
         <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px;">
-            <button class="pill-btn" onclick="closeModal('modal-demo-form')">取消</button>
-            <button class="pill-btn accent" onclick="closeModal('modal-demo-form'); showToast('✅ 配置已下发并立即生效')">保存生效</button>
+            <button class="pill-btn" data-aui-close-modal="modal-demo-form">取消</button>
+            <button class="pill-btn accent" onclick="closeModal('modal-demo-form'); showToast('配置已下发并立即生效', { type: 'success' })">保存生效</button>
         </div>
     </div>
 </div>
@@ -699,9 +816,10 @@
 <!-- ==================== MODAL 2: NODE DETAIL SHEET ==================== -->
 <div class="modal-overlay" id="modal-ip-detail">
     <div class="modal-sheet">
+        <div class="sheet-grabber" aria-hidden="true"></div>
         <div class="card-header">
-            <h3 class="card-title">🔍 节点运行指标详情</h3>
-            <button class="icon-btn" onclick="closeModal('modal-ip-detail')">✕</button>
+            <h3 class="card-title">节点运行指标详情</h3>
+            <button class="icon-btn" data-aui-close-modal="modal-ip-detail" aria-label="关闭">✕</button>
         </div>
         <div style="background: var(--card-sec); border-radius: 14px; padding: 16px; border: 1px solid var(--border); margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border-subtle); gap: 10px;">
@@ -709,7 +827,7 @@
                     <div class="val-sub">NODE IDENTIFIER</div>
                     <div class="mono" id="detail-ip" style="font-size: 20px; font-weight: 800; overflow: hidden; text-overflow: ellipsis;">edge-us-east-01</div>
                 </div>
-                <button class="pill-btn accent" onclick="copyText(document.getElementById('detail-ip').textContent, '📋 已复制节点标识')">📋 复制</button>
+                <button class="pill-btn accent" onclick="copyText(document.getElementById('detail-ip').textContent, '已复制节点标识')">复制</button>
             </div>
             <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; font-size: 13px;">
                 <div>
@@ -726,13 +844,13 @@
                 </div>
                 <div>
                     <div class="val-sub">当前调度状态</div>
-                    <div style="margin-top: 4px;"><span id="detail-status" class="tag accent">⚡ 主力承载中</span></div>
+                    <div style="margin-top: 4px;"><span id="detail-status" class="tag accent">● 主力承载中</span></div>
                 </div>
             </div>
         </div>
         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
-            <button class="pill-btn" onclick="closeModal('modal-ip-detail'); showToast('🔄 已触发节点重平衡')" style="justify-content: center; padding: 9px;">🔄 流量重平衡</button>
-            <button class="pill-btn danger" onclick="closeModal('modal-ip-detail'); showToast('⏸ 节点已切入维护模式')" style="justify-content: center; padding: 9px;">⏸ 切入维护</button>
+            <button class="pill-btn" onclick="closeModal('modal-ip-detail'); showToast('已触发节点重平衡', { type: 'info' })" style="justify-content: center; padding: 9px;">流量重平衡</button>
+            <button class="pill-btn danger" onclick="closeModal('modal-ip-detail'); demoConfirmDialog()" style="justify-content: center; padding: 9px;">切入维护</button>
         </div>
     </div>
 </div>
@@ -746,6 +864,20 @@
     let dataCategoryFilter = 'all';
     let dataStatusFilter = 'all';
     let chartResizeRaf = 0;
+    let currentPopoverNode = {
+        ip: 'edge-us-east-01',
+        geo: '🇺🇸 美东弗吉尼亚 · Zone A',
+        asn: 'AS14618 Core Backbone',
+        risk: '低负载 (28%)',
+        riskType: 'success',
+        status: '主力承载中',
+        statusType: 'accent'
+    };
+
+    function openNodeMenu(btnEl, nodeInfo) {
+        if (nodeInfo) currentPopoverNode = nodeInfo;
+        togglePopover(btnEl, 'node-context-menu');
+    }
 
     function toggleDataViewMode() {
         isTableView = !isTableView;
@@ -753,20 +885,47 @@
         document.getElementById('data-view-cards').style.display = isTableView ? 'none' : 'grid';
         const label = document.getElementById('view-mode-label');
         if (label) {
-            label.textContent = isTableView ? '🗂️ 切换网格视图' : '📋 切换表格视图';
+            label.textContent = isTableView ? '切换网格视图' : '切换表格视图';
         }
-        showToast(isTableView ? '📋 已切换至高密度表格视图' : '🗂️ 已切换至响应式卡片网格视图');
+        showToast(isTableView ? '已切换至高密度表格视图' : '已切换至响应式卡片网格视图', { type: 'info' });
     }
 
     function applyDataFilters() {
         const query = dataSearchQuery.trim().toLowerCase();
-        const items = document.querySelectorAll('#data-table-body tr, #data-view-cards .item-card');
-        items.forEach(item => {
+        const rows = document.querySelectorAll('#data-table-body tr');
+        const cards = document.querySelectorAll('#data-view-cards .item-card');
+        let visibleRows = 0;
+
+        rows.forEach(item => {
+            const matchCat = dataCategoryFilter === 'all' || item.dataset.category === dataCategoryFilter;
+            const matchStatus = dataStatusFilter === 'all' || item.dataset.status === dataStatusFilter;
+            const matchText = !query || item.textContent.toLowerCase().includes(query);
+            const show = matchCat && matchStatus && matchText;
+            item.style.display = show ? '' : 'none';
+            if (show) visibleRows++;
+        });
+        cards.forEach(item => {
             const matchCat = dataCategoryFilter === 'all' || item.dataset.category === dataCategoryFilter;
             const matchStatus = dataStatusFilter === 'all' || item.dataset.status === dataStatusFilter;
             const matchText = !query || item.textContent.toLowerCase().includes(query);
             item.style.display = (matchCat && matchStatus && matchText) ? '' : 'none';
         });
+
+        const emptyEl = document.getElementById('data-empty-state');
+        if (emptyEl) emptyEl.style.display = visibleRows === 0 ? 'flex' : 'none';
+    }
+
+    function resetDataFilters() {
+        dataSearchQuery = '';
+        dataCategoryFilter = 'all';
+        dataStatusFilter = 'all';
+        const search = document.getElementById('data-search-input');
+        const cat = document.getElementById('data-category-select');
+        if (search) search.value = '';
+        if (cat) cat.value = 'all';
+        const firstSeg = document.querySelector('#p-data .segmented-control .segment-btn');
+        if (firstSeg) switchSubView('.noop', 'none', firstSeg);
+        applyDataFilters();
     }
 
     function setDataSearch(val) {
@@ -819,13 +978,13 @@
     }
 
     async function demoConfirmDialog() {
-        const ok = await auiConfirm('确定要重置当前演示节点的调度配置并同步集群吗？', {
-            title: '高危操作确认',
+        const ok = await auiConfirm('节点将暂停接收新流量并平滑排空现有连接。', {
+            title: '切入维护模式',
             confirmText: '确认执行',
             cancelText: '取消',
             danger: true
         });
-        showToast(ok ? '✅ 已确认执行操作' : '↩️ 已取消操作');
+        showToast(ok ? '已确认执行维护操作' : '已取消操作', { type: ok ? 'warning' : 'info' });
     }
 
     function toggleSpeedLimitDemo() {
@@ -839,58 +998,34 @@
             icon.textContent = '⏳';
             text.textContent = '限流保护';
             dot.classList.add('warning');
-            showToast('⏳ 已激活限流保护模式');
+            showToast('已激活限流保护模式', { type: 'warning' });
         } else {
             btn.classList.remove('warning', 'active');
             icon.textContent = '⚡';
             text.textContent = '全速模式';
             dot.classList.remove('warning');
-            showToast('⚡ 已恢复常规全速模式');
+            showToast('已恢复常规全速模式', { type: 'success' });
         }
     }
 
     function toggleAutoThemeSetting(enabled) {
         if (enabled) {
             window.AUI.setTheme('auto');
-            showToast('🌓 已开启自动跟随系统深浅色');
+            showToast('已开启自动跟随系统深浅色', { type: 'info' });
         } else {
             const target = window.AUI.isDarkEffective() ? 'dark' : 'light';
             window.AUI.setTheme(target);
-            showToast(target === 'dark' ? '🌙 已锁定深色模式' : '☀️ 已锁定浅色模式');
-        }
-    }
-
-    function copyText(text, successMsg) {
-        const fallbackCopy = () => {
-            const textarea = document.createElement('textarea');
-            textarea.value = text;
-            textarea.setAttribute('readonly', '');
-            textarea.style.position = 'fixed';
-            textarea.style.opacity = '0';
-            document.body.appendChild(textarea);
-            textarea.select();
-            let ok = false;
-            try { ok = document.execCommand('copy'); } catch (_) { ok = false; }
-            textarea.remove();
-            showToast(ok ? successMsg : '⚠️ 当前环境不支持自动复制，请手动选择文本');
-        };
-
-        if (navigator.clipboard && window.isSecureContext) {
-            navigator.clipboard.writeText(text)
-                .then(() => showToast(successMsg))
-                .catch(fallbackCopy);
-        } else {
-            fallbackCopy();
+            showToast(target === 'dark' ? '已锁定 OLED 深色模式' : '已锁定浅色模式', { type: 'info' });
         }
     }
 
     function copyToken(tokenName) {
-        copyText(`var(${tokenName})`, `📋 已复制 var(${tokenName})`);
+        window.AUI.copyText(`var(${tokenName})`, `已复制 var(${tokenName})`);
     }
 
     function copyAiPrompt() {
-        const text = '请拉取并阅读 https://github.com/Level6me/Aui 仓库中的 AGENTS.md 与 DESIGN_SPEC.md，严格遵循 AUI 苹果毛玻璃设计规范与“Avoid unnecessary secondary labels and descriptions. Let the layout do the explaining.”原则，直接复用 src/css/aui.css 与 src/js/aui-core.js（或 templates/single-file-starter.html）来开发本项目的 Web 界面。';
-        copyText(text, '✅ 已复制 AI Agent 开发指令');
+        const text = '请拉取并阅读 https://github.com/Level6me/Aui 仓库中的 AGENTS.md 与 DESIGN_SPEC.md，严格遵循 AUI 2.0 苹果 HIG 毛玻璃设计规范与“Avoid unnecessary secondary labels and descriptions. Let the layout do the explaining.”原则，直接复用 src/css/aui.css 与 src/js/aui-core.js（或 templates/single-file-starter.html）来开发本项目的 Web 界面。';
+        window.AUI.copyText(text, '已复制 AI Agent 开发指令');
     }
 
     // Zero-Dependency Smooth Bezier Area Chart Demo
@@ -961,6 +1096,39 @@
             if (autoSwitch) autoSwitch.checked = (mode === 'auto');
             scheduleChartDraw();
         });
+        window.AUI.registerCommands([
+            {
+                group: '快捷操作',
+                title: '新建服务节点配置',
+                subtitle: '打开 Adaptive Bottom Sheet 表单',
+                shortcut: 'N',
+                action: () => openModal('modal-demo-form')
+            },
+            {
+                group: '快捷操作',
+                title: '切换悬浮监控小窗 (Mini HUD)',
+                subtitle: '实时速率画中画浮层',
+                action: toggleMiniHud
+            },
+            {
+                group: '快捷操作',
+                title: '切换限流保护模式',
+                subtitle: '演示告警态按钮与状态灯',
+                action: toggleSpeedLimitDemo
+            },
+            {
+                group: '快捷操作',
+                title: '触发高危操作确认弹窗',
+                subtitle: 'Apple HIG Alert Dialog',
+                action: demoConfirmDialog
+            },
+            {
+                group: '开发者',
+                title: '复制 AI Agent 接入指令',
+                subtitle: '一键复制到剪贴板',
+                action: copyAiPrompt
+            }
+        ]);
     });
 </script>
 </body>

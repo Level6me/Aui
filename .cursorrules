@@ -1,3 +1,4 @@
-Always follow AGENTS.md and DESIGN_SPEC.md when creating or modifying Web UI files.
+Always follow AGENTS.md and DESIGN_SPEC.md (AUI 2.0) when creating or modifying Web UI files.
 Core principle: "Avoid unnecessary secondary labels and descriptions. Let the layout do the explaining."
-Use the AUI CSS variables, Apple frosted-glass surfaces (--dock, backdrop-filter: blur(28px) saturate(190%)), tabular-nums KPI cards (.val-big, .val-sub), pill buttons (.pill-btn), and Floating Glass Dock (.dock) defined in src/css/ and templates/.
+Use AUI CSS tokens (Apple HIG Light/OLED Dark adaptive semantic colors, --glass-regular, --glass-rim), SF Symbols linear SVG (.aui-icon), tabular-nums KPI cards (.val-big, .val-sub), Floating Glass Dock (.dock), spring-sliding .segmented-control, Inset Grouped Lists (.list-group), Frosted Popovers (.popover-menu), Adaptive Bottom Sheets (.modal-sheet), Spotlight Command Palette (⌘K), auiConfirm, and showToast.
+Never use window.alert/window.confirm or user-scalable=no; preserve keyboard :focus-visible and reduced-motion/transparency accessibility.

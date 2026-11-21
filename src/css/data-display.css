@@ -1,5 +1,5 @@
 /**
- * AUI Design System — Data Display: Tables, Card Grids, Rank Bars & Diagnostic Lists
+ * AUI Design System — Data Display: Tables, Card Grids, Rank Bars, Skeletons & Empty States
  */
 
 /* 1. Data Table (.table-wrap & table) */
@@ -41,8 +41,10 @@ tr:last-child td {
     border-bottom: none;
 }
 
-tr:hover td {
-    background: var(--card-hover);
+@media (hover: hover) and (pointer: fine) {
+    tr:hover td {
+        background: var(--card-hover);
+    }
 }
 
 tr.selected td {
@@ -96,15 +98,24 @@ tr.selected td {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    transition: transform 0.15s var(--ease-spring), box-shadow 0.15s ease, border-color 0.15s ease;
     min-width: 0;
     overflow: hidden;
 }
-.item-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-    border-color: rgba(120, 120, 128, 0.25);
+
+@media (hover: hover) and (pointer: fine) {
+    .item-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+        border-color: var(--fill-primary);
+    }
 }
+
+.item-card:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--accent-bg), 0 0 0 1.5px var(--accent);
+}
+
 .item-card.selected {
     border-color: var(--accent);
     background: var(--card-sec);
@@ -146,14 +157,14 @@ tr.selected td {
     border-top: 1px solid var(--border-subtle);
 }
 
-/* 3. Top-N Progress Rank Bars */
+/* 3. Top-N Progress Rank Bars (Apple Semantic Colors) */
 .rank-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 7px;
     font-size: 12px;
-    border-radius: 6px;
+    border-radius: 8px;
     padding: 4px 6px;
     transition: background 0.15s ease;
 }
@@ -164,18 +175,18 @@ tr.selected td {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 18px;
-    height: 18px;
-    border-radius: 4px;
+    width: 19px;
+    height: 19px;
+    border-radius: 5px;
     font-size: 10px;
     font-weight: 700;
     margin-right: 8px;
     flex-shrink: 0;
 }
-.rank-num.top1 { background: #ef4444; color: #ffffff; }
-.rank-num.top2 { background: #f97316; color: #ffffff; }
-.rank-num.top3 { background: #eab308; color: #ffffff; }
-.rank-num.normal { background: rgba(120, 120, 128, 0.14); color: var(--text-sec); }
+.rank-num.top1 { background: var(--danger); color: #ffffff; }
+.rank-num.top2 { background: var(--warning); color: #ffffff; }
+.rank-num.top3 { background: var(--yellow); color: #1c1c1e; }
+.rank-num.normal { background: var(--fill-tertiary); color: var(--text-sec); }
 
 .rank-bar-bg {
     flex: 1;
@@ -189,7 +200,7 @@ tr.selected td {
     height: 100%;
     background: var(--accent);
     border-radius: 4px;
-    transition: width 0.3s ease;
+    transition: width 0.3s var(--ease-spring);
 }
 
 /* 4. Compact Fingerprint / Diagnostic Progress Rows */
@@ -212,12 +223,71 @@ tr.selected td {
 }
 .diag-bar-track {
     height: 4px;
-    background: rgba(120, 120, 128, 0.12);
+    background: var(--fill-tertiary);
     border-radius: 99px;
     overflow: hidden;
 }
 .diag-bar-fill {
     height: 100%;
     border-radius: 99px;
-    transition: width 0.3s ease;
+    transition: width 0.3s var(--ease-spring);
+}
+
+/* 5. Skeleton Shimmer Placeholders (Zero-Jank Loading State) */
+.skeleton {
+    position: relative;
+    overflow: hidden;
+    background: var(--fill-quaternary);
+    border-radius: 8px;
+}
+.skeleton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        var(--fill-tertiary) 50%,
+        transparent 100%
+    );
+    animation: auiShimmer 1.5s infinite;
+}
+@keyframes auiShimmer {
+    100% { transform: translateX(100%); }
+}
+.skeleton-line {
+    height: 12px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+}
+.skeleton-line.lg { height: 26px; width: 48%; border-radius: 8px; }
+.skeleton-line.sm { height: 10px; width: 36%; }
+.skeleton-line:last-child { margin-bottom: 0; }
+
+/* 6. Minimal Self-Explanatory Empty State */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 36px 20px;
+    gap: 10px;
+    color: var(--text-sec);
+}
+.empty-state-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: var(--fill-quaternary);
+    color: var(--text-sec);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.empty-state-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
 }

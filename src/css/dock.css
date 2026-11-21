@@ -1,5 +1,5 @@
 /**
- * AUI Design System — Signature Floating Glass Dock
+ * AUI Design System — Signature Floating Glass Dock (Concentric HIG Geometry)
  */
 
 .dock {
@@ -11,39 +11,41 @@
     max-width: 500px;
     height: 64px;
     background: var(--dock);
-    backdrop-filter: blur(28px) saturate(190%);
-    -webkit-backdrop-filter: blur(28px) saturate(190%);
+    backdrop-filter: var(--glass-regular);
+    -webkit-backdrop-filter: var(--glass-regular);
     border: 0.5px solid var(--dock-border);
     border-radius: var(--radius-dock);
     display: flex;
     justify-content: space-evenly;
     align-items: center;
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-lg), var(--glass-rim);
     z-index: 1000;
-    padding: 0 6px;
+    padding: 0 8px;
 }
 
 .dock-btn {
     border: none;
     background: none;
-    min-width: 52px;
+    min-width: 54px;
     height: 48px;
-    border-radius: 15px;
+    border-radius: var(--radius-dock-item);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 2px;
-    transition: all 0.2s var(--ease-spring);
+    transition: background-color 0.2s var(--ease-spring), color 0.2s var(--ease-spring), transform 0.14s var(--ease-spring);
     color: var(--text-sec);
     cursor: pointer;
-    padding: 4px 8px;
+    padding: 4px 10px;
     user-select: none;
 }
 
-.dock-btn:hover {
-    color: var(--text);
-    background: rgba(120, 120, 128, 0.08);
+@media (hover: hover) and (pointer: fine) {
+    .dock-btn:hover {
+        color: var(--text);
+        background: var(--fill-quaternary);
+    }
 }
 
 .dock-btn:active {
@@ -64,6 +66,15 @@
     width: 19px;
     height: 19px;
     fill: currentColor;
+    flex-shrink: 0;
+}
+
+.dock-btn svg.aui-icon {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.85;
 }
 
 .dock-btn span {

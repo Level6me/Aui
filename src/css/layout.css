@@ -91,7 +91,8 @@
         gap: 6px;
     }
     .header-actions .pill-btn .pill-text,
-    .header-actions .pill-btn .btn-text-full {
+    .header-actions .pill-btn .btn-text-full,
+    .header-actions .pill-btn .kbd {
         display: none !important;
     }
     .header-actions .pill-btn .btn-text-mobile {
@@ -177,10 +178,6 @@
     margin-bottom: 0;
 }
 
-.card:hover {
-    box-shadow: var(--shadow-md);
-}
-
 .card.card-flush {
     padding: 0;
 }
@@ -194,13 +191,26 @@
     cursor: pointer;
     user-select: none;
 }
-.card.interactive:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-    border-color: rgba(120, 120, 128, 0.28);
+
+@media (hover: hover) and (pointer: fine) {
+    .card:hover {
+        box-shadow: var(--shadow-md);
+    }
+    .card.interactive:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+        border-color: var(--fill-primary);
+    }
 }
+
 .card.interactive:active {
     transform: scale(0.98);
+}
+
+.card.interactive:focus-visible,
+.stat-interactive:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--accent-bg), 0 0 0 1.5px var(--accent);
 }
 
 .card-header {
@@ -250,10 +260,14 @@
     transition: all 0.18s var(--ease-spring);
     user-select: none;
 }
-.stat-interactive:hover {
-    background: var(--card-hover);
-    transform: translateY(-2px);
+
+@media (hover: hover) and (pointer: fine) {
+    .stat-interactive:hover {
+        background: var(--card-hover);
+        transform: translateY(-2px);
+    }
 }
+
 .stat-interactive:active {
     transform: scale(0.95);
 }
@@ -264,13 +278,13 @@
     top: max(10px, env(safe-area-inset-top, 10px));
     z-index: 500;
     background: var(--dock);
-    backdrop-filter: blur(28px) saturate(190%);
-    -webkit-backdrop-filter: blur(28px) saturate(190%);
+    backdrop-filter: var(--glass-regular);
+    -webkit-backdrop-filter: var(--glass-regular);
     border: 1px solid var(--border);
     border-radius: var(--radius-card-lg);
     padding: 12px 14px;
     margin-bottom: 14px;
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-md), var(--glass-rim);
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -291,7 +305,8 @@
 .sticky-toolbar.bare .search-box,
 .sticky-toolbar.bare .pill-btn,
 .sticky-toolbar.bare .badge,
-.sticky-toolbar.bare .tag {
+.sticky-toolbar.bare .tag,
+.sticky-toolbar.bare .live-pill {
     box-shadow: var(--sticky-float-shadow);
 }
 .sticky-toolbar.bare .capsule-switcher .pill-btn {

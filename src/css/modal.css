@@ -1,5 +1,5 @@
 /**
- * AUI Design System — Page Router, Frosted Modal Sheets & Setting Rows
+ * AUI Design System — Page Router, Adaptive Bottom Sheets, Alert Dialogs, Command Palette & Setting Rows
  */
 
 /* SPA Page Container */
@@ -14,17 +14,14 @@
     from { opacity: 0; transform: translateY(4px); }
     to { opacity: 1; transform: translateY(0); }
 }
-@media (prefers-reduced-motion: reduce) {
-    .page.active { animation: none; }
-}
 
-/* Frosted Glass Modal Overlay & Sheet */
+/* Frosted Glass Modal Overlay & Adaptive Sheet */
 .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.60);
-    backdrop-filter: blur(16px) saturate(160%);
-    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    background: rgba(0, 0, 0, 0.56);
+    backdrop-filter: var(--glass-ultra-thin);
+    -webkit-backdrop-filter: var(--glass-ultra-thin);
     display: none;
     align-items: center;
     justify-content: center;
@@ -38,16 +35,18 @@
 .modal-card,
 .modal-sheet {
     background: var(--modal-bg);
+    backdrop-filter: var(--glass-thick);
+    -webkit-backdrop-filter: var(--glass-thick);
     width: 100%;
     max-width: min(560px, calc(100vw - 32px));
     border-radius: var(--radius-modal);
     padding: 22px 24px;
     border: 1px solid var(--border);
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-lg), var(--glass-rim);
     max-height: 88vh;
     overflow-y: auto;
     overscroll-behavior: contain;
-    animation: auiSheetIn 0.22s var(--ease-spring);
+    animation: auiSheetIn 0.24s var(--ease-spring);
 }
 
 .modal-card.wide,
@@ -55,9 +54,193 @@
     max-width: min(760px, calc(100vw - 32px));
 }
 
+.sheet-grabber {
+    display: none;
+    width: 36px;
+    height: 5px;
+    border-radius: 99px;
+    background: var(--fill-primary);
+    margin: -8px auto 14px auto;
+}
+
+/* Apple HIG Centered Compact Alert Dialog */
+.modal-overlay.alert-overlay {
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.modal-sheet.alert-sheet {
+    max-width: 336px;
+    padding: 20px 20px 16px 20px;
+    text-align: center;
+    border-radius: 20px;
+}
+.alert-sheet .alert-title {
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 6px;
+}
+.alert-sheet .alert-message {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text-sec);
+    margin-bottom: 18px;
+    white-space: pre-wrap;
+}
+.alert-sheet .alert-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+.alert-sheet .alert-actions .pill-btn {
+    justify-content: center;
+    padding: 9px 12px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
 @keyframes auiSheetIn {
     from { opacity: 0; transform: scale(0.95) translateY(8px); }
     to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes auiBottomSheetIn {
+    from { opacity: 0.6; transform: translateY(100%); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Mobile Adaptive Bottom Sheet Presentation (iOS HIG) */
+@media (max-width: 640px) {
+    .modal-overlay:not(.alert-overlay) {
+        align-items: flex-end;
+        padding: 0;
+    }
+    .modal-overlay:not(.alert-overlay) .modal-sheet:not(.alert-sheet),
+    .modal-overlay:not(.alert-overlay) .modal-card:not(.alert-sheet) {
+        max-width: 100%;
+        border-radius: 22px 22px 0 0;
+        border-bottom: none;
+        padding: 18px 18px calc(20px + env(safe-area-inset-bottom, 0px)) 18px;
+        max-height: 90vh;
+        animation: auiBottomSheetIn 0.28s var(--ease-spring);
+    }
+    .modal-overlay:not(.alert-overlay) .sheet-grabber {
+        display: block;
+    }
+}
+
+/* macOS Spotlight / Command Palette (⌘K) */
+.cmd-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2800;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: var(--glass-ultra-thin);
+    -webkit-backdrop-filter: var(--glass-ultra-thin);
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    padding: min(14vh, 110px) 16px 16px 16px;
+}
+.cmd-overlay.active {
+    display: flex;
+}
+.cmd-sheet {
+    width: 100%;
+    max-width: 540px;
+    background: var(--modal-bg);
+    backdrop-filter: var(--glass-thick);
+    -webkit-backdrop-filter: var(--glass-thick);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    box-shadow: var(--shadow-lg), var(--glass-rim);
+    overflow: hidden;
+    animation: auiSheetIn 0.2s var(--ease-spring);
+}
+.cmd-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+.cmd-input-wrap input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 500;
+    outline: none;
+}
+.cmd-input-wrap input::placeholder {
+    color: var(--text-ter);
+}
+.cmd-list {
+    max-height: min(360px, 54vh);
+    overflow-y: auto;
+    padding: 6px;
+}
+.cmd-group-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-sec);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 6px 10px 4px 10px;
+}
+.cmd-item {
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 9px 10px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 0.12s ease;
+}
+.cmd-item.selected,
+.cmd-item:hover {
+    background: var(--accent-bg);
+    color: var(--accent);
+}
+.cmd-item-sub {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-sec);
+}
+.cmd-item.selected .cmd-item-sub {
+    color: var(--accent);
+    opacity: 0.85;
+}
+.cmd-empty {
+    padding: 24px 12px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-sec);
+}
+.cmd-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 14px;
+    border-top: 1px solid var(--border-subtle);
+    background: var(--card-sec);
+    font-size: 11px;
+    color: var(--text-sec);
 }
 
 /* Form Group Inside Modals */

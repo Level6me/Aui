@@ -1,28 +1,36 @@
 /**
- * AUI Design System — Design Tokens & Adaptive Theme Variables
- * Apple HIG Frosted Glass Aesthetic
+ * AUI Design System — Design Tokens & Adaptive Theme Variables (v2.0)
+ * Apple HIG Frosted Glass Aesthetic + Dark Mode Luminance Calibration
  * Supports: data-theme="auto" (default), data-theme="light", data-theme="dark"
  */
 
 :root {
     color-scheme: light;
 
-    /* Surface & Background Tokens (Light Default) */
+    /* Surface & Background Tokens (Light Default — iOS Grouped Hierarchy) */
     --bg: #f2f2f7;
     --card: #ffffff;
     --card-sec: #f8f8fa;
     --card-hover: #f5f5f7;
-    --card-translucent: rgba(255, 255, 255, 0.88);
-    --dock: rgba(255, 255, 255, 0.85);
-    --modal-bg: rgba(255, 255, 255, 0.95);
+    --surface-elevated: #ffffff;
+    --surface-elevated-sec: #f2f2f7;
+    --card-translucent: rgba(255, 255, 255, 0.86);
+    --dock: rgba(255, 255, 255, 0.82);
+    --modal-bg: rgba(255, 255, 255, 0.94);
     --table-stripe: rgba(120, 120, 128, 0.03);
+
+    /* Apple HIG 4-Level Adaptive System Fills */
+    --fill-primary: rgba(120, 120, 128, 0.20);
+    --fill-secondary: rgba(120, 120, 128, 0.16);
+    --fill-tertiary: rgba(118, 118, 128, 0.12);
+    --fill-quaternary: rgba(116, 116, 128, 0.08);
 
     /* Typography Hierarchy Tokens */
     --text: #1c1c1e;
     --text-sec: #8e8e93;
     --text-ter: #aeaeb2;
 
-    /* Semantic Accent Colors (Apple System Palette) */
+    /* Semantic Accent Colors (Apple System Light Palette) */
     --accent: #007aff;
     --accent-hover: #0062cc;
     --accent-bg: rgba(0, 122, 255, 0.10);
@@ -39,24 +47,46 @@
     --purple: #af52de;
     --purple-bg: rgba(175, 82, 222, 0.12);
 
+    /* Extended Apple System Palette (Charts, Categories & Rankings) */
+    --indigo: #5856d6;
+    --indigo-bg: rgba(88, 86, 214, 0.12);
+
+    --teal: #30b0c7;
+    --teal-bg: rgba(48, 176, 199, 0.12);
+
+    --pink: #ff2d55;
+    --pink-bg: rgba(255, 45, 85, 0.12);
+
+    --yellow: #ffcc00;
+    --yellow-bg: rgba(255, 204, 0, 0.16);
+
     /* Hairline Borders & Dividers */
     --border: rgba(120, 120, 128, 0.15);
     --border-subtle: rgba(120, 120, 128, 0.08);
-    --dock-border: rgba(255, 255, 255, 0.28);
+    --dock-border: rgba(255, 255, 255, 0.42);
+
+    /* Apple Material Blur Thickness Tiers & Specular Rim Highlight */
+    --glass-ultra-thin: blur(16px) saturate(160%);
+    --glass-thin: blur(22px) saturate(180%);
+    --glass-regular: blur(28px) saturate(190%);
+    --glass-thick: blur(40px) saturate(200%);
+    --glass-rim: inset 0 1px 0 rgba(255, 255, 255, 0.58);
 
     /* Elevation Shadows */
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
     --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.18);
+    --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.16);
     --sticky-float-shadow: 0 4px 14px rgba(0, 0, 0, 0.11), 0 1px 4px rgba(0, 0, 0, 0.06);
 
-    /* Spatial & Radius Tokens */
+    /* Spatial & Concentric Radius Tokens */
     --radius-card: 18px;
     --radius-card-lg: 20px;
     --radius-modal: 22px;
     --radius-dock: 33px;
+    --radius-dock-item: 24px;
     --radius-pill: 20px;
     --radius-control: 12px;
+    --radius-control-inner: 9px;
     --radius-tag: 7px;
 
     /* Apple Spring Easing */
@@ -76,24 +106,55 @@
         --card: #1c1c1e;
         --card-sec: #2c2c2e;
         --card-hover: #262629;
-        --card-translucent: rgba(28, 28, 30, 0.88);
-        --dock: rgba(28, 28, 30, 0.88);
-        --modal-bg: rgba(28, 28, 30, 0.96);
+        --surface-elevated: #2c2c2e;
+        --surface-elevated-sec: #3a3a3c;
+        --card-translucent: rgba(28, 28, 30, 0.86);
+        --dock: rgba(28, 28, 30, 0.86);
+        --modal-bg: rgba(28, 28, 30, 0.94);
         --table-stripe: rgba(255, 255, 255, 0.02);
+
+        --fill-primary: rgba(120, 120, 128, 0.36);
+        --fill-secondary: rgba(120, 120, 128, 0.32);
+        --fill-tertiary: rgba(118, 118, 128, 0.24);
+        --fill-quaternary: rgba(116, 116, 128, 0.18);
 
         --text: #ffffff;
         --text-sec: #98989d;
         --text-ter: #636366;
 
-        --accent-bg: rgba(0, 122, 255, 0.18);
-        --success-bg: rgba(52, 199, 89, 0.16);
-        --warning-bg: rgba(255, 149, 0, 0.16);
-        --danger-bg: rgba(255, 59, 48, 0.16);
-        --purple-bg: rgba(175, 82, 222, 0.16);
+        /* Apple HIG Dark Mode Elevated Luminance Semantic Palette */
+        --accent: #0a84ff;
+        --accent-hover: #409cff;
+        --accent-bg: rgba(10, 132, 255, 0.20);
+
+        --success: #30d158;
+        --success-bg: rgba(48, 209, 88, 0.18);
+
+        --warning: #ff9f0a;
+        --warning-bg: rgba(255, 159, 10, 0.18);
+
+        --danger: #ff453a;
+        --danger-bg: rgba(255, 69, 58, 0.18);
+
+        --purple: #bf5af2;
+        --purple-bg: rgba(191, 90, 242, 0.18);
+
+        --indigo: #5e5ce6;
+        --indigo-bg: rgba(94, 92, 230, 0.20);
+
+        --teal: #40c8e0;
+        --teal-bg: rgba(64, 200, 224, 0.18);
+
+        --pink: #ff375f;
+        --pink-bg: rgba(255, 55, 95, 0.18);
+
+        --yellow: #ffd60a;
+        --yellow-bg: rgba(255, 214, 10, 0.18);
 
         --border: rgba(255, 255, 255, 0.12);
         --border-subtle: rgba(255, 255, 255, 0.06);
-        --dock-border: rgba(255, 255, 255, 0.22);
+        --dock-border: rgba(255, 255, 255, 0.18);
+        --glass-rim: inset 0 0.5px 0 rgba(255, 255, 255, 0.16);
 
         --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.30);
         --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.45);
@@ -109,27 +170,116 @@
     --card: #1c1c1e;
     --card-sec: #2c2c2e;
     --card-hover: #262629;
-    --card-translucent: rgba(28, 28, 30, 0.88);
-    --dock: rgba(28, 28, 30, 0.88);
-    --modal-bg: rgba(28, 28, 30, 0.96);
+    --surface-elevated: #2c2c2e;
+    --surface-elevated-sec: #3a3a3c;
+    --card-translucent: rgba(28, 28, 30, 0.86);
+    --dock: rgba(28, 28, 30, 0.86);
+    --modal-bg: rgba(28, 28, 30, 0.94);
     --table-stripe: rgba(255, 255, 255, 0.02);
+
+    --fill-primary: rgba(120, 120, 128, 0.36);
+    --fill-secondary: rgba(120, 120, 128, 0.32);
+    --fill-tertiary: rgba(118, 118, 128, 0.24);
+    --fill-quaternary: rgba(116, 116, 128, 0.18);
 
     --text: #ffffff;
     --text-sec: #98989d;
     --text-ter: #636366;
 
-    --accent-bg: rgba(0, 122, 255, 0.18);
-    --success-bg: rgba(52, 199, 89, 0.16);
-    --warning-bg: rgba(255, 149, 0, 0.16);
-    --danger-bg: rgba(255, 59, 48, 0.16);
-    --purple-bg: rgba(175, 82, 222, 0.16);
+    --accent: #0a84ff;
+    --accent-hover: #409cff;
+    --accent-bg: rgba(10, 132, 255, 0.20);
+
+    --success: #30d158;
+    --success-bg: rgba(48, 209, 88, 0.18);
+
+    --warning: #ff9f0a;
+    --warning-bg: rgba(255, 159, 10, 0.18);
+
+    --danger: #ff453a;
+    --danger-bg: rgba(255, 69, 58, 0.18);
+
+    --purple: #bf5af2;
+    --purple-bg: rgba(191, 90, 242, 0.18);
+
+    --indigo: #5e5ce6;
+    --indigo-bg: rgba(94, 92, 230, 0.20);
+
+    --teal: #40c8e0;
+    --teal-bg: rgba(64, 200, 224, 0.18);
+
+    --pink: #ff375f;
+    --pink-bg: rgba(255, 55, 95, 0.18);
+
+    --yellow: #ffd60a;
+    --yellow-bg: rgba(255, 214, 10, 0.18);
 
     --border: rgba(255, 255, 255, 0.12);
     --border-subtle: rgba(255, 255, 255, 0.06);
-    --dock-border: rgba(255, 255, 255, 0.22);
+    --dock-border: rgba(255, 255, 255, 0.18);
+    --glass-rim: inset 0 0.5px 0 rgba(255, 255, 255, 0.16);
 
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.30);
     --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.45);
     --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.60);
     --sticky-float-shadow: 0 4px 16px rgba(0, 0, 0, 0.52), 0 0 12px rgba(0, 0, 0, 0.34);
+}
+
+/* Apple HIG Accessibility: Increased Contrast */
+@media (prefers-contrast: more) {
+    :root {
+        --border: rgba(60, 60, 67, 0.36);
+        --border-subtle: rgba(60, 60, 67, 0.20);
+        --text-sec: #636366;
+    }
+    :root[data-theme="dark"] {
+        --border: rgba(255, 255, 255, 0.32);
+        --border-subtle: rgba(255, 255, 255, 0.18);
+        --text-sec: #c7c7cc;
+    }
+    @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+            --border: rgba(255, 255, 255, 0.32);
+            --border-subtle: rgba(255, 255, 255, 0.18);
+            --text-sec: #c7c7cc;
+        }
+    }
+}
+
+/* Apple HIG Accessibility: Reduced Transparency Fallback */
+@media (prefers-reduced-transparency: reduce) {
+    :root {
+        --dock: #ffffff;
+        --card-translucent: #ffffff;
+        --modal-bg: #ffffff;
+        --glass-ultra-thin: none;
+        --glass-thin: none;
+        --glass-regular: none;
+        --glass-thick: none;
+    }
+    :root[data-theme="dark"] {
+        --dock: #1c1c1e;
+        --card-translucent: #1c1c1e;
+        --modal-bg: #1c1c1e;
+    }
+    @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+            --dock: #1c1c1e;
+            --card-translucent: #1c1c1e;
+            --modal-bg: #1c1c1e;
+        }
+    }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    :root {
+        --dock: #ffffff;
+        --card-translucent: #ffffff;
+        --modal-bg: #ffffff;
+    }
+    :root[data-theme="dark"] {
+        --dock: #1c1c1e;
+        --card-translucent: #1c1c1e;
+        --modal-bg: #1c1c1e;
+    }
 }

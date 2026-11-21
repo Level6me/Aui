@@ -1,12 +1,16 @@
 /**
- * AUI Design System — Zero-Dependency Core Runtime (aui-core.js)
+ * AUI Design System — Zero-Dependency Core Runtime (aui-core.js v2.0)
  * Provides:
  * 1. Adaptive 3-Mode Theme Engine (auto / light / dark) + OS change listener
- * 2. Floating Glass Dock Page Router + Keyboard Shortcuts (1-9, Esc)
- * 3. Segmented Control & Capsule Switcher Helper
- * 4. Frosted Modal Sheet Controller (with forced-login guard & delegation)
- * 5. Top Frosted Toast Pill Notification Engine
- * 6. Chart.js Theme Color Helper
+ * 2. Floating Glass Dock Page Router + Hash Sync + Keyboard Shortcuts (1-9, Esc, ⌘K)
+ * 3. Spring Sliding Segmented Control & Capsule Switcher Helper
+ * 4. Accessible Frosted Modal & Adaptive Bottom Sheet Controller (Focus Trap + Restore)
+ * 5. Apple Alert Async Confirmation Dialog (auiConfirm)
+ * 6. Spotlight Command Palette (⌘K / Ctrl+K)
+ * 7. Frosted Popover / Context Menu Engine
+ * 8. Top Frosted Toast Pill Notification Engine (Semantic Types + Hover Pause + ARIA)
+ * 9. Inline Copy Helper & Declarative data-aui-* Delegation
+ * 10. Chart.js Theme Color Helper
  */
 
 (function (window) {
@@ -17,6 +21,7 @@
     const THEME_ICONS = { auto: '🌓', light: '☀️', dark: '🌙' };
     const THEME_LABELS = { auto: '自动', light: '浅色', dark: '深色' };
     const MAX_TOASTS = 3;
+    const FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
     function safeGetStorage(key) {
         try {
@@ -34,6 +39,11 @@
         }
     }
 
+    function prefersReducedMotion() {
+        return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    }
+
+    // --- 1. Adaptive Theme Engine ---
     let currentThemeMode = safeGetStorage(THEME_STORAGE_KEY) || 'auto';
     if (!THEME_MODES.includes(currentThemeMode)) currentThemeMode = 'auto';
     const themeListeners = [];
@@ -51,7 +61,7 @@
             if (existing) existing.remove();
             return;
         }
-        const color = dark ? '#1c1c1e' : '#007aff';
+        const color = dark ? '#000000' : '#f2f2f7';
         if (existing) {
             existing.setAttribute('content', color);
         } else if (document.head) {
@@ -99,13 +109,10 @@
     document.documentElement.setAttribute('data-theme', currentThemeMode);
     syncThemeColorMeta(isDarkEffective(currentThemeMode), currentThemeMode);
 
-    // Listen to OS dark mode changes when in 'auto' mode
     if (window.matchMedia) {
         const darkMedia = window.matchMedia('(prefers-color-scheme: dark)');
         const handleOsChange = () => {
-            if (currentThemeMode === 'auto') {
-                setTheme('auto');
-            }
+            if (currentThemeMode === 'auto') setTheme('auto');
         };
         if (typeof darkMedia.addEventListener === 'function') {
             darkMedia.addEventListener('change', handleOsChange);
@@ -114,40 +121,84 @@
         }
     }
 
-    // --- Dock Page Navigation ---
-    function switchPage(pageId, title, btnEl) {
-        document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
-        const target = document.getElementById(pageId);
-        if (target) target.classList.add('active');
-
-        if (!btnEl) {
-            const dockBtns = document.querySelectorAll('.dock .dock-btn');
-            for (const btn of dockBtns) {
-                const onclickAttr = btn.getAttribute('onclick') || '';
-                if (btn.dataset.page === pageId || onclickAttr.includes(`'${pageId}'`) || onclickAttr.includes(`"${pageId}"`)) {
-                    btnEl = btn;
-                    break;
-                }
+    // --- 2. Floating Glass Dock Page Router ---
+    function findDockButtonForPage(pageId) {
+        const dockBtns = document.querySelectorAll('.dock .dock-btn');
+        for (const btn of dockBtns) {
+            const onclickAttr = btn.getAttribute('onclick') || '';
+            if (btn.dataset.page === pageId || onclickAttr.includes(`'${pageId}'`) || onclickAttr.includes(`"${pageId}"`)) {
+                return btn;
             }
         }
+        return null;
+    }
 
-        if (btnEl) {
-            document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
-            btnEl.classList.add('active');
+    function switchPage(pageId, title, btnEl, options = {}) {
+        const target = document.getElementById(pageId);
+        if (!target) return;
+
+        document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+        target.classList.add('active');
+
+        const activeBtn = btnEl || findDockButtonForPage(pageId);
+        if (activeBtn) {
+            document.querySelectorAll('.dock-btn').forEach(b => {
+                b.classList.remove('active');
+                b.removeAttribute('aria-current');
+            });
+            activeBtn.classList.add('active');
+            activeBtn.setAttribute('aria-current', 'page');
         }
 
+        const resolvedTitle = title || (activeBtn && (activeBtn.dataset.title || activeBtn.textContent.trim())) || '';
         const titleEl = document.getElementById('page-title');
-        if (titleEl && title) titleEl.textContent = title;
+        if (titleEl && resolvedTitle) titleEl.textContent = resolvedTitle;
 
-        const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+        if (options.syncHash !== false && document.documentElement.hasAttribute('data-aui-hash')) {
+            try {
+                if (window.location.hash !== '#' + pageId) {
+                    window.history.replaceState(null, '', '#' + pageId);
+                }
+            } catch (_) {}
+        }
+
+        if (options.scroll !== false) {
+            window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
+        }
+
+        requestAnimationFrame(refreshAllSegmentedControls);
 
         window.dispatchEvent(new CustomEvent('aui:pagechange', {
-            detail: { pageId, title }
+            detail: { pageId, title: resolvedTitle }
         }));
     }
 
-    // --- Sub-Tab & Segmented Control Helper ---
+    // --- 3. Spring Sliding Segmented Control & Sub-View Helper ---
+    function updateSegmentedControl(ctrl) {
+        if (!ctrl) return;
+        const activeBtn = ctrl.querySelector('.segment-btn.active');
+        let indicator = ctrl.querySelector(':scope > .segment-indicator');
+
+        if (!activeBtn || activeBtn.offsetWidth === 0) {
+            if (indicator) indicator.style.opacity = '0';
+            return;
+        }
+        if (!indicator) {
+            indicator = document.createElement('span');
+            indicator.className = 'segment-indicator';
+            indicator.setAttribute('aria-hidden', 'true');
+            ctrl.insertBefore(indicator, ctrl.firstChild);
+            ctrl.classList.add('has-indicator');
+        }
+        indicator.style.opacity = '1';
+        indicator.style.width = activeBtn.offsetWidth + 'px';
+        indicator.style.transform = `translateX(${activeBtn.offsetLeft}px)`;
+    }
+
+    function refreshAllSegmentedControls() {
+        document.querySelectorAll('.segmented-control').forEach(updateSegmentedControl);
+    }
+
     function switchSubView(groupSelector, targetId, btnEl, activeClass = 'active') {
         if (groupSelector && groupSelector !== '.noop') {
             document.querySelectorAll(groupSelector).forEach(el => {
@@ -166,9 +217,16 @@
 
         if (btnEl && btnEl.parentElement) {
             Array.from(btnEl.parentElement.children).forEach(sibling => {
+                if (sibling.classList.contains('segment-indicator')) return;
                 sibling.classList.remove(activeClass, 'active', 'accent');
+                if (sibling.tagName === 'BUTTON') sibling.setAttribute('aria-selected', 'false');
             });
             btnEl.classList.add(activeClass);
+            if (btnEl.tagName === 'BUTTON') btnEl.setAttribute('aria-selected', 'true');
+
+            if (btnEl.parentElement.classList.contains('segmented-control')) {
+                updateSegmentedControl(btnEl.parentElement);
+            }
         }
 
         window.dispatchEvent(new CustomEvent('aui:subviewchange', {
@@ -176,8 +234,9 @@
         }));
     }
 
-    // --- Modal Controller & Frosted Confirm Dialog ---
+    // --- 4. Accessible Modal & Adaptive Bottom Sheet Controller ---
     let pendingConfirmResolve = null;
+    const modalFocusStack = [];
 
     function settleConfirm(result) {
         if (typeof pendingConfirmResolve === 'function') {
@@ -188,23 +247,70 @@
     }
 
     function syncModalScrollLock() {
-        const hasActiveModal = document.querySelectorAll('.modal-overlay.active').length > 0;
-        document.documentElement.classList.toggle('modal-open', hasActiveModal);
-        document.body.classList.toggle('modal-open', hasActiveModal);
+        const hasOverlay = document.querySelectorAll('.modal-overlay.active, .cmd-overlay.active').length > 0;
+        document.documentElement.classList.toggle('modal-open', hasOverlay);
+        document.body.classList.toggle('modal-open', hasOverlay);
+    }
+
+    function getFocusableElements(container) {
+        return Array.from(container.querySelectorAll(FOCUSABLE_SELECTOR)).filter(
+            el => el.offsetParent !== null && !el.hasAttribute('aria-hidden')
+        );
     }
 
     function openModal(id) {
         const el = document.getElementById(id);
         if (!el) return;
+        closePopovers();
+
+        const sheet = el.querySelector('.modal-sheet, .modal-card');
+        if (sheet) {
+            if (!sheet.hasAttribute('role')) sheet.setAttribute('role', 'dialog');
+            sheet.setAttribute('aria-modal', 'true');
+            if (!sheet.classList.contains('alert-sheet') && !sheet.querySelector('.sheet-grabber')) {
+                const grabber = document.createElement('div');
+                grabber.className = 'sheet-grabber';
+                grabber.setAttribute('aria-hidden', 'true');
+                sheet.insertBefore(grabber, sheet.firstChild);
+            }
+        }
+
+        const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+        modalFocusStack.push({ id, opener });
+
         el.classList.add('active');
         syncModalScrollLock();
+
+        if (sheet) {
+            setTimeout(() => {
+                const focusables = getFocusableElements(sheet);
+                const first = focusables.find(n => n.tagName === 'INPUT' || n.tagName === 'TEXTAREA') || focusables[0];
+                if (first) {
+                    try { first.focus(); } catch (_) {}
+                }
+            }, 30);
+        }
+    }
+
+    function restoreFocusForModal(closedId) {
+        for (let i = modalFocusStack.length - 1; i >= 0; i--) {
+            if (modalFocusStack[i].id === closedId) {
+                const { opener } = modalFocusStack.splice(i, 1)[0];
+                if (opener && opener.isConnected) {
+                    try { opener.focus(); } catch (_) {}
+                }
+                break;
+            }
+        }
     }
 
     function closeModal(id) {
+        let closedId = null;
         if (id) {
             const el = document.getElementById(id);
-            if (el) {
+            if (el && el.classList.contains('active')) {
                 el.classList.remove('active');
+                closedId = el.id;
                 if (el.id === 'aui-confirm-modal') settleConfirm(false);
             }
         } else {
@@ -212,55 +318,70 @@
             for (let i = activeOverlays.length - 1; i >= 0; i--) {
                 if (!activeOverlays[i].classList.contains('forced-login')) {
                     activeOverlays[i].classList.remove('active');
+                    closedId = activeOverlays[i].id;
                     if (activeOverlays[i].id === 'aui-confirm-modal') settleConfirm(false);
                     break;
                 }
             }
         }
         syncModalScrollLock();
+        if (closedId) restoreFocusForModal(closedId);
     }
 
+    function handleModalFocusTrap(e) {
+        if (e.key !== 'Tab') return;
+        const activeOverlays = Array.from(document.querySelectorAll('.modal-overlay.active'));
+        if (activeOverlays.length === 0) return;
+        const topOverlay = activeOverlays[activeOverlays.length - 1];
+        const sheet = topOverlay.querySelector('.modal-sheet, .modal-card') || topOverlay;
+        const focusables = getFocusableElements(sheet);
+        if (focusables.length === 0) return;
+
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+        }
+    }
+
+    // --- 5. Apple Alert Async Confirmation Dialog ---
     function ensureConfirmModal() {
         let overlay = document.getElementById('aui-confirm-modal');
         if (overlay) return overlay;
 
         overlay = document.createElement('div');
         overlay.id = 'aui-confirm-modal';
-        overlay.className = 'modal-overlay';
+        overlay.className = 'modal-overlay alert-overlay';
         overlay.style.zIndex = '2400';
 
         const sheet = document.createElement('div');
-        sheet.className = 'modal-sheet';
-        sheet.style.maxWidth = '390px';
-        sheet.setAttribute('role', 'dialog');
+        sheet.className = 'modal-sheet alert-sheet';
+        sheet.setAttribute('role', 'alertdialog');
         sheet.setAttribute('aria-modal', 'true');
         sheet.setAttribute('aria-labelledby', 'aui-confirm-title');
+        sheet.setAttribute('aria-describedby', 'aui-confirm-message');
 
         const titleEl = document.createElement('div');
         titleEl.id = 'aui-confirm-title';
-        titleEl.className = 'card-title';
-        titleEl.style.marginBottom = '10px';
+        titleEl.className = 'alert-title';
 
         const msgEl = document.createElement('div');
         msgEl.id = 'aui-confirm-message';
-        msgEl.style.fontSize = '13px';
-        msgEl.style.lineHeight = '1.55';
-        msgEl.style.color = 'var(--text-sec)';
-        msgEl.style.marginBottom = '18px';
-        msgEl.style.whiteSpace = 'pre-wrap';
+        msgEl.className = 'alert-message';
 
         const actions = document.createElement('div');
-        actions.style.display = 'flex';
-        actions.style.justifyContent = 'flex-end';
-        actions.style.gap = '8px';
+        actions.className = 'alert-actions';
 
         const cancelBtn = document.createElement('button');
         cancelBtn.type = 'button';
         cancelBtn.id = 'aui-confirm-cancel';
         cancelBtn.className = 'pill-btn';
         cancelBtn.addEventListener('click', () => {
-            overlay.classList.remove('active');
-            syncModalScrollLock();
+            closeModal('aui-confirm-modal');
             settleConfirm(false);
         });
 
@@ -269,9 +390,10 @@
         okBtn.id = 'aui-confirm-ok';
         okBtn.className = 'pill-btn accent';
         okBtn.addEventListener('click', () => {
-            overlay.classList.remove('active');
-            syncModalScrollLock();
-            settleConfirm(true);
+            const resolve = pendingConfirmResolve;
+            pendingConfirmResolve = null;
+            closeModal('aui-confirm-modal');
+            if (typeof resolve === 'function') resolve(true);
         });
 
         actions.appendChild(cancelBtn);
@@ -286,7 +408,7 @@
 
     function auiConfirm(message, options = {}) {
         settleConfirm(false);
-        const overlay = ensureConfirmModal();
+        ensureConfirmModal();
         const titleEl = document.getElementById('aui-confirm-title');
         const msgEl = document.getElementById('aui-confirm-message');
         const cancelBtn = document.getElementById('aui-confirm-cancel');
@@ -306,19 +428,322 @@
         }
 
         openModal('aui-confirm-modal');
-        if (okBtn) {
-            setTimeout(() => {
-                try { okBtn.focus(); } catch (_) {}
-            }, 20);
-        }
+        setTimeout(() => {
+            const focusTarget = isDanger ? cancelBtn : okBtn;
+            if (focusTarget) {
+                try { focusTarget.focus(); } catch (_) {}
+            }
+        }, 35);
 
         return new Promise(resolve => {
             pendingConfirmResolve = resolve;
         });
     }
 
-    // --- Toast Notification Engine ---
-    function showToast(message, duration = 2600) {
+    // --- 6. Spotlight Command Palette (⌘K / Ctrl+K) ---
+    let customCommands = [];
+    let cmdFiltered = [];
+    let cmdSelectedIdx = 0;
+    let cmdOpener = null;
+
+    function registerCommands(items) {
+        if (Array.isArray(items)) {
+            customCommands = items.slice();
+        }
+    }
+
+    function collectCommands() {
+        const list = [];
+        document.querySelectorAll('.dock .dock-btn').forEach((btn, idx) => {
+            const label = btn.textContent.trim();
+            if (!label) return;
+            list.push({
+                id: 'dock-' + idx,
+                group: '导航',
+                title: label,
+                subtitle: '切换视图',
+                shortcut: String(idx + 1),
+                action: () => btn.click()
+            });
+        });
+        list.push({
+            id: 'theme-cycle',
+            group: '外观',
+            title: '切换深浅色主题',
+            subtitle: `当前：${THEME_LABELS[currentThemeMode]}`,
+            shortcut: 'Theme',
+            action: () => cycleTheme()
+        });
+        customCommands.forEach((cmd, i) => {
+            if (cmd && cmd.title && typeof cmd.action === 'function') {
+                list.push({
+                    id: cmd.id || 'custom-' + i,
+                    group: cmd.group || '快捷操作',
+                    title: cmd.title,
+                    subtitle: cmd.subtitle || '',
+                    shortcut: cmd.shortcut || '',
+                    action: cmd.action
+                });
+            }
+        });
+        return list;
+    }
+
+    function ensureCommandPalette() {
+        let overlay = document.getElementById('aui-cmd-overlay');
+        if (overlay) return overlay;
+
+        overlay = document.createElement('div');
+        overlay.id = 'aui-cmd-overlay';
+        overlay.className = 'cmd-overlay';
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) closeCommandPalette();
+        });
+
+        const sheet = document.createElement('div');
+        sheet.className = 'cmd-sheet';
+        sheet.setAttribute('role', 'dialog');
+        sheet.setAttribute('aria-modal', 'true');
+        sheet.setAttribute('aria-label', '快捷命令面板');
+
+        const inputWrap = document.createElement('div');
+        inputWrap.className = 'cmd-input-wrap';
+
+        const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        icon.setAttribute('viewBox', '0 0 24 24');
+        icon.setAttribute('class', 'aui-icon');
+        icon.style.color = 'var(--text-sec)';
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', '11');
+        circle.setAttribute('cy', '11');
+        circle.setAttribute('r', '7');
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', '16.65');
+        line.setAttribute('y1', '16.65');
+        line.setAttribute('x2', '21');
+        line.setAttribute('y2', '21');
+        icon.appendChild(circle);
+        icon.appendChild(line);
+
+        const input = document.createElement('input');
+        input.id = 'aui-cmd-input';
+        input.type = 'text';
+        input.placeholder = '输入命令或页面名称...';
+        input.autocomplete = 'off';
+        input.addEventListener('input', () => renderCommandItems(input.value));
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (cmdFiltered.length > 0) {
+                    cmdSelectedIdx = (cmdSelectedIdx + 1) % cmdFiltered.length;
+                    highlightCommandItem();
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (cmdFiltered.length > 0) {
+                    cmdSelectedIdx = (cmdSelectedIdx - 1 + cmdFiltered.length) % cmdFiltered.length;
+                    highlightCommandItem();
+                }
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                const chosen = cmdFiltered[cmdSelectedIdx];
+                if (chosen) {
+                    closeCommandPalette();
+                    chosen.action();
+                }
+            }
+        });
+
+        const escBadge = document.createElement('span');
+        escBadge.className = 'kbd';
+        escBadge.textContent = 'ESC';
+
+        inputWrap.appendChild(icon);
+        inputWrap.appendChild(input);
+        inputWrap.appendChild(escBadge);
+
+        const list = document.createElement('div');
+        list.id = 'aui-cmd-list';
+        list.className = 'cmd-list';
+
+        const footer = document.createElement('div');
+        footer.className = 'cmd-footer';
+        const hintLeft = document.createElement('span');
+        hintLeft.textContent = '↑↓ 选择 · ↵ 执行';
+        const hintRight = document.createElement('span');
+        hintRight.className = 'mono';
+        hintRight.textContent = '⌘K / Ctrl+K';
+        footer.appendChild(hintLeft);
+        footer.appendChild(hintRight);
+
+        sheet.appendChild(inputWrap);
+        sheet.appendChild(list);
+        sheet.appendChild(footer);
+        overlay.appendChild(sheet);
+        document.body.appendChild(overlay);
+        return overlay;
+    }
+
+    function highlightCommandItem() {
+        const list = document.getElementById('aui-cmd-list');
+        if (!list) return;
+        const buttons = list.querySelectorAll('.cmd-item');
+        buttons.forEach((btn, idx) => {
+            const active = idx === cmdSelectedIdx;
+            btn.classList.toggle('selected', active);
+            if (active) btn.scrollIntoView({ block: 'nearest' });
+        });
+    }
+
+    function renderCommandItems(query) {
+        const list = document.getElementById('aui-cmd-list');
+        if (!list) return;
+        const q = String(query || '').trim().toLowerCase();
+        const all = collectCommands();
+        cmdFiltered = all.filter(item => {
+            if (!q) return true;
+            return (
+                item.title.toLowerCase().includes(q) ||
+                (item.subtitle && item.subtitle.toLowerCase().includes(q)) ||
+                (item.group && item.group.toLowerCase().includes(q))
+            );
+        });
+        cmdSelectedIdx = 0;
+        list.textContent = '';
+
+        if (cmdFiltered.length === 0) {
+            const empty = document.createElement('div');
+            empty.className = 'cmd-empty';
+            empty.textContent = '无匹配命令';
+            list.appendChild(empty);
+            return;
+        }
+
+        let lastGroup = '';
+        cmdFiltered.forEach((item, idx) => {
+            if (item.group && item.group !== lastGroup) {
+                lastGroup = item.group;
+                const grp = document.createElement('div');
+                grp.className = 'cmd-group-label';
+                grp.textContent = item.group;
+                list.appendChild(grp);
+            }
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'cmd-item' + (idx === 0 ? ' selected' : '');
+
+            const left = document.createElement('div');
+            const title = document.createElement('div');
+            title.textContent = item.title;
+            left.appendChild(title);
+            if (item.subtitle) {
+                const sub = document.createElement('div');
+                sub.className = 'cmd-item-sub';
+                sub.textContent = item.subtitle;
+                left.appendChild(sub);
+            }
+            btn.appendChild(left);
+
+            if (item.shortcut) {
+                const kbd = document.createElement('span');
+                kbd.className = 'kbd';
+                kbd.textContent = item.shortcut;
+                btn.appendChild(kbd);
+            }
+            btn.addEventListener('mouseenter', () => {
+                cmdSelectedIdx = idx;
+                highlightCommandItem();
+            });
+            btn.addEventListener('click', () => {
+                closeCommandPalette();
+                item.action();
+            });
+            list.appendChild(btn);
+        });
+    }
+
+    function openCommandPalette() {
+        closePopovers();
+        const overlay = ensureCommandPalette();
+        cmdOpener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+        overlay.classList.add('active');
+        syncModalScrollLock();
+        const input = document.getElementById('aui-cmd-input');
+        if (input) {
+            input.value = '';
+            renderCommandItems('');
+            setTimeout(() => {
+                try { input.focus(); } catch (_) {}
+            }, 20);
+        }
+    }
+
+    function closeCommandPalette() {
+        const overlay = document.getElementById('aui-cmd-overlay');
+        if (!overlay || !overlay.classList.contains('active')) return;
+        overlay.classList.remove('active');
+        syncModalScrollLock();
+        if (cmdOpener && cmdOpener.isConnected) {
+            try { cmdOpener.focus(); } catch (_) {}
+        }
+        cmdOpener = null;
+    }
+
+    // --- 7. Frosted Popover / Context Menu ---
+    let activePopoverId = null;
+
+    function closePopovers() {
+        document.querySelectorAll('.popover-menu.active').forEach(menu => {
+            menu.classList.remove('active');
+        });
+        activePopoverId = null;
+    }
+
+    function togglePopover(triggerEl, menuId) {
+        const menu = document.getElementById(menuId);
+        if (!menu || !triggerEl) return;
+
+        const isSameOpen = activePopoverId === menuId && menu.classList.contains('active');
+        closePopovers();
+        if (isSameOpen) return;
+
+        menu.classList.add('active');
+        activePopoverId = menuId;
+
+        const rect = triggerEl.getBoundingClientRect();
+        const menuW = menu.offsetWidth || 200;
+        const menuH = menu.offsetHeight || 160;
+        const margin = 10;
+
+        let left = rect.right - menuW;
+        if (left < margin) left = Math.max(margin, rect.left);
+        if (left + menuW > window.innerWidth - margin) {
+            left = Math.max(margin, window.innerWidth - menuW - margin);
+        }
+
+        let top = rect.bottom + 6;
+        if (top + menuH > window.innerHeight - margin && rect.top - menuH - 6 > margin) {
+            top = rect.top - menuH - 6;
+            menu.style.transformOrigin = 'bottom right';
+        } else {
+            menu.style.transformOrigin = 'top right';
+        }
+
+        menu.style.left = Math.round(left) + 'px';
+        menu.style.top = Math.round(top) + 'px';
+    }
+
+    // --- 8. Top Frosted Toast Pill Notification Engine ---
+    function showToast(message, optionsOrDuration = 2600) {
+        let duration = 2600;
+        let type = '';
+        if (typeof optionsOrDuration === 'number') {
+            duration = optionsOrDuration;
+        } else if (optionsOrDuration && typeof optionsOrDuration === 'object') {
+            if (typeof optionsOrDuration.duration === 'number') duration = optionsOrDuration.duration;
+            if (typeof optionsOrDuration.type === 'string') type = optionsOrDuration.type;
+        }
+
         let container = document.getElementById('toast-container');
         if (!container) {
             container = document.createElement('div');
@@ -326,26 +751,81 @@
             container.className = 'toast-container';
             document.body.appendChild(container);
         }
+        container.setAttribute('role', 'status');
+        container.setAttribute('aria-live', 'polite');
 
         while (container.children.length >= MAX_TOASTS) {
             container.removeChild(container.firstElementChild);
         }
 
         const pill = document.createElement('div');
-        pill.className = 'toast-pill';
-        pill.textContent = String(message ?? '');
+        pill.className = 'toast-pill' + (type ? ' ' + type : '');
+        if (type) {
+            const dot = document.createElement('span');
+            dot.className = 'toast-dot';
+            pill.appendChild(dot);
+        }
+        const textNode = document.createElement('span');
+        textNode.textContent = String(message ?? '');
+        pill.appendChild(textNode);
         container.appendChild(pill);
 
-        setTimeout(() => {
+        let timer = null;
+        const dismiss = () => {
             if (!pill.isConnected) return;
             pill.style.opacity = '0';
             pill.style.transform = 'translateY(-10px) scale(0.95)';
             pill.style.transition = 'all 0.2s ease';
             setTimeout(() => pill.remove(), 220);
-        }, duration);
+        };
+        const startTimer = () => {
+            timer = setTimeout(dismiss, duration);
+        };
+        pill.addEventListener('mouseenter', () => { if (timer) clearTimeout(timer); });
+        pill.addEventListener('mouseleave', startTimer);
+        startTimer();
     }
 
-    // --- Chart.js Palette Helper ---
+    // --- 9. Inline Copy Helper ---
+    function copyText(text, triggerOrMessage) {
+        const value = String(text ?? '');
+        const isEl = triggerOrMessage instanceof HTMLElement;
+        const successMsg = typeof triggerOrMessage === 'string' ? triggerOrMessage : `已复制 ${value}`;
+
+        const onDone = (ok) => {
+            if (!ok) {
+                showToast('当前环境不支持自动复制，请手动选择文本', { type: 'warning' });
+                return;
+            }
+            if (isEl) {
+                triggerOrMessage.classList.add('copied');
+                setTimeout(() => triggerOrMessage.classList.remove('copied'), 1200);
+            }
+            showToast(successMsg, { type: 'success' });
+        };
+
+        const fallbackCopy = () => {
+            const ta = document.createElement('textarea');
+            ta.value = value;
+            ta.setAttribute('readonly', '');
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            let ok = false;
+            try { ok = document.execCommand('copy'); } catch (_) { ok = false; }
+            ta.remove();
+            onDone(ok);
+        };
+
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(value).then(() => onDone(true)).catch(fallbackCopy);
+        } else {
+            fallbackCopy();
+        }
+    }
+
+    // --- 10. Chart.js Palette Helper ---
     function readCssVar(name, fallback) {
         const val = window.getComputedStyle(document.documentElement).getPropertyValue(name).trim();
         return val || fallback;
@@ -357,24 +837,47 @@
             isDark: dark,
             gridColor: dark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(120, 120, 128, 0.10)',
             tickColor: readCssVar('--text-sec', dark ? '#98989d' : '#8e8e93'),
-            accent: readCssVar('--accent', '#007aff'),
-            accentFill: dark ? 'rgba(0, 122, 255, 0.16)' : 'rgba(0, 122, 255, 0.08)',
-            success: readCssVar('--success', '#34c759'),
-            successFill: dark ? 'rgba(52, 199, 89, 0.16)' : 'rgba(52, 199, 89, 0.08)',
-            danger: readCssVar('--danger', '#ff3b30'),
-            dangerFill: dark ? 'rgba(255, 59, 48, 0.16)' : 'rgba(255, 59, 48, 0.08)',
-            warning: readCssVar('--warning', '#ff9500'),
-            purple: readCssVar('--purple', '#af52de')
+            accent: readCssVar('--accent', dark ? '#0a84ff' : '#007aff'),
+            accentFill: dark ? 'rgba(10, 132, 255, 0.18)' : 'rgba(0, 122, 255, 0.08)',
+            success: readCssVar('--success', dark ? '#30d158' : '#34c759'),
+            successFill: dark ? 'rgba(48, 209, 88, 0.18)' : 'rgba(52, 199, 89, 0.08)',
+            danger: readCssVar('--danger', dark ? '#ff453a' : '#ff3b30'),
+            dangerFill: dark ? 'rgba(255, 69, 58, 0.18)' : 'rgba(255, 59, 48, 0.08)',
+            warning: readCssVar('--warning', dark ? '#ff9f0a' : '#ff9500'),
+            purple: readCssVar('--purple', dark ? '#bf5af2' : '#af52de'),
+            indigo: readCssVar('--indigo', dark ? '#5e5ce6' : '#5856d6'),
+            teal: readCssVar('--teal', dark ? '#40c8e0' : '#30b0c7'),
+            pink: readCssVar('--pink', dark ? '#ff375f' : '#ff2d55'),
+            yellow: readCssVar('--yellow', dark ? '#ffd60a' : '#ffcc00')
         };
     }
 
-    // --- Global Keyboard & Backdrop Listeners ---
+    // --- Global Listeners, Declarative Delegation & Initialization ---
     document.addEventListener('DOMContentLoaded', () => {
         setTheme(currentThemeMode);
 
-        // Close modal on overlay backdrop click (delegated for dynamic modals)
+        // Initialize aria-current on default active dock button
+        const initActiveDock = document.querySelector('.dock .dock-btn.active');
+        if (initActiveDock) initActiveDock.setAttribute('aria-current', 'page');
+
+        // Hash deep-link support
+        const hashId = window.location.hash ? window.location.hash.slice(1) : '';
+        if (hashId) {
+            const hashPage = document.getElementById(hashId);
+            if (hashPage && hashPage.classList.contains('page')) {
+                switchPage(hashId, null, null, { scroll: false, syncHash: false });
+            }
+        }
+
+        // Initialize sliding segmented controls
+        requestAnimationFrame(refreshAllSegmentedControls);
+        window.addEventListener('resize', () => requestAnimationFrame(refreshAllSegmentedControls));
+
+        // Delegated click handlers (Backdrop, Popovers & CSP-friendly data-aui-* attributes)
         document.addEventListener('click', (e) => {
             const target = e.target;
+
+            // Modal backdrop click
             if (
                 target &&
                 target.classList &&
@@ -383,16 +886,77 @@
                 !target.classList.contains('forced-login')
             ) {
                 closeModal(target.id);
+                return;
+            }
+
+            // Declarative triggers
+            const trigger = target && target.closest ? target.closest('[data-aui-modal], [data-aui-close-modal], [data-aui-popover], [data-aui-copy], [data-aui-cmd]') : null;
+            if (trigger) {
+                if (trigger.hasAttribute('data-aui-modal')) {
+                    openModal(trigger.getAttribute('data-aui-modal'));
+                    return;
+                }
+                if (trigger.hasAttribute('data-aui-close-modal')) {
+                    closeModal(trigger.getAttribute('data-aui-close-modal') || undefined);
+                    return;
+                }
+                if (trigger.hasAttribute('data-aui-popover')) {
+                    e.stopPropagation();
+                    togglePopover(trigger, trigger.getAttribute('data-aui-popover'));
+                    return;
+                }
+                if (trigger.hasAttribute('data-aui-copy')) {
+                    copyText(trigger.getAttribute('data-aui-copy'), trigger);
+                    return;
+                }
+                if (trigger.hasAttribute('data-aui-cmd')) {
+                    openCommandPalette();
+                    return;
+                }
+            }
+
+            // Close popover when clicking outside or on a popover action item
+            if (activePopoverId) {
+                const insideMenu = target && target.closest && target.closest('.popover-menu');
+                if (!insideMenu || (target.closest && target.closest('.popover-item'))) {
+                    closePopovers();
+                }
             }
         });
 
-        // Keyboard shortcuts: Esc closes modal, 1-9 switches Dock tabs
+        window.addEventListener('resize', closePopovers);
+
+        // Global keyboard shortcuts: ⌘K / Ctrl+K, Esc, Focus Trap, 1-9 Dock tabs
         document.addEventListener('keydown', (e) => {
             if (e.isComposing) return;
+
+            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+                e.preventDefault();
+                const cmdOverlay = document.getElementById('aui-cmd-overlay');
+                if (cmdOverlay && cmdOverlay.classList.contains('active')) {
+                    closeCommandPalette();
+                } else {
+                    openCommandPalette();
+                }
+                return;
+            }
+
             if (e.key === 'Escape') {
+                const cmdOverlay = document.getElementById('aui-cmd-overlay');
+                if (cmdOverlay && cmdOverlay.classList.contains('active')) {
+                    closeCommandPalette();
+                    return;
+                }
+                if (activePopoverId) {
+                    closePopovers();
+                    return;
+                }
                 closeModal();
                 return;
             }
+
+            handleModalFocusTrap(e);
+
             const target = e.target;
             const tag = (target && target.tagName) ? target.tagName.toLowerCase() : '';
             if (
@@ -404,7 +968,7 @@
                 e.ctrlKey ||
                 e.altKey ||
                 e.shiftKey ||
-                document.querySelector('.modal-overlay.active')
+                document.querySelector('.modal-overlay.active, .cmd-overlay.active')
             ) {
                 return;
             }
@@ -427,9 +991,16 @@
         onThemeChange,
         switchPage,
         switchSubView,
+        refreshSegmentedControls: refreshAllSegmentedControls,
         openModal,
         closeModal,
         confirm: auiConfirm,
+        registerCommands,
+        openCommandPalette,
+        closeCommandPalette,
+        togglePopover,
+        closePopovers,
+        copyText,
         showToast,
         getChartThemeTokens
     };
@@ -440,6 +1011,9 @@
     window.openModal = openModal;
     window.closeModal = closeModal;
     window.auiConfirm = auiConfirm;
+    window.openCommandPalette = openCommandPalette;
+    window.togglePopover = togglePopover;
+    window.copyText = copyText;
     window.showToast = showToast;
 
 })(window);
