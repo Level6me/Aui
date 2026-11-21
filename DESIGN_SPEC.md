@@ -19,6 +19,7 @@
 4. **触觉级微交互反馈（Spring Tactile Feedback）**
    - 全局交互曲线采用 Apple 弹簧阻尼：`cubic-bezier(0.1, 0.8, 0.25, 1)`。
    - 按钮按下（`:active`）必须有物理微缩放反馈：常规按钮 `scale(0.97)`、胶囊按钮 `scale(0.95)`、圆形图标与 Dock 按钮 `scale(0.92)`；可点击卡片悬停上浮 `translateY(-2px)`。
+   - 页面顶端下拉与底部上拉保留 iOS / macOS 原生弹簧阻尼回弹（`overscroll-behavior-x: none; overscroll-behavior-y: auto; -webkit-overflow-scrolling: touch;`），不通过 JS 强行劫持原生滚动。
 5. **零重型依赖与双模工程架构（Zero-Bloat Architecture）**
    - 不依赖重型第三方 UI 组件库，纯原生 CSS 变量 + 模块化 CSS + 原生 JS 即可驱动。
    - 支持 **单文件内联交付（Pattern A）** 与 **模块化开发 + 一键构建单文件/PWA 产物（Pattern B）**。
@@ -155,10 +156,12 @@
 - **定位与尺寸**：`position: fixed; bottom: calc(14px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); width: 94%; max-width: 500px; height: 64px; border-radius: 33px;`
 - **光学材质**：`background: var(--dock); backdrop-filter: blur(28px) saturate(190%); border: 0.5px solid var(--dock-border); box-shadow: var(--shadow-lg);`
 - **子按钮（`.dock-btn`）**：垂直居中排列 `19px × 19px` 纯色 SVG 图标与 `10px` 粗体文字；激活态 `.dock-btn.active` 赋予 `color: var(--accent); background: var(--accent-bg);`。
-- **快捷键联动**：数字键 `1 ~ 9` 直接映射触发对应序号的 `.dock-btn`。
+- **快捷键联动**：数字键 `1 ~ 9` 直接映射触发对应序号的 `.dock-btn`（弹窗激活或聚焦输入控件时自动屏蔽）。
 
-### 5.2 吸顶毛玻璃过滤工具栏（Sticky Glass Toolbar — `.sticky-toolbar`）
-- 用于列表页、检索页、系统设置页顶部：随页面滚动吸顶（`position: sticky; top: 10px; z-index: 500`），内部集成搜索框 `.search-box`、下拉筛选 `.select-custom`、分段控制器 `.segmented-control` 或子标签栏 `.tab-bar`。
+### 5.2 吸顶毛玻璃过滤工具栏（Sticky Glass Toolbar — `.sticky-toolbar` & `.sticky-toolbar.bare`）
+- **标准卡片形态（`.sticky-toolbar`）**：用于列表页、检索页、系统设置页顶部，随页面滚动吸顶（`position: sticky; top: max(10px, env(safe-area-inset-top, 10px)); z-index: 500`），内部集成搜索框 `.search-box`、下拉筛选 `.select-custom`、分段控制器 `.segmented-control` 或子标签栏 `.tab-bar`。
+- **轻量无外框形态（`.sticky-toolbar.bare` + `.sticky-toolbar-row`）**：采用轻盈无外框的顶部胶囊切换布局，去除整条横幅外框与遮罩，仅在内部浮动组件（`.capsule-switcher`、`.segmented-control`、`.pill-btn`、`.search-box` 等）周圈施加柔和渐变阴影（`--sticky-float-shadow`），既不遮挡顶部背景又能在滚动时保持清晰层次。
+- 为确保 `position: sticky` 在各端稳定生效，`html, body` 仅在 `@supports (overflow-x: clip)` 条件块中声明 `overflow-x: clip`（避免旧浏览器回退到 `overflow-x: hidden` 破坏吸顶）。
 
 ### 5.3 核心 KPI 指标卡与交互联动（`.card.interactive` & `.stat-interactive`）
 - KPI 卡片采用 **三行式紧凑结构**（上：语义色微标签 `.val-sub`；中：大号数值 `.val-big`；下：简短补充状态 `.val-sub`），或者 **二行式极简结构**（直接 `.val-sub` + `.val-big`）。
@@ -176,10 +179,10 @@
 - 序号徽标 `.rank-num` 对前三名赋予高辨识度色彩：`top1`（`#ef4444` 红）、`top2`（`#f97316` 橙）、`top3`（`#eab308` 黄），其余为 `.normal` 中性灰底。
 - 右侧数值与底部进度条 `.rank-bar-fill` 联动展示占比。
 
-### 5.7 磨砂模态弹窗（`.modal-overlay` + `.modal-sheet`）
+### 5.7 磨砂模态弹窗（`.modal-overlay` + `.modal-sheet`）与异步确认框（`auiConfirm`）
 - 遮罩层采用 `rgba(0,0,0,0.6)` + `backdrop-filter: blur(16px)`。
 - 弹窗主体 `.modal-sheet` 圆角 `22px`，弹出动画采用 `scale(0.95) translateY(8px)` ➔ `scale(1) translateY(0)`。
-- 支持点击背景遮罩或按 `Esc` 键关闭。
+- 支持点击背景遮罩或按 `Esc` 键关闭；需要二次确认时统一使用 `await auiConfirm(message, { title, confirmText, cancelText, danger })`（禁止阻塞式 `window.confirm()`）。
 
 ### 5.8 顶部悬浮胶囊通知（`.toast-pill`）与微型监控悬浮窗（`.mini-floating-hud`）
 - 所有操作反馈严禁使用浏览器原生阻塞式 `alert()`，统一调用 `showToast('...')` 从顶部中心滑入毛玻璃胶囊提示。

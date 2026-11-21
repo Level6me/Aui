@@ -2,8 +2,8 @@
 <html lang="zh-CN" data-theme="auto">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>AUI App Starter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>AUI 控制台起步模板</title>
     <meta name="theme-color" content="#007aff" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#1c1c1e" media="(prefers-color-scheme: dark)">
     <style>
@@ -17,6 +17,8 @@
  */
 
 :root {
+    color-scheme: light;
+
     /* Surface & Background Tokens (Light Default) */
     --bg: #f2f2f7;
     --card: #ffffff;
@@ -58,6 +60,7 @@
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
     --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.06);
     --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.18);
+    --sticky-float-shadow: 0 4px 14px rgba(0, 0, 0, 0.11), 0 1px 4px rgba(0, 0, 0, 0.06);
 
     /* Spatial & Radius Tokens */
     --radius-card: 18px;
@@ -80,6 +83,7 @@
 /* System Dark Mode (when data-theme is auto or unset) */
 @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
+        color-scheme: dark;
         --bg: #000000;
         --card: #1c1c1e;
         --card-sec: #2c2c2e;
@@ -106,11 +110,13 @@
         --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.30);
         --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.45);
         --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.60);
+        --sticky-float-shadow: 0 4px 16px rgba(0, 0, 0, 0.52), 0 0 12px rgba(0, 0, 0, 0.34);
     }
 }
 
 /* Explicit Dark Mode Override */
 :root[data-theme="dark"] {
+    color-scheme: dark;
     --bg: #000000;
     --card: #1c1c1e;
     --card-sec: #2c2c2e;
@@ -137,36 +143,7 @@
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.30);
     --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.45);
     --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.60);
-}
-
-/* Explicit Light Mode Override */
-:root[data-theme="light"] {
-    --bg: #f2f2f7;
-    --card: #ffffff;
-    --card-sec: #f8f8fa;
-    --card-hover: #f5f5f7;
-    --card-translucent: rgba(255, 255, 255, 0.88);
-    --dock: rgba(255, 255, 255, 0.85);
-    --modal-bg: rgba(255, 255, 255, 0.95);
-    --table-stripe: rgba(120, 120, 128, 0.03);
-
-    --text: #1c1c1e;
-    --text-sec: #8e8e93;
-    --text-ter: #aeaeb2;
-
-    --accent-bg: rgba(0, 122, 255, 0.10);
-    --success-bg: rgba(52, 199, 89, 0.12);
-    --warning-bg: rgba(255, 149, 0, 0.12);
-    --danger-bg: rgba(255, 59, 48, 0.12);
-    --purple-bg: rgba(175, 82, 222, 0.12);
-
-    --border: rgba(120, 120, 128, 0.15);
-    --border-subtle: rgba(120, 120, 128, 0.08);
-    --dock-border: rgba(255, 255, 255, 0.28);
-
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
-    --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.18);
+    --sticky-float-shadow: 0 4px 16px rgba(0, 0, 0, 0.52), 0 0 12px rgba(0, 0, 0, 0.34);
 }
 
 /* === base.css === */
@@ -180,14 +157,25 @@
     padding: 0;
 }
 
+html {
+    scrollbar-gutter: stable;
+}
+
 html, body {
     touch-action: manipulation;
     -webkit-text-size-adjust: 100%;
+    -webkit-overflow-scrolling: touch;
     min-height: 100%;
-    overflow-x: hidden;
     width: 100%;
     max-width: 100vw;
-    overscroll-behavior-y: none;
+    overscroll-behavior-x: none;
+    overscroll-behavior-y: auto;
+}
+
+@supports (overflow-x: clip) {
+    html, body {
+        overflow-x: clip;
+    }
 }
 
 body {
@@ -195,12 +183,13 @@ body {
     color: var(--text);
     font-family: var(--font-sans);
     margin: 0;
-    padding: 12px 16px calc(110px + env(safe-area-inset-bottom, 0px)) 16px;
+    padding: 12px 16px calc(92px + env(safe-area-inset-bottom, 0px)) 16px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+html.modal-open,
 body.modal-open {
     overflow: hidden !important;
 }
@@ -224,7 +213,7 @@ body.modal-open {
 
 @media (max-width: 600px) {
     body {
-        padding: 10px 12px calc(100px + env(safe-area-inset-bottom, 0px)) 12px;
+        padding: 10px 12px calc(88px + env(safe-area-inset-bottom, 0px)) 12px;
     }
 }
 
@@ -437,6 +426,15 @@ body.modal-open {
     box-shadow: var(--shadow-md);
 }
 
+.card.card-flush {
+    padding: 0;
+}
+
+.card.card-flush > .table-wrap {
+    border: none;
+    border-radius: inherit;
+}
+
 .card.interactive {
     cursor: pointer;
     user-select: none;
@@ -523,6 +521,36 @@ body.modal-open {
     gap: 10px;
 }
 
+/* Lightweight Frameless Sticky Switcher Bar (with component-perimeter ambient shadow) */
+.sticky-toolbar.bare {
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+}
+.sticky-toolbar.bare .capsule-switcher,
+.sticky-toolbar.bare .segmented-control,
+.sticky-toolbar.bare .search-box,
+.sticky-toolbar.bare .pill-btn,
+.sticky-toolbar.bare .badge,
+.sticky-toolbar.bare .tag {
+    box-shadow: var(--sticky-float-shadow);
+}
+.sticky-toolbar.bare .capsule-switcher .pill-btn {
+    box-shadow: none;
+}
+.sticky-toolbar-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
 .controls-bar {
     display: flex;
     flex-direction: column;
@@ -560,7 +588,7 @@ body.modal-open {
 }
 
 .bottom-spacer {
-    height: calc(70px + env(safe-area-inset-bottom, 16px));
+    height: 16px;
     width: 100%;
 }
 
@@ -631,6 +659,11 @@ body.modal-open {
     color: #ffffff;
     border-color: var(--accent);
 }
+.pill-btn.active:hover,
+.pill-btn.accent:hover {
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+}
 .pill-btn.danger {
     background: var(--danger-bg);
     color: var(--danger);
@@ -650,6 +683,12 @@ body.modal-open {
     color: #ffffff;
 }
 .pill-btn.warning {
+    background: var(--warning-bg);
+    color: var(--warning);
+    border-color: rgba(255, 149, 0, 0.35);
+}
+.pill-btn.warning:hover,
+.pill-btn.warning.active {
     background: var(--warning);
     color: #ffffff;
     border-color: var(--warning);
@@ -763,6 +802,10 @@ body.modal-open {
     display: inline-flex;
     gap: 2px;
     width: fit-content;
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
 }
 .capsule-switcher .pill-btn {
     padding: 4px 14px;
@@ -833,7 +876,8 @@ body.modal-open {
 
 /* 6. Inputs, Search Box & Custom Selects */
 .input-box,
-.form-control {
+.form-control,
+.input-field {
     width: 100%;
     border: 1px solid var(--border);
     background: var(--card-sec);
@@ -846,7 +890,8 @@ body.modal-open {
     transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 .input-box:focus,
-.form-control:focus {
+.form-control:focus,
+.input-field:focus {
     border-color: var(--accent);
     box-shadow: 0 0 0 3px var(--accent-bg);
     background: var(--card);
@@ -891,15 +936,17 @@ body.modal-open {
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 8px 12px;
+    font-family: inherit;
     font-size: 13px;
     font-weight: 600;
     color: var(--text);
     outline: none;
     cursor: pointer;
-    transition: border-color 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .select-custom:focus {
     border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-bg);
 }
 
 /* 7. Semantic Tags & Badges (.badge & .tag) */
@@ -957,6 +1004,9 @@ body.modal-open {
 }
 input:checked + .slider { background-color: var(--accent); }
 input:checked + .slider:before { transform: translateX(20px); }
+input:focus-visible + .slider {
+    box-shadow: 0 0 0 3px var(--accent-bg), 0 0 0 1.5px var(--accent);
+}
 
 /* 9. Progress Bar */
 .progress-track {
@@ -1008,6 +1058,8 @@ input:checked + .slider:before { transform: translateX(20px); }
     display: flex;
     align-items: center;
     gap: 8px;
+    max-width: 100%;
+    word-break: break-word;
 }
 @keyframes auiToastIn {
     from { opacity: 0; transform: translateY(-14px) scale(0.94); }
@@ -1066,9 +1118,9 @@ input:checked + .slider:before { transform: translateX(20px); }
 /* 13. Mini Floating HUD (Picture-in-Picture / Desktop Mini Card) */
 .mini-floating-hud {
     position: fixed;
-    bottom: 88px;
-    right: 20px;
-    z-index: 1500;
+    bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+    right: 16px;
+    z-index: 1100;
     background: var(--card-translucent);
     backdrop-filter: blur(28px) saturate(190%);
     -webkit-backdrop-filter: blur(28px) saturate(190%);
@@ -1077,6 +1129,7 @@ input:checked + .slider:before { transform: translateX(20px); }
     padding: 12px 14px;
     box-shadow: var(--shadow-lg);
     min-width: 190px;
+    max-width: calc(100vw - 32px);
     user-select: none;
 }
 .mini-hud-header {
@@ -1096,6 +1149,19 @@ input:checked + .slider:before { transform: translateX(20px); }
     font-size: 14px;
     font-weight: 800;
     font-variant-numeric: tabular-nums;
+}
+
+/* 14. Accessible Focus Ring for Interactive Controls */
+.btn:focus-visible,
+.pill-btn:focus-visible,
+.icon-btn:focus-visible,
+.action-btn:focus-visible,
+.segment-btn:focus-visible,
+.tab-item:focus-visible,
+.sort-pill:focus-visible,
+.page-pill:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--accent-bg), 0 0 0 1.5px var(--accent);
 }
 
 /* === data-display.css === */
@@ -1376,6 +1442,11 @@ tr.selected td {
     transform: scale(0.92);
 }
 
+.dock-btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--accent-bg), 0 0 0 1.5px var(--accent);
+}
+
 .dock-btn.active {
     color: var(--accent);
     background: var(--accent-bg);
@@ -1401,12 +1472,17 @@ tr.selected td {
 /* SPA Page Container */
 .page {
     display: none;
-    opacity: 0;
-    transition: opacity 0.2s ease-in-out;
 }
 .page.active {
     display: block;
-    opacity: 1;
+    animation: auiPageIn 0.2s ease-out;
+}
+@keyframes auiPageIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .page.active { animation: none; }
 }
 
 /* Frosted Glass Modal Overlay & Sheet */
@@ -1504,11 +1580,11 @@ tr.selected td {
             <h1 class="title" id="page-title">系统概览</h1>
         </div>
         <div class="header-actions">
-            <button class="pill-btn" onclick="cycleTheme()" title="切换主题 (自动 / 浅色 / 深色)">
+            <button class="pill-btn" onclick="cycleTheme()" title="切换主题 (自动 / 浅色 / 深色)" aria-label="切换主题">
                 <span id="theme-icon">🌓</span>
                 <span id="theme-label" class="pill-text">自动</span>
             </button>
-            <button class="pill-btn accent" onclick="openModal('modal-action')">
+            <button class="pill-btn accent" onclick="openModal('modal-action')" title="新建配置项" aria-label="新建配置项">
                 <span>➕</span>
                 <span class="pill-text">新建项目</span>
             </button>
@@ -1518,22 +1594,22 @@ tr.selected td {
     <!-- Page 1: Overview -->
     <main id="p-overview" class="page active">
         <div class="grid-4">
-            <div class="card interactive" onclick="showToast('已筛选在线实例')">
+            <div class="card interactive" onclick="switchPage('p-nodes', '节点列表')">
                 <div class="val-sub" style="color: var(--success);">● 在线实例</div>
                 <div class="val-big" style="color: var(--success);">128</div>
                 <div class="val-sub">服务可用率 99.9%</div>
             </div>
-            <div class="card interactive" onclick="showToast('已切换至实时吞吐监控')">
+            <div class="card interactive" onclick="switchPage('p-nodes', '节点列表')">
                 <div class="val-sub" style="color: var(--accent);">↑ 实时吞吐</div>
                 <div class="val-big" style="color: var(--accent);">1.42 GB/s</div>
                 <div class="val-sub">峰值 2.10 GB/s</div>
             </div>
-            <div class="card interactive">
+            <div class="card interactive" onclick="switchPage('p-nodes', '节点列表')">
                 <div class="val-sub" style="color: var(--warning);">⚡ 队列作业</div>
                 <div class="val-big" style="color: var(--warning);">14</div>
                 <div class="val-sub">平均延迟 18 ms</div>
             </div>
-            <div class="card interactive">
+            <div class="card interactive" onclick="switchPage('p-nodes', '节点列表')">
                 <div class="val-sub" style="color: var(--purple);">📦 已完成作业</div>
                 <div class="val-big" style="color: var(--purple);">3,842</div>
                 <div class="val-sub">24h 自动处理</div>
@@ -1542,11 +1618,8 @@ tr.selected td {
 
         <div class="card">
             <div class="card-header">
-                <div class="card-title">📋 实例运行列表</div>
-                <div class="search-box">
-                    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-                    <input type="text" placeholder="过滤名称 / 地址 / 状态...">
-                </div>
+                <div class="card-title">📋 活跃节点摘要</div>
+                <button class="pill-btn" onclick="switchPage('p-nodes', '节点列表')">查看全部</button>
             </div>
             <div class="table-wrap">
                 <table>
@@ -1577,7 +1650,63 @@ tr.selected td {
         <div class="bottom-spacer"></div>
     </main>
 
-    <!-- Page 2: Settings -->
+    <!-- Page 2: Nodes List -->
+    <section id="p-nodes" class="page">
+        <div class="sticky-toolbar">
+            <div class="controls-bar">
+                <div class="search-box" style="flex: 1;">
+                    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                    <input type="text" placeholder="过滤名称 / 地址 / 状态..." oninput="filterStarterNodes(this.value)">
+                </div>
+                <div class="segmented-control">
+                    <button class="segment-btn active" onclick="switchSubView('.noop', 'none', this); filterStarterStatus('all')">全部</button>
+                    <button class="segment-btn" onclick="switchSubView('.noop', 'none', this); filterStarterStatus('online')">在线</button>
+                    <button class="segment-btn" onclick="switchSubView('.noop', 'none', this); filterStarterStatus('maintenance')">维护中</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card card-flush">
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>节点标识</th>
+                            <th>服务类型</th>
+                            <th>状态</th>
+                            <th>响应延迟</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="starter-node-tbody">
+                        <tr data-status="online">
+                            <td>
+                                <div class="ip-text">node-ap-southeast-01</div>
+                                <div class="geo-subline">🇸🇬 亚太一区 · 核心计算节点</div>
+                            </td>
+                            <td><span class="tag accent">核心引擎</span></td>
+                            <td><span class="tag success">● 在线</span></td>
+                            <td class="mono tabular">12.4 ms</td>
+                            <td><button class="action-btn" onclick="showToast('节点 node-ap-southeast-01 运行正常')">详情</button></td>
+                        </tr>
+                        <tr data-status="maintenance">
+                            <td>
+                                <div class="ip-text">node-us-west-02</div>
+                                <div class="geo-subline">🇺🇸 美西二区 · 边缘缓存节点</div>
+                            </td>
+                            <td><span class="tag neutral">边缘网关</span></td>
+                            <td><span class="tag warning">⏸ 维护中</span></td>
+                            <td class="mono tabular">--</td>
+                            <td><button class="action-btn success" onclick="showToast('已恢复节点调度')">恢复</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="bottom-spacer"></div>
+    </section>
+
+    <!-- Page 3: Settings -->
     <section id="p-settings" class="page">
         <div class="card">
             <div class="card-header">
@@ -1604,8 +1733,12 @@ tr.selected td {
         <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
         <span>系统概览</span>
     </button>
+    <button class="dock-btn" onclick="switchPage('p-nodes', '节点列表', this)">
+        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+        <span>节点列表</span>
+    </button>
     <button class="dock-btn" onclick="switchPage('p-settings', '系统设置', this)">
-        <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+        <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39-.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
         <span>系统设置</span>
     </button>
 </nav>
@@ -1615,7 +1748,7 @@ tr.selected td {
     <div class="modal-sheet">
         <div class="card-header">
             <h3 class="card-title">➕ 新建配置项</h3>
-            <button class="icon-btn" onclick="closeModal('modal-action')">✕</button>
+            <button class="icon-btn" onclick="closeModal('modal-action')" aria-label="关闭弹窗">✕</button>
         </div>
         <div class="form-group">
             <label class="form-label">资源端点标识</label>
@@ -1635,7 +1768,7 @@ tr.selected td {
  * 1. Adaptive 3-Mode Theme Engine (auto / light / dark) + OS change listener
  * 2. Floating Glass Dock Page Router + Keyboard Shortcuts (1-9, Esc)
  * 3. Segmented Control & Capsule Switcher Helper
- * 4. Frosted Modal Sheet Controller
+ * 4. Frosted Modal Sheet Controller (with forced-login guard & delegation)
  * 5. Top Frosted Toast Pill Notification Engine
  * 6. Chart.js Theme Color Helper
  */
@@ -1647,21 +1780,57 @@ tr.selected td {
     const THEME_MODES = ['auto', 'light', 'dark'];
     const THEME_ICONS = { auto: '🌓', light: '☀️', dark: '🌙' };
     const THEME_LABELS = { auto: '自动', light: '浅色', dark: '深色' };
+    const MAX_TOASTS = 3;
 
-    let currentThemeMode = localStorage.getItem(THEME_STORAGE_KEY) || 'auto';
+    function safeGetStorage(key) {
+        try {
+            return window.localStorage.getItem(key);
+        } catch (_) {
+            return null;
+        }
+    }
+
+    function safeSetStorage(key, value) {
+        try {
+            window.localStorage.setItem(key, value);
+        } catch (_) {
+            // Ignore storage errors in restricted/private environments
+        }
+    }
+
+    let currentThemeMode = safeGetStorage(THEME_STORAGE_KEY) || 'auto';
+    if (!THEME_MODES.includes(currentThemeMode)) currentThemeMode = 'auto';
     const themeListeners = [];
 
     function isDarkEffective(mode) {
         const m = mode || currentThemeMode;
         if (m === 'dark') return true;
         if (m === 'light') return false;
-        return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+
+    function syncThemeColorMeta(dark, mode) {
+        const existing = document.getElementById('aui-dynamic-theme-color');
+        if (mode === 'auto') {
+            if (existing) existing.remove();
+            return;
+        }
+        const color = dark ? '#1c1c1e' : '#007aff';
+        if (existing) {
+            existing.setAttribute('content', color);
+        } else if (document.head) {
+            const meta = document.createElement('meta');
+            meta.id = 'aui-dynamic-theme-color';
+            meta.name = 'theme-color';
+            meta.content = color;
+            document.head.appendChild(meta);
+        }
     }
 
     function setTheme(mode) {
         if (!THEME_MODES.includes(mode)) mode = 'auto';
         currentThemeMode = mode;
-        localStorage.setItem(THEME_STORAGE_KEY, mode);
+        safeSetStorage(THEME_STORAGE_KEY, mode);
         document.documentElement.setAttribute('data-theme', mode);
 
         const iconEl = document.getElementById('theme-icon');
@@ -1670,6 +1839,8 @@ tr.selected td {
         if (labelEl) labelEl.textContent = THEME_LABELS[mode];
 
         const dark = isDarkEffective(mode);
+        syncThemeColorMeta(dark, mode);
+
         themeListeners.forEach(fn => {
             try { fn(dark, mode); } catch (e) { console.error(e); }
         });
@@ -1680,17 +1851,31 @@ tr.selected td {
         setTheme(THEME_MODES[nextIdx]);
     }
 
+    function getThemeMode() {
+        return currentThemeMode;
+    }
+
     function onThemeChange(callback) {
         if (typeof callback === 'function') themeListeners.push(callback);
     }
 
+    // Apply persisted theme attribute immediately to minimize FOUC
+    document.documentElement.setAttribute('data-theme', currentThemeMode);
+    syncThemeColorMeta(isDarkEffective(currentThemeMode), currentThemeMode);
+
     // Listen to OS dark mode changes when in 'auto' mode
     if (window.matchMedia) {
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+        const darkMedia = window.matchMedia('(prefers-color-scheme: dark)');
+        const handleOsChange = () => {
             if (currentThemeMode === 'auto') {
                 setTheme('auto');
             }
-        });
+        };
+        if (typeof darkMedia.addEventListener === 'function') {
+            darkMedia.addEventListener('change', handleOsChange);
+        } else if (typeof darkMedia.addListener === 'function') {
+            darkMedia.addListener(handleOsChange);
+        }
     }
 
     // --- Dock Page Navigation ---
@@ -1699,6 +1884,17 @@ tr.selected td {
         const target = document.getElementById(pageId);
         if (target) target.classList.add('active');
 
+        if (!btnEl) {
+            const dockBtns = document.querySelectorAll('.dock .dock-btn');
+            for (const btn of dockBtns) {
+                const onclickAttr = btn.getAttribute('onclick') || '';
+                if (btn.dataset.page === pageId || onclickAttr.includes(`'${pageId}'`) || onclickAttr.includes(`"${pageId}"`)) {
+                    btnEl = btn;
+                    break;
+                }
+            }
+        }
+
         if (btnEl) {
             document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
             btnEl.classList.add('active');
@@ -1706,43 +1902,183 @@ tr.selected td {
 
         const titleEl = document.getElementById('page-title');
         if (titleEl && title) titleEl.textContent = title;
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+
+        window.dispatchEvent(new CustomEvent('aui:pagechange', {
+            detail: { pageId, title }
+        }));
     }
 
     // --- Sub-Tab & Segmented Control Helper ---
     function switchSubView(groupSelector, targetId, btnEl, activeClass = 'active') {
-        document.querySelectorAll(groupSelector).forEach(el => {
-            el.style.display = 'none';
-        });
-        const target = document.getElementById(targetId);
-        if (target) target.style.display = 'block';
+        if (groupSelector && groupSelector !== '.noop') {
+            document.querySelectorAll(groupSelector).forEach(el => {
+                el.style.display = 'none';
+            });
+        }
+        if (targetId && targetId !== 'none') {
+            const target = document.getElementById(targetId);
+            if (target) {
+                target.style.display = '';
+                if (window.getComputedStyle(target).display === 'none') {
+                    target.style.display = 'block';
+                }
+            }
+        }
 
         if (btnEl && btnEl.parentElement) {
             Array.from(btnEl.parentElement.children).forEach(sibling => {
-                sibling.classList.remove(activeClass, 'accent');
+                sibling.classList.remove(activeClass, 'active', 'accent');
             });
             btnEl.classList.add(activeClass);
         }
+
+        window.dispatchEvent(new CustomEvent('aui:subviewchange', {
+            detail: { groupSelector, targetId }
+        }));
     }
 
-    // --- Modal Controller ---
+    // --- Modal Controller & Frosted Confirm Dialog ---
+    let pendingConfirmResolve = null;
+
+    function settleConfirm(result) {
+        if (typeof pendingConfirmResolve === 'function') {
+            const resolve = pendingConfirmResolve;
+            pendingConfirmResolve = null;
+            resolve(!!result);
+        }
+    }
+
+    function syncModalScrollLock() {
+        const hasActiveModal = document.querySelectorAll('.modal-overlay.active').length > 0;
+        document.documentElement.classList.toggle('modal-open', hasActiveModal);
+        document.body.classList.toggle('modal-open', hasActiveModal);
+    }
+
     function openModal(id) {
         const el = document.getElementById(id);
         if (!el) return;
         el.classList.add('active');
-        document.body.classList.add('modal-open');
+        syncModalScrollLock();
     }
 
     function closeModal(id) {
         if (id) {
             const el = document.getElementById(id);
-            if (el) el.classList.remove('active');
+            if (el) {
+                el.classList.remove('active');
+                if (el.id === 'aui-confirm-modal') settleConfirm(false);
+            }
         } else {
-            document.querySelectorAll('.modal-overlay.active').forEach(el => el.classList.remove('active'));
+            const activeOverlays = Array.from(document.querySelectorAll('.modal-overlay.active'));
+            for (let i = activeOverlays.length - 1; i >= 0; i--) {
+                if (!activeOverlays[i].classList.contains('forced-login')) {
+                    activeOverlays[i].classList.remove('active');
+                    if (activeOverlays[i].id === 'aui-confirm-modal') settleConfirm(false);
+                    break;
+                }
+            }
         }
-        if (document.querySelectorAll('.modal-overlay.active').length === 0) {
-            document.body.classList.remove('modal-open');
+        syncModalScrollLock();
+    }
+
+    function ensureConfirmModal() {
+        let overlay = document.getElementById('aui-confirm-modal');
+        if (overlay) return overlay;
+
+        overlay = document.createElement('div');
+        overlay.id = 'aui-confirm-modal';
+        overlay.className = 'modal-overlay';
+        overlay.style.zIndex = '2400';
+
+        const sheet = document.createElement('div');
+        sheet.className = 'modal-sheet';
+        sheet.style.maxWidth = '390px';
+        sheet.setAttribute('role', 'dialog');
+        sheet.setAttribute('aria-modal', 'true');
+        sheet.setAttribute('aria-labelledby', 'aui-confirm-title');
+
+        const titleEl = document.createElement('div');
+        titleEl.id = 'aui-confirm-title';
+        titleEl.className = 'card-title';
+        titleEl.style.marginBottom = '10px';
+
+        const msgEl = document.createElement('div');
+        msgEl.id = 'aui-confirm-message';
+        msgEl.style.fontSize = '13px';
+        msgEl.style.lineHeight = '1.55';
+        msgEl.style.color = 'var(--text-sec)';
+        msgEl.style.marginBottom = '18px';
+        msgEl.style.whiteSpace = 'pre-wrap';
+
+        const actions = document.createElement('div');
+        actions.style.display = 'flex';
+        actions.style.justifyContent = 'flex-end';
+        actions.style.gap = '8px';
+
+        const cancelBtn = document.createElement('button');
+        cancelBtn.type = 'button';
+        cancelBtn.id = 'aui-confirm-cancel';
+        cancelBtn.className = 'pill-btn';
+        cancelBtn.addEventListener('click', () => {
+            overlay.classList.remove('active');
+            syncModalScrollLock();
+            settleConfirm(false);
+        });
+
+        const okBtn = document.createElement('button');
+        okBtn.type = 'button';
+        okBtn.id = 'aui-confirm-ok';
+        okBtn.className = 'pill-btn accent';
+        okBtn.addEventListener('click', () => {
+            overlay.classList.remove('active');
+            syncModalScrollLock();
+            settleConfirm(true);
+        });
+
+        actions.appendChild(cancelBtn);
+        actions.appendChild(okBtn);
+        sheet.appendChild(titleEl);
+        sheet.appendChild(msgEl);
+        sheet.appendChild(actions);
+        overlay.appendChild(sheet);
+        document.body.appendChild(overlay);
+        return overlay;
+    }
+
+    function auiConfirm(message, options = {}) {
+        settleConfirm(false);
+        const overlay = ensureConfirmModal();
+        const titleEl = document.getElementById('aui-confirm-title');
+        const msgEl = document.getElementById('aui-confirm-message');
+        const cancelBtn = document.getElementById('aui-confirm-cancel');
+        const okBtn = document.getElementById('aui-confirm-ok');
+
+        const title = options.title || '操作确认';
+        const confirmText = options.confirmText || '确认';
+        const cancelText = options.cancelText || '取消';
+        const isDanger = !!options.danger;
+
+        if (titleEl) titleEl.textContent = title;
+        if (msgEl) msgEl.textContent = String(message ?? '');
+        if (cancelBtn) cancelBtn.textContent = cancelText;
+        if (okBtn) {
+            okBtn.textContent = confirmText;
+            okBtn.className = isDanger ? 'pill-btn danger' : 'pill-btn accent';
         }
+
+        openModal('aui-confirm-modal');
+        if (okBtn) {
+            setTimeout(() => {
+                try { okBtn.focus(); } catch (_) {}
+            }, 20);
+        }
+
+        return new Promise(resolve => {
+            pendingConfirmResolve = resolve;
+        });
     }
 
     // --- Toast Notification Engine ---
@@ -1754,12 +2090,18 @@ tr.selected td {
             container.className = 'toast-container';
             document.body.appendChild(container);
         }
+
+        while (container.children.length >= MAX_TOASTS) {
+            container.removeChild(container.firstElementChild);
+        }
+
         const pill = document.createElement('div');
         pill.className = 'toast-pill';
-        pill.textContent = message;
+        pill.textContent = String(message ?? '');
         container.appendChild(pill);
 
         setTimeout(() => {
+            if (!pill.isConnected) return;
             pill.style.opacity = '0';
             pill.style.transform = 'translateY(-10px) scale(0.95)';
             pill.style.transition = 'all 0.2s ease';
@@ -1768,20 +2110,25 @@ tr.selected td {
     }
 
     // --- Chart.js Palette Helper ---
+    function readCssVar(name, fallback) {
+        const val = window.getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+        return val || fallback;
+    }
+
     function getChartThemeTokens() {
         const dark = isDarkEffective();
         return {
             isDark: dark,
             gridColor: dark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(120, 120, 128, 0.10)',
-            tickColor: dark ? '#98989d' : '#8e8e93',
-            accent: '#007aff',
+            tickColor: readCssVar('--text-sec', dark ? '#98989d' : '#8e8e93'),
+            accent: readCssVar('--accent', '#007aff'),
             accentFill: dark ? 'rgba(0, 122, 255, 0.16)' : 'rgba(0, 122, 255, 0.08)',
-            success: '#34c759',
+            success: readCssVar('--success', '#34c759'),
             successFill: dark ? 'rgba(52, 199, 89, 0.16)' : 'rgba(52, 199, 89, 0.08)',
-            danger: '#ff3b30',
+            danger: readCssVar('--danger', '#ff3b30'),
             dangerFill: dark ? 'rgba(255, 59, 48, 0.16)' : 'rgba(255, 59, 48, 0.08)',
-            warning: '#ff9500',
-            purple: '#af52de'
+            warning: readCssVar('--warning', '#ff9500'),
+            purple: readCssVar('--purple', '#af52de')
         };
     }
 
@@ -1789,23 +2136,40 @@ tr.selected td {
     document.addEventListener('DOMContentLoaded', () => {
         setTheme(currentThemeMode);
 
-        // Close modal on overlay backdrop click
-        document.querySelectorAll('.modal-overlay').forEach(overlay => {
-            overlay.addEventListener('click', (e) => {
-                if (e.target === overlay && !overlay.classList.contains('forced-login')) {
-                    closeModal(overlay.id);
-                }
-            });
+        // Close modal on overlay backdrop click (delegated for dynamic modals)
+        document.addEventListener('click', (e) => {
+            const target = e.target;
+            if (
+                target &&
+                target.classList &&
+                target.classList.contains('modal-overlay') &&
+                target.classList.contains('active') &&
+                !target.classList.contains('forced-login')
+            ) {
+                closeModal(target.id);
+            }
         });
 
-        // Keyboard shortcuts: Esc closes modal, 1-6 switches Dock tabs
+        // Keyboard shortcuts: Esc closes modal, 1-9 switches Dock tabs
         document.addEventListener('keydown', (e) => {
-            const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+            if (e.isComposing) return;
             if (e.key === 'Escape') {
                 closeModal();
                 return;
             }
-            if (tag === 'input' || tag === 'textarea' || tag === 'select' || e.metaKey || e.ctrlKey || e.altKey) {
+            const target = e.target;
+            const tag = (target && target.tagName) ? target.tagName.toLowerCase() : '';
+            if (
+                tag === 'input' ||
+                tag === 'textarea' ||
+                tag === 'select' ||
+                (target && target.isContentEditable) ||
+                e.metaKey ||
+                e.ctrlKey ||
+                e.altKey ||
+                e.shiftKey ||
+                document.querySelector('.modal-overlay.active')
+            ) {
                 return;
             }
             const num = parseInt(e.key, 10);
@@ -1822,12 +2186,14 @@ tr.selected td {
     window.AUI = {
         setTheme,
         cycleTheme,
+        getThemeMode,
         isDarkEffective,
         onThemeChange,
         switchPage,
         switchSubView,
         openModal,
         closeModal,
+        confirm: auiConfirm,
         showToast,
         getChartThemeTokens
     };
@@ -1837,9 +2203,34 @@ tr.selected td {
     window.switchSubView = switchSubView;
     window.openModal = openModal;
     window.closeModal = closeModal;
+    window.auiConfirm = auiConfirm;
     window.showToast = showToast;
 
 })(window);
+</script>
+<script>
+    let starterSearch = '';
+    let starterStatus = 'all';
+
+    function applyStarterFilter() {
+        const rows = document.querySelectorAll('#starter-node-tbody tr');
+        const q = starterSearch.trim().toLowerCase();
+        rows.forEach(row => {
+            const matchStatus = starterStatus === 'all' || row.dataset.status === starterStatus;
+            const matchText = !q || row.textContent.toLowerCase().includes(q);
+            row.style.display = (matchStatus && matchText) ? '' : 'none';
+        });
+    }
+
+    function filterStarterNodes(val) {
+        starterSearch = val;
+        applyStarterFilter();
+    }
+
+    function filterStarterStatus(status) {
+        starterStatus = status;
+        applyStarterFilter();
+    }
 </script>
 </body>
 </html>

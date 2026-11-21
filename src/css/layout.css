@@ -181,6 +181,15 @@
     box-shadow: var(--shadow-md);
 }
 
+.card.card-flush {
+    padding: 0;
+}
+
+.card.card-flush > .table-wrap {
+    border: none;
+    border-radius: inherit;
+}
+
 .card.interactive {
     cursor: pointer;
     user-select: none;
@@ -267,6 +276,36 @@
     gap: 10px;
 }
 
+/* Lightweight Frameless Sticky Switcher Bar (with component-perimeter ambient shadow) */
+.sticky-toolbar.bare {
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+}
+.sticky-toolbar.bare .capsule-switcher,
+.sticky-toolbar.bare .segmented-control,
+.sticky-toolbar.bare .search-box,
+.sticky-toolbar.bare .pill-btn,
+.sticky-toolbar.bare .badge,
+.sticky-toolbar.bare .tag {
+    box-shadow: var(--sticky-float-shadow);
+}
+.sticky-toolbar.bare .capsule-switcher .pill-btn {
+    box-shadow: none;
+}
+.sticky-toolbar-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
 .controls-bar {
     display: flex;
     flex-direction: column;
@@ -304,6 +343,6 @@
 }
 
 .bottom-spacer {
-    height: calc(70px + env(safe-area-inset-bottom, 16px));
+    height: 16px;
     width: 100%;
 }

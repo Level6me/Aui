@@ -2,8 +2,8 @@
 <html lang="zh-CN" data-theme="auto">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>AUI App Starter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>AUI 控制台起步模板</title>
     <meta name="theme-color" content="#007aff" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#1c1c1e" media="(prefers-color-scheme: dark)">
     <link rel="stylesheet" href="../src/css/aui.css">
@@ -23,11 +23,11 @@
             <h1 class="title" id="page-title">系统概览</h1>
         </div>
         <div class="header-actions">
-            <button class="pill-btn" onclick="cycleTheme()" title="切换主题 (自动 / 浅色 / 深色)">
+            <button class="pill-btn" onclick="cycleTheme()" title="切换主题 (自动 / 浅色 / 深色)" aria-label="切换主题">
                 <span id="theme-icon">🌓</span>
                 <span id="theme-label" class="pill-text">自动</span>
             </button>
-            <button class="pill-btn accent" onclick="openModal('modal-action')">
+            <button class="pill-btn accent" onclick="openModal('modal-action')" title="新建配置项" aria-label="新建配置项">
                 <span>➕</span>
                 <span class="pill-text">新建项目</span>
             </button>
@@ -37,22 +37,22 @@
     <!-- Page 1: Overview -->
     <main id="p-overview" class="page active">
         <div class="grid-4">
-            <div class="card interactive" onclick="showToast('已筛选在线实例')">
+            <div class="card interactive" onclick="switchPage('p-nodes', '节点列表')">
                 <div class="val-sub" style="color: var(--success);">● 在线实例</div>
                 <div class="val-big" style="color: var(--success);">128</div>
                 <div class="val-sub">服务可用率 99.9%</div>
             </div>
-            <div class="card interactive" onclick="showToast('已切换至实时吞吐监控')">
+            <div class="card interactive" onclick="switchPage('p-nodes', '节点列表')">
                 <div class="val-sub" style="color: var(--accent);">↑ 实时吞吐</div>
                 <div class="val-big" style="color: var(--accent);">1.42 GB/s</div>
                 <div class="val-sub">峰值 2.10 GB/s</div>
             </div>
-            <div class="card interactive">
+            <div class="card interactive" onclick="switchPage('p-nodes', '节点列表')">
                 <div class="val-sub" style="color: var(--warning);">⚡ 队列作业</div>
                 <div class="val-big" style="color: var(--warning);">14</div>
                 <div class="val-sub">平均延迟 18 ms</div>
             </div>
-            <div class="card interactive">
+            <div class="card interactive" onclick="switchPage('p-nodes', '节点列表')">
                 <div class="val-sub" style="color: var(--purple);">📦 已完成作业</div>
                 <div class="val-big" style="color: var(--purple);">3,842</div>
                 <div class="val-sub">24h 自动处理</div>
@@ -61,11 +61,8 @@
 
         <div class="card">
             <div class="card-header">
-                <div class="card-title">📋 实例运行列表</div>
-                <div class="search-box">
-                    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-                    <input type="text" placeholder="过滤名称 / 地址 / 状态...">
-                </div>
+                <div class="card-title">📋 活跃节点摘要</div>
+                <button class="pill-btn" onclick="switchPage('p-nodes', '节点列表')">查看全部</button>
             </div>
             <div class="table-wrap">
                 <table>
@@ -96,7 +93,63 @@
         <div class="bottom-spacer"></div>
     </main>
 
-    <!-- Page 2: Settings -->
+    <!-- Page 2: Nodes List -->
+    <section id="p-nodes" class="page">
+        <div class="sticky-toolbar">
+            <div class="controls-bar">
+                <div class="search-box" style="flex: 1;">
+                    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                    <input type="text" placeholder="过滤名称 / 地址 / 状态..." oninput="filterStarterNodes(this.value)">
+                </div>
+                <div class="segmented-control">
+                    <button class="segment-btn active" onclick="switchSubView('.noop', 'none', this); filterStarterStatus('all')">全部</button>
+                    <button class="segment-btn" onclick="switchSubView('.noop', 'none', this); filterStarterStatus('online')">在线</button>
+                    <button class="segment-btn" onclick="switchSubView('.noop', 'none', this); filterStarterStatus('maintenance')">维护中</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card card-flush">
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>节点标识</th>
+                            <th>服务类型</th>
+                            <th>状态</th>
+                            <th>响应延迟</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="starter-node-tbody">
+                        <tr data-status="online">
+                            <td>
+                                <div class="ip-text">node-ap-southeast-01</div>
+                                <div class="geo-subline">🇸🇬 亚太一区 · 核心计算节点</div>
+                            </td>
+                            <td><span class="tag accent">核心引擎</span></td>
+                            <td><span class="tag success">● 在线</span></td>
+                            <td class="mono tabular">12.4 ms</td>
+                            <td><button class="action-btn" onclick="showToast('节点 node-ap-southeast-01 运行正常')">详情</button></td>
+                        </tr>
+                        <tr data-status="maintenance">
+                            <td>
+                                <div class="ip-text">node-us-west-02</div>
+                                <div class="geo-subline">🇺🇸 美西二区 · 边缘缓存节点</div>
+                            </td>
+                            <td><span class="tag neutral">边缘网关</span></td>
+                            <td><span class="tag warning">⏸ 维护中</span></td>
+                            <td class="mono tabular">--</td>
+                            <td><button class="action-btn success" onclick="showToast('已恢复节点调度')">恢复</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="bottom-spacer"></div>
+    </section>
+
+    <!-- Page 3: Settings -->
     <section id="p-settings" class="page">
         <div class="card">
             <div class="card-header">
@@ -123,8 +176,12 @@
         <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
         <span>系统概览</span>
     </button>
+    <button class="dock-btn" onclick="switchPage('p-nodes', '节点列表', this)">
+        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+        <span>节点列表</span>
+    </button>
     <button class="dock-btn" onclick="switchPage('p-settings', '系统设置', this)">
-        <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+        <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39-.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
         <span>系统设置</span>
     </button>
 </nav>
@@ -134,7 +191,7 @@
     <div class="modal-sheet">
         <div class="card-header">
             <h3 class="card-title">➕ 新建配置项</h3>
-            <button class="icon-btn" onclick="closeModal('modal-action')">✕</button>
+            <button class="icon-btn" onclick="closeModal('modal-action')" aria-label="关闭弹窗">✕</button>
         </div>
         <div class="form-group">
             <label class="form-label">资源端点标识</label>
@@ -148,5 +205,29 @@
 </div>
 
 <script src="../src/js/aui-core.js"></script>
+<script>
+    let starterSearch = '';
+    let starterStatus = 'all';
+
+    function applyStarterFilter() {
+        const rows = document.querySelectorAll('#starter-node-tbody tr');
+        const q = starterSearch.trim().toLowerCase();
+        rows.forEach(row => {
+            const matchStatus = starterStatus === 'all' || row.dataset.status === starterStatus;
+            const matchText = !q || row.textContent.toLowerCase().includes(q);
+            row.style.display = (matchStatus && matchText) ? '' : 'none';
+        });
+    }
+
+    function filterStarterNodes(val) {
+        starterSearch = val;
+        applyStarterFilter();
+    }
+
+    function filterStarterStatus(status) {
+        starterStatus = status;
+        applyStarterFilter();
+    }
+</script>
 </body>
 </html>

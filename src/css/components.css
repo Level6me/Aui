@@ -64,6 +64,11 @@
     color: #ffffff;
     border-color: var(--accent);
 }
+.pill-btn.active:hover,
+.pill-btn.accent:hover {
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+}
 .pill-btn.danger {
     background: var(--danger-bg);
     color: var(--danger);
@@ -83,6 +88,12 @@
     color: #ffffff;
 }
 .pill-btn.warning {
+    background: var(--warning-bg);
+    color: var(--warning);
+    border-color: rgba(255, 149, 0, 0.35);
+}
+.pill-btn.warning:hover,
+.pill-btn.warning.active {
     background: var(--warning);
     color: #ffffff;
     border-color: var(--warning);
@@ -196,6 +207,10 @@
     display: inline-flex;
     gap: 2px;
     width: fit-content;
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
 }
 .capsule-switcher .pill-btn {
     padding: 4px 14px;
@@ -266,7 +281,8 @@
 
 /* 6. Inputs, Search Box & Custom Selects */
 .input-box,
-.form-control {
+.form-control,
+.input-field {
     width: 100%;
     border: 1px solid var(--border);
     background: var(--card-sec);
@@ -279,7 +295,8 @@
     transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 .input-box:focus,
-.form-control:focus {
+.form-control:focus,
+.input-field:focus {
     border-color: var(--accent);
     box-shadow: 0 0 0 3px var(--accent-bg);
     background: var(--card);
@@ -324,15 +341,17 @@
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 8px 12px;
+    font-family: inherit;
     font-size: 13px;
     font-weight: 600;
     color: var(--text);
     outline: none;
     cursor: pointer;
-    transition: border-color 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .select-custom:focus {
     border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-bg);
 }
 
 /* 7. Semantic Tags & Badges (.badge & .tag) */
@@ -390,6 +409,9 @@
 }
 input:checked + .slider { background-color: var(--accent); }
 input:checked + .slider:before { transform: translateX(20px); }
+input:focus-visible + .slider {
+    box-shadow: 0 0 0 3px var(--accent-bg), 0 0 0 1.5px var(--accent);
+}
 
 /* 9. Progress Bar */
 .progress-track {
@@ -441,6 +463,8 @@ input:checked + .slider:before { transform: translateX(20px); }
     display: flex;
     align-items: center;
     gap: 8px;
+    max-width: 100%;
+    word-break: break-word;
 }
 @keyframes auiToastIn {
     from { opacity: 0; transform: translateY(-14px) scale(0.94); }
@@ -499,9 +523,9 @@ input:checked + .slider:before { transform: translateX(20px); }
 /* 13. Mini Floating HUD (Picture-in-Picture / Desktop Mini Card) */
 .mini-floating-hud {
     position: fixed;
-    bottom: 88px;
-    right: 20px;
-    z-index: 1500;
+    bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+    right: 16px;
+    z-index: 1100;
     background: var(--card-translucent);
     backdrop-filter: blur(28px) saturate(190%);
     -webkit-backdrop-filter: blur(28px) saturate(190%);
@@ -510,6 +534,7 @@ input:checked + .slider:before { transform: translateX(20px); }
     padding: 12px 14px;
     box-shadow: var(--shadow-lg);
     min-width: 190px;
+    max-width: calc(100vw - 32px);
     user-select: none;
 }
 .mini-hud-header {
@@ -529,4 +554,17 @@ input:checked + .slider:before { transform: translateX(20px); }
     font-size: 14px;
     font-weight: 800;
     font-variant-numeric: tabular-nums;
+}
+
+/* 14. Accessible Focus Ring for Interactive Controls */
+.btn:focus-visible,
+.pill-btn:focus-visible,
+.icon-btn:focus-visible,
+.action-btn:focus-visible,
+.segment-btn:focus-visible,
+.tab-item:focus-visible,
+.sort-pill:focus-visible,
+.page-pill:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--accent-bg), 0 0 0 1.5px var(--accent);
 }

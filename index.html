@@ -2,7 +2,7 @@
 <html lang="zh-CN" data-theme="auto">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>AUI — Apple Frosted Glass WebUI Design System</title>
     <meta name="theme-color" content="#007aff" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#1c1c1e" media="(prefers-color-scheme: dark)">
@@ -18,7 +18,7 @@
         <span style="font-weight: 800; font-size: 10px; letter-spacing: 0.5px; color: var(--text-sec);">🍏 AUI LIVE MONITOR</span>
         <div style="display: flex; align-items: center; gap: 6px;">
             <span style="font-size: 10px; font-weight: 700; color: var(--accent);">16 节点</span>
-            <button class="icon-btn" onclick="toggleMiniHud()" style="width: 18px; height: 18px; font-size: 10px;">✕</button>
+            <button class="icon-btn" onclick="toggleMiniHud()" style="width: 18px; height: 18px; font-size: 10px;" title="关闭悬浮窗" aria-label="关闭悬浮窗">✕</button>
         </div>
     </div>
     <div class="mini-hud-row">
@@ -42,19 +42,19 @@
             <h1 class="title" id="page-title">系统总览</h1>
         </div>
         <div class="header-actions">
-            <button class="pill-btn" id="btn-speed-mode" onclick="toggleSpeedLimitDemo()" title="切换限流保护状态">
+            <button class="pill-btn" id="btn-speed-mode" onclick="toggleSpeedLimitDemo()" title="切换限流保护状态" aria-label="切换限流保护状态">
                 <span id="speed-mode-icon">⚡</span>
                 <span id="speed-mode-text" class="pill-text">全速模式</span>
             </button>
-            <button class="pill-btn" onclick="toggleMiniHud()" title="切换悬浮监控小窗">
+            <button class="pill-btn" onclick="toggleMiniHud()" title="切换悬浮监控小窗" aria-label="切换悬浮监控小窗">
                 <span>🖥️</span>
                 <span class="pill-text">悬浮窗</span>
             </button>
-            <button class="pill-btn" onclick="cycleTheme()" title="切换主题 (自动 / 浅色 / 深色)">
+            <button class="pill-btn" onclick="cycleTheme()" title="切换主题 (自动 / 浅色 / 深色)" aria-label="切换主题">
                 <span id="theme-icon">🌓</span>
                 <span id="theme-label" class="pill-text">自动</span>
             </button>
-            <button class="pill-btn accent" onclick="openModal('modal-demo-form')">
+            <button class="pill-btn accent" onclick="openModal('modal-demo-form')" title="新建配置" aria-label="新建配置">
                 <span>➕</span>
                 <span class="pill-text">新建项目</span>
             </button>
@@ -63,22 +63,24 @@
 
     <!-- ==================== PAGE 1: DASHBOARD & ANALYTICS ==================== -->
     <main id="p-overview" class="page active">
-        <!-- Capsule Sub-Tab Switcher + Live Health Badge -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; gap: 10px; flex-wrap: wrap;">
-            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                <div class="capsule-switcher">
-                    <button class="pill-btn accent" onclick="switchSubView('.overview-sub', 'sub-dash', this, 'accent')">📊 核心看板</button>
-                    <button class="pill-btn" onclick="switchSubView('.overview-sub', 'sub-deep', this, 'accent')">🔬 6维矩阵</button>
+        <!-- Lightweight Frameless Sticky Switcher Bar -->
+        <div class="sticky-toolbar bare">
+            <div class="sticky-toolbar-row">
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                    <div class="capsule-switcher">
+                        <button class="pill-btn accent" onclick="switchSubView('.overview-sub', 'sub-dash', this, 'accent')">📊 核心看板</button>
+                        <button class="pill-btn" onclick="switchSubView('.overview-sub', 'sub-deep', this, 'accent')">🔬 6维矩阵</button>
+                    </div>
+                    <div onclick="showToast('✅ 核心调度服务健康度 99.98%')" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; background: var(--success-bg); color: var(--success); cursor: pointer;">
+                        <span class="status-dot" style="width: 6px; height: 6px;"></span>
+                        <span>服务健康: 99.98%</span>
+                    </div>
                 </div>
-                <div onclick="showToast('✅ 核心调度服务健康度 99.98%')" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; background: var(--success-bg); color: var(--success); cursor: pointer;">
-                    <span class="status-dot" style="width: 6px; height: 6px;"></span>
-                    <span>服务健康: 99.98%</span>
+                <div class="segmented-control">
+                    <button class="segment-btn" onclick="switchSubView('.noop', 'none', this); showToast('已切换至 24 小时视图')">24h</button>
+                    <button class="segment-btn active" onclick="switchSubView('.noop', 'none', this); showToast('已切换至 7 天视图')">7天</button>
+                    <button class="segment-btn" onclick="switchSubView('.noop', 'none', this); showToast('已切换至 30 天视图')">30天</button>
                 </div>
-            </div>
-            <div class="segmented-control">
-                <button class="segment-btn" onclick="switchSubView('.noop', 'none', this); showToast('已切换至 24 小时视图')">24h</button>
-                <button class="segment-btn active" onclick="switchSubView('.noop', 'none', this); showToast('已切换至 7 天视图')">7天</button>
-                <button class="segment-btn" onclick="switchSubView('.noop', 'none', this); showToast('已切换至 30 天视图')">30天</button>
             </div>
         </div>
 
@@ -274,29 +276,29 @@
                 <div class="filter-row">
                     <div class="search-box" style="flex: 1;">
                         <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-                        <input type="text" placeholder="实时过滤节点名称 / 地址 / 标识..." oninput="showToast('过滤条件: ' + this.value)">
+                        <input type="text" id="data-search-input" placeholder="实时过滤节点名称 / 地址 / 标识..." oninput="setDataSearch(this.value)">
                     </div>
-                    <select class="select-custom">
+                    <select class="select-custom" id="data-category-select" onchange="setDataCategory(this.value)" aria-label="分组筛选">
                         <option value="all">📁 全部分组</option>
                         <option value="core">⚡ 核心计算</option>
                         <option value="edge">🌐 边缘存储</option>
                     </select>
                     <button class="pill-btn accent" id="btn-toggle-view" onclick="toggleDataViewMode()">
-                        <span id="view-mode-label">🗂️ 切换网格/表格</span>
+                        <span id="view-mode-label">🗂️ 切换网格视图</span>
                     </button>
                 </div>
             </div>
             <div class="segmented-control">
-                <button class="segment-btn active" onclick="switchSubView('.noop', 'none', this)">全部 (186)</button>
-                <button class="segment-btn" onclick="switchSubView('.noop', 'none', this)">运行中 (42)</button>
-                <button class="segment-btn" onclick="switchSubView('.noop', 'none', this)">同步中 (98)</button>
-                <button class="segment-btn" onclick="switchSubView('.noop', 'none', this)">异常 (3)</button>
+                <button class="segment-btn active" onclick="setDataStatus('all', this)">全部 (186)</button>
+                <button class="segment-btn" onclick="setDataStatus('running', this)">运行中 (42)</button>
+                <button class="segment-btn" onclick="setDataStatus('syncing', this)">同步中 (98)</button>
+                <button class="segment-btn" onclick="setDataStatus('maintenance', this)">维护中 (3)</button>
             </div>
         </div>
 
         <!-- View A: High-Density Data Table -->
-        <div id="data-view-table" class="card" style="padding: 0;">
-            <div class="table-wrap" style="border: none;">
+        <div id="data-view-table" class="card card-flush">
+            <div class="table-wrap">
                 <table>
                     <thead>
                         <tr>
@@ -308,8 +310,8 @@
                             <th>操作</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr onclick="openModal('modal-ip-detail')" style="cursor: pointer;">
+                    <tbody id="data-table-body">
+                        <tr data-category="core" data-status="running" onclick="openIpDetail({ip:'edge-us-east-01',geo:'🇺🇸 美东弗吉尼亚 · Zone A',asn:'AS14618 Core Backbone',risk:'低负载 (28%)',riskType:'success',status:'⚡ 主力承载中',statusType:'accent'})" style="cursor: pointer;">
                             <td>
                                 <div class="ip-text">edge-us-east-01</div>
                                 <div class="geo-subline">🇺🇸 美东弗吉尼亚 · 核心可用区 A</div>
@@ -319,11 +321,11 @@
                             <td><span class="tag success">低负载 (28%)</span></td>
                             <td><span class="tag accent">⚡ 主力承载</span></td>
                             <td onclick="event.stopPropagation();">
-                                <button class="action-btn" onclick="openModal('modal-ip-detail')">详情</button>
+                                <button class="action-btn" onclick="openIpDetail({ip:'edge-us-east-01',geo:'🇺🇸 美东弗吉尼亚 · Zone A',asn:'AS14618 Core Backbone',risk:'低负载 (28%)',riskType:'success',status:'⚡ 主力承载中',statusType:'accent'})">详情</button>
                                 <button class="action-btn" onclick="showToast('🔄 已触发健康检查')">重检</button>
                             </td>
                         </tr>
-                        <tr onclick="openModal('modal-ip-detail')" style="cursor: pointer;">
+                        <tr data-category="edge" data-status="syncing" onclick="openIpDetail({ip:'edge-ap-sg-04',geo:'🇸🇬 亚太新加坡 · Zone B',asn:'AS14061 Edge Relay',risk:'中高负载 (74%)',riskType:'warning',status:'● 在线同步中',statusType:'success'})" style="cursor: pointer;">
                             <td>
                                 <div class="ip-text">edge-ap-sg-04</div>
                                 <div class="geo-subline">🇸🇬 亚太新加坡 · 高速中继网关</div>
@@ -333,8 +335,22 @@
                             <td><span class="tag warning">中高负载 (74%)</span></td>
                             <td><span class="tag success">● 在线同步</span></td>
                             <td onclick="event.stopPropagation();">
-                                <button class="action-btn" onclick="openModal('modal-ip-detail')">详情</button>
+                                <button class="action-btn" onclick="openIpDetail({ip:'edge-ap-sg-04',geo:'🇸🇬 亚太新加坡 · Zone B',asn:'AS14061 Edge Relay',risk:'中高负载 (74%)',riskType:'warning',status:'● 在线同步中',statusType:'success'})">详情</button>
                                 <button class="action-btn danger" onclick="showToast('⏸ 已下线维护')">维护</button>
+                            </td>
+                        </tr>
+                        <tr data-category="edge" data-status="maintenance" onclick="openIpDetail({ip:'edge-eu-fra-02',geo:'🇩🇪 欧洲法兰克福 · Zone C',asn:'AS24940 Europe Edge',risk:'维护窗口',riskType:'warning',status:'⏸ 计划维护中',statusType:'warning'})" style="cursor: pointer;">
+                            <td>
+                                <div class="ip-text">edge-eu-fra-02</div>
+                                <div class="geo-subline">🇩🇪 欧洲法兰克福 · 边缘缓存网关</div>
+                            </td>
+                            <td><span class="tag neutral mono">QUIC / HTTP3</span></td>
+                            <td class="mono tabular" style="font-weight: 700;">--</td>
+                            <td><span class="tag warning">维护窗口</span></td>
+                            <td><span class="tag warning">⏸ 维护中</span></td>
+                            <td onclick="event.stopPropagation();">
+                                <button class="action-btn" onclick="openIpDetail({ip:'edge-eu-fra-02',geo:'🇩🇪 欧洲法兰克福 · Zone C',asn:'AS24940 Europe Edge',risk:'维护窗口',riskType:'warning',status:'⏸ 计划维护中',statusType:'warning'})">详情</button>
+                                <button class="action-btn success" onclick="showToast('▶ 已恢复在线调度')">恢复</button>
                             </td>
                         </tr>
                     </tbody>
@@ -354,7 +370,7 @@
 
         <!-- View B: Responsive Card Grid -->
         <div id="data-view-cards" class="item-grid-container" style="display: none;">
-            <div class="item-card" onclick="openModal('modal-ip-detail')">
+            <div class="item-card" data-category="core" data-status="running" onclick="openIpDetail({ip:'cluster-snapshot-ap-southeast-202611.tar.zst',geo:'亚太快照存储池 · 4.28 / 4.80 GB',asn:'SHA256 已校验',risk:'传输正常 (89.2%)',riskType:'success',status:'↓ 52.4 MB/s 传输中',statusType:'accent'})">
                 <div>
                     <div class="item-card-header">
                         <div class="item-card-title">cluster-snapshot-ap-southeast-202611.tar.zst</div>
@@ -377,7 +393,7 @@
                 </div>
             </div>
 
-            <div class="item-card selected" onclick="openModal('modal-ip-detail')">
+            <div class="item-card selected" data-category="edge" data-status="syncing" onclick="openIpDetail({ip:'global-edge-routing-table-v4.2.bundle',geo:'边缘配置分发池 · 1.12 GB',asn:'节点覆盖 16/16',risk:'已校验签名',riskType:'accent',status:'↑ 31.2 MB/s 分发中',statusType:'accent'})">
                 <div>
                     <div class="item-card-header">
                         <div class="item-card-title">global-edge-routing-table-v4.2.bundle</div>
@@ -395,6 +411,29 @@
                     <span class="badge accent">🌐 路由配置</span>
                     <div style="display: flex; gap: 6px;" onclick="event.stopPropagation();">
                         <button class="icon-btn" onclick="showToast('🔍 已触发校验')">🔍</button>
+                        <button class="icon-btn danger" onclick="showToast('🗑 已移除作业')">✕</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="item-card" data-category="core" data-status="maintenance" onclick="openIpDetail({ip:'region-telemetry-archive-202611.parquet',geo:'离线指标归档 · 128.5 / 310.0 MB',asn:'Parquet Snapshot',risk:'排队等待中',riskType:'warning',status:'ETA 02:15',statusType:'neutral'})">
+                <div>
+                    <div class="item-card-header">
+                        <div class="item-card-title">region-telemetry-archive-202611.parquet</div>
+                        <span class="badge warning">排队中</span>
+                    </div>
+                    <div class="item-card-meta">
+                        <span>128.5 MB / 310.0 MB (41.4%)</span>
+                        <span style="color: var(--text-sec);">ETA 02:15</span>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill warning" style="width: 41.4%;"></div>
+                    </div>
+                </div>
+                <div class="item-card-footer">
+                    <span class="badge neutral">📦 指标归档</span>
+                    <div style="display: flex; gap: 6px;" onclick="event.stopPropagation();">
+                        <button class="icon-btn accent" onclick="showToast('▶ 已优先恢复')">▶</button>
                         <button class="icon-btn danger" onclick="showToast('🗑 已移除作业')">✕</button>
                     </div>
                 </div>
@@ -421,7 +460,7 @@
                     <button class="pill-btn" onclick="showToast('标准胶囊按钮')">标准胶囊 (.pill-btn)</button>
                     <button class="pill-btn accent" onclick="showToast('强调胶囊按钮')">⚡ 强调胶囊 (.accent)</button>
                     <button class="pill-btn success" onclick="showToast('成功胶囊按钮')">✓ 正常状态 (.success)</button>
-                    <button class="pill-btn warning" onclick="showToast('限流发光胶囊')">⏳ 限流保护 (.warning)</button>
+                    <button class="pill-btn warning active" onclick="showToast('限流发光胶囊')">⏳ 限流保护 (.warning)</button>
                     <button class="pill-btn danger" onclick="showToast('危险操作胶囊')">✕ 异常阻断 (.danger)</button>
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px;">
@@ -453,6 +492,7 @@
                 <div style="display: flex; flex-wrap: wrap; gap: 8px;">
                     <button class="pill-btn" onclick="openModal('modal-demo-form')">🪟 打开表单弹窗 (.modal-sheet)</button>
                     <button class="pill-btn accent" onclick="openModal('modal-ip-detail')">🔍 打开节点详情弹窗</button>
+                    <button class="pill-btn danger" onclick="demoConfirmDialog()">⚠️ 触发确认弹窗 (auiConfirm)</button>
                     <button class="pill-btn" onclick="showToast('🎉 顶部毛玻璃胶囊通知 (Toast Pill)')">🔔 触发 Toast</button>
                 </div>
             </div>
@@ -598,7 +638,7 @@
                     <div class="setting-desc">支持 Auto / Light (#f2f2f7) / Pure OLED Dark (#000000) 三态切换</div>
                 </div>
                 <label class="switch">
-                    <input type="checkbox" checked onchange="cycleTheme()">
+                    <input type="checkbox" id="setting-auto-theme" checked onchange="toggleAutoThemeSetting(this.checked)">
                     <span class="slider"></span>
                 </label>
             </div>
@@ -664,29 +704,29 @@
             <button class="icon-btn" onclick="closeModal('modal-ip-detail')">✕</button>
         </div>
         <div style="background: var(--card-sec); border-radius: 14px; padding: 16px; border: 1px solid var(--border); margin-bottom: 16px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border-subtle);">
-                <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border-subtle); gap: 10px;">
+                <div style="min-width: 0;">
                     <div class="val-sub">NODE IDENTIFIER</div>
-                    <div class="mono" style="font-size: 20px; font-weight: 800;">edge-us-east-01</div>
+                    <div class="mono" id="detail-ip" style="font-size: 20px; font-weight: 800; overflow: hidden; text-overflow: ellipsis;">edge-us-east-01</div>
                 </div>
-                <button class="pill-btn accent" onclick="showToast('📋 已复制节点标识')">📋 复制</button>
+                <button class="pill-btn accent" onclick="copyText(document.getElementById('detail-ip').textContent, '📋 已复制节点标识')">📋 复制</button>
             </div>
             <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; font-size: 13px;">
                 <div>
                     <div class="val-sub">所属区域 / 可用区</div>
-                    <div style="font-weight: 700; margin-top: 2px;">🇺🇸 美东弗吉尼亚 · Zone A</div>
+                    <div id="detail-geo" style="font-weight: 700; margin-top: 2px;">🇺🇸 美东弗吉尼亚 · Zone A</div>
                 </div>
                 <div>
                     <div class="val-sub">网络自治域 (ASN)</div>
-                    <div style="font-weight: 700; margin-top: 2px;">AS14618 Core Backbone</div>
+                    <div id="detail-asn" style="font-weight: 700; margin-top: 2px;">AS14618 Core Backbone</div>
                 </div>
                 <div>
                     <div class="val-sub">负载状态</div>
-                    <div style="margin-top: 4px;"><span class="tag success">低负载 (28%)</span></div>
+                    <div style="margin-top: 4px;"><span id="detail-risk" class="tag success">低负载 (28%)</span></div>
                 </div>
                 <div>
                     <div class="val-sub">当前调度状态</div>
-                    <div style="margin-top: 4px;"><span class="tag accent">⚡ 主力承载中</span></div>
+                    <div style="margin-top: 4px;"><span id="detail-status" class="tag accent">⚡ 主力承载中</span></div>
                 </div>
             </div>
         </div>
@@ -702,12 +742,69 @@
     // Demo Interactivity for Showcase Page
     let isTableView = true;
     let isAltSpeed = false;
+    let dataSearchQuery = '';
+    let dataCategoryFilter = 'all';
+    let dataStatusFilter = 'all';
+    let chartResizeRaf = 0;
 
     function toggleDataViewMode() {
         isTableView = !isTableView;
         document.getElementById('data-view-table').style.display = isTableView ? 'block' : 'none';
         document.getElementById('data-view-cards').style.display = isTableView ? 'none' : 'grid';
+        const label = document.getElementById('view-mode-label');
+        if (label) {
+            label.textContent = isTableView ? '🗂️ 切换网格视图' : '📋 切换表格视图';
+        }
         showToast(isTableView ? '📋 已切换至高密度表格视图' : '🗂️ 已切换至响应式卡片网格视图');
+    }
+
+    function applyDataFilters() {
+        const query = dataSearchQuery.trim().toLowerCase();
+        const items = document.querySelectorAll('#data-table-body tr, #data-view-cards .item-card');
+        items.forEach(item => {
+            const matchCat = dataCategoryFilter === 'all' || item.dataset.category === dataCategoryFilter;
+            const matchStatus = dataStatusFilter === 'all' || item.dataset.status === dataStatusFilter;
+            const matchText = !query || item.textContent.toLowerCase().includes(query);
+            item.style.display = (matchCat && matchStatus && matchText) ? '' : 'none';
+        });
+    }
+
+    function setDataSearch(val) {
+        dataSearchQuery = val || '';
+        applyDataFilters();
+    }
+
+    function setDataCategory(val) {
+        dataCategoryFilter = val || 'all';
+        applyDataFilters();
+    }
+
+    function setDataStatus(status, btnEl) {
+        dataStatusFilter = status || 'all';
+        if (btnEl) switchSubView('.noop', 'none', btnEl);
+        applyDataFilters();
+    }
+
+    function openIpDetail(info) {
+        if (info) {
+            const ipEl = document.getElementById('detail-ip');
+            const geoEl = document.getElementById('detail-geo');
+            const asnEl = document.getElementById('detail-asn');
+            const riskEl = document.getElementById('detail-risk');
+            const statusEl = document.getElementById('detail-status');
+            if (ipEl) ipEl.textContent = info.ip || '';
+            if (geoEl) geoEl.textContent = info.geo || '';
+            if (asnEl) asnEl.textContent = info.asn || '';
+            if (riskEl) {
+                riskEl.textContent = info.risk || '';
+                riskEl.className = 'tag ' + (info.riskType || 'neutral');
+            }
+            if (statusEl) {
+                statusEl.textContent = info.status || '';
+                statusEl.className = 'tag ' + (info.statusType || 'neutral');
+            }
+        }
+        openModal('modal-ip-detail');
     }
 
     function jumpToDataPage() {
@@ -721,6 +818,16 @@
         hud.style.display = visible ? 'none' : 'block';
     }
 
+    async function demoConfirmDialog() {
+        const ok = await auiConfirm('确定要重置当前演示节点的调度配置并同步集群吗？', {
+            title: '高危操作确认',
+            confirmText: '确认执行',
+            cancelText: '取消',
+            danger: true
+        });
+        showToast(ok ? '✅ 已确认执行操作' : '↩️ 已取消操作');
+    }
+
     function toggleSpeedLimitDemo() {
         isAltSpeed = !isAltSpeed;
         const btn = document.getElementById('btn-speed-mode');
@@ -728,13 +835,13 @@
         const text = document.getElementById('speed-mode-text');
         const dot = document.getElementById('header-dot');
         if (isAltSpeed) {
-            btn.classList.add('warning');
+            btn.classList.add('warning', 'active');
             icon.textContent = '⏳';
             text.textContent = '限流保护';
             dot.classList.add('warning');
             showToast('⏳ 已激活限流保护模式');
         } else {
-            btn.classList.remove('warning');
+            btn.classList.remove('warning', 'active');
             icon.textContent = '⚡';
             text.textContent = '全速模式';
             dot.classList.remove('warning');
@@ -742,22 +849,57 @@
         }
     }
 
+    function toggleAutoThemeSetting(enabled) {
+        if (enabled) {
+            window.AUI.setTheme('auto');
+            showToast('🌓 已开启自动跟随系统深浅色');
+        } else {
+            const target = window.AUI.isDarkEffective() ? 'dark' : 'light';
+            window.AUI.setTheme(target);
+            showToast(target === 'dark' ? '🌙 已锁定深色模式' : '☀️ 已锁定浅色模式');
+        }
+    }
+
+    function copyText(text, successMsg) {
+        const fallbackCopy = () => {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.setAttribute('readonly', '');
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            let ok = false;
+            try { ok = document.execCommand('copy'); } catch (_) { ok = false; }
+            textarea.remove();
+            showToast(ok ? successMsg : '⚠️ 当前环境不支持自动复制，请手动选择文本');
+        };
+
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text)
+                .then(() => showToast(successMsg))
+                .catch(fallbackCopy);
+        } else {
+            fallbackCopy();
+        }
+    }
+
     function copyToken(tokenName) {
-        if (navigator.clipboard) navigator.clipboard.writeText(`var(${tokenName})`);
-        showToast(`📋 已复制 var(${tokenName})`);
+        copyText(`var(${tokenName})`, `📋 已复制 var(${tokenName})`);
     }
 
     function copyAiPrompt() {
-        const text = '请拉取并阅读 https://github.com/Level6me/Aui 仓库中的 AGENTS.md 与 DESIGN_SPEC.md，严格遵循 AUI 苹果毛玻璃设计规范与“Avoid unnecessary secondary labels and descriptions. Let the layout do the explaining.”原则，直接复用 src/css/aui.css 与 src/js/aui-core.js 来开发本项目的 Web 界面。';
-        if (navigator.clipboard) navigator.clipboard.writeText(text);
-        showToast('✅ 已复制 AI Agent 开发指令');
+        const text = '请拉取并阅读 https://github.com/Level6me/Aui 仓库中的 AGENTS.md 与 DESIGN_SPEC.md，严格遵循 AUI 苹果毛玻璃设计规范与“Avoid unnecessary secondary labels and descriptions. Let the layout do the explaining.”原则，直接复用 src/css/aui.css 与 src/js/aui-core.js（或 templates/single-file-starter.html）来开发本项目的 Web 界面。';
+        copyText(text, '✅ 已复制 AI Agent 开发指令');
     }
 
     // Zero-Dependency Smooth Bezier Area Chart Demo
     function drawSmoothAreaChart() {
         const canvas = document.getElementById('liveWaveCanvas');
-        if (!canvas) return;
+        if (!canvas || !canvas.parentElement) return;
         const rect = canvas.parentElement.getBoundingClientRect();
+        if (rect.width <= 0 || rect.height <= 0) return;
+
         const dpr = window.devicePixelRatio || 1;
         canvas.width = rect.width * dpr;
         canvas.height = rect.height * dpr;
@@ -796,10 +938,29 @@
         renderSeries(upPoints, tokens.accent, tokens.accentFill);
     }
 
-    window.addEventListener('resize', drawSmoothAreaChart);
+    function scheduleChartDraw() {
+        if (chartResizeRaf) cancelAnimationFrame(chartResizeRaf);
+        chartResizeRaf = requestAnimationFrame(drawSmoothAreaChart);
+    }
+
+    window.addEventListener('resize', scheduleChartDraw);
+    window.addEventListener('aui:pagechange', (e) => {
+        if (e.detail && e.detail.pageId === 'p-overview') scheduleChartDraw();
+    });
+    window.addEventListener('aui:subviewchange', (e) => {
+        if (e.detail && e.detail.targetId === 'sub-dash') scheduleChartDraw();
+    });
+
     document.addEventListener('DOMContentLoaded', () => {
         setTimeout(drawSmoothAreaChart, 30);
-        window.AUI.onThemeChange(drawSmoothAreaChart);
+        const autoSwitch = document.getElementById('setting-auto-theme');
+        if (autoSwitch) {
+            autoSwitch.checked = (window.AUI.getThemeMode() === 'auto');
+        }
+        window.AUI.onThemeChange((_, mode) => {
+            if (autoSwitch) autoSwitch.checked = (mode === 'auto');
+            scheduleChartDraw();
+        });
     });
 </script>
 </body>

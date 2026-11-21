@@ -51,10 +51,10 @@ Depending on the backend/deployment requirements of the new project, select one 
 4. **Navigation — Floating Glass Dock (`.dock`)**:
    - Primary top-level navigation (3 to 6 pages) MUST live in the bottom centered Floating Glass Dock (`<nav class="dock">`), NOT in a traditional left sidebar or top navbar.
    - Always place `<div class="bottom-spacer"></div>` at the bottom of each `.page` so the floating dock never obscures content.
-   - Secondary switching within a page uses either `.sticky-toolbar` + `.tab-bar` / `.segmented-control` or `.capsule-switcher`.
+   - Secondary switching within a page uses either `.sticky-toolbar` + `.tab-bar` / `.segmented-control` or `.sticky-toolbar.bare` + `.sticky-toolbar-row` + `.capsule-switcher` (lightweight frameless sticky switcher bar with subtle perimeter ambient shadow).
 5. **Tables, Card Grids & Modals**:
    - Wrap tables in `.table-wrap` for horizontal touch scrolling. Combine primary identifier (`.ip-text` in monospace) and secondary metadata (`.geo-subline`) into a single stacked cell to keep tables compact.
-   - Use `.modal-overlay` + `.modal-sheet` for dialogs, and `showToast('...')` for non-blocking top pill notifications (never use `window.alert`).
+   - Use `.modal-overlay` + `.modal-sheet` for dialogs, `await auiConfirm('...')` for confirmations (never `window.confirm`), and `showToast('...')` for non-blocking top pill notifications (never use `window.alert`).
 
 ---
 
@@ -62,11 +62,11 @@ Depending on the backend/deployment requirements of the new project, select one 
 
 | Category | Classes |
 | :--- | :--- |
-| **Layout & Grids** | `.container`, `.header`, `.header-left`, `.date-badge`, `.title`, `.header-actions`, `.sticky-toolbar`, `.grid-2`, `.grid-3`, `.grid-4`, `.grid-6`, `.card`, `.card.interactive`, `.card-header`, `.card-title`, `.bottom-spacer` |
+| **Layout & Grids** | `.container` (`.wide`, `.compact`), `.header`, `.header-left`, `.date-badge`, `.title`, `.header-actions`, `.btn-text-mobile`, `.btn-text-full`, `.sticky-toolbar` (`.bare`, `.sticky-toolbar-row`), `.controls-bar`, `.filter-row`, `.grid-2`, `.grid-3`, `.grid-4`, `.grid-6`, `.card` (`.interactive`, `.card-flush`), `.card-header`, `.card-title`, `.chart-box`, `.chart-mini`, `.bottom-spacer` |
 | **KPI & Typography** | `.val-big`, `.val-sub`, `.stat-interactive`, `.mono`, `.tabular` |
 | **Buttons** | `.btn` (`.secondary`, `.danger`, `.success`, `.w-full`), `.pill-btn` (`.accent`, `.danger`, `.success`, `.warning`, `.active`), `.icon-btn`, `.action-btn` |
-| **Switchers & Tabs** | `.segmented-control` + `.segment-btn`, `.capsule-switcher` + `.pill-btn`, `.tab-bar` + `.tab-item`, `.sort-pill` |
-| **Inputs & Forms** | `.input-box` / `.form-control`, `.search-box`, `.select-custom`, `.switch` + `.slider`, `.form-group`, `.form-label`, `.setting-row`, `.setting-label`, `.setting-desc` |
+| **Switchers & Tabs** | `.segmented-control` + `.segment-btn`, `.capsule-switcher` + `.pill-btn`, `.tab-bar` + `.tab-item`, `.sort-pill`, `.batch-bar` |
+| **Inputs & Forms** | `.input-box` / `.form-control` / `.input-field`, `.search-box`, `.select-custom`, `.switch` + `.slider`, `.form-group`, `.form-label`, `.setting-row`, `.setting-label`, `.setting-desc` |
 | **Status & Badges** | `.status-dot` (`.warning`, `.danger`), `.badge` / `.tag` (`.accent`, `.success`, `.warning`, `.danger`, `.purple`, `.neutral`), `.progress-track` + `.progress-fill` |
-| **Data Display** | `.table-wrap`, `.ip-text`, `.geo-subline`, `.item-grid-container`, `.item-card`, `.rank-item`, `.rank-num` (`.top1`, `.top2`, `.top3`, `.normal`), `.rank-bar-bg`, `.rank-bar-fill`, `.pagination-wrapper`, `.page-pill` |
-| **Navigation & Overlays** | `.dock`, `.dock-btn`, `.page`, `.modal-overlay`, `.modal-sheet`, `.toast-container`, `.toast-pill`, `.mini-floating-hud` |
+| **Data Display** | `.table-wrap`, `.ip-text`, `.geo-subline`, `.item-grid-container`, `.item-card` (`.item-card-header`, `.item-card-title`, `.item-card-meta`, `.item-card-footer`), `.rank-item`, `.rank-num` (`.top1`, `.top2`, `.top3`, `.normal`), `.rank-bar-bg`, `.rank-bar-fill`, `.diag-row-item` (`.diag-row-header`, `.diag-bar-track`, `.diag-bar-fill`), `.pagination-wrapper`, `.page-pill` |
+| **Navigation & Overlays** | `.dock`, `.dock-btn`, `.page`, `.modal-overlay` (`.forced-login`), `.modal-sheet` / `.modal-card` (`.wide`), `.toast-container`, `.toast-pill`, `.mini-floating-hud` |

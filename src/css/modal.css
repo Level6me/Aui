@@ -5,12 +5,17 @@
 /* SPA Page Container */
 .page {
     display: none;
-    opacity: 0;
-    transition: opacity 0.2s ease-in-out;
 }
 .page.active {
     display: block;
-    opacity: 1;
+    animation: auiPageIn 0.2s ease-out;
+}
+@keyframes auiPageIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .page.active { animation: none; }
 }
 
 /* Frosted Glass Modal Overlay & Sheet */

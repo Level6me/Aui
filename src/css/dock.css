@@ -50,6 +50,11 @@
     transform: scale(0.92);
 }
 
+.dock-btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--accent-bg), 0 0 0 1.5px var(--accent);
+}
+
 .dock-btn.active {
     color: var(--accent);
     background: var(--accent-bg);
