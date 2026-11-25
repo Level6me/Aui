@@ -38,7 +38,7 @@
 | `--dock` | `rgba(255,255,255,0.82)` | `rgba(28,28,30,0.86)` | 底部 Dock、吸顶工具栏、Popover、Toast 玻璃底色 |
 | `--modal-bg` | `rgba(255,255,255,0.94)` | `rgba(28,28,30,0.94)` | 模态弹窗、Bottom Sheet、Command Palette 底色 |
 | `--fill-primary` ~ `--fill-quaternary` | `rgba(120,120,128, 0.20~0.08)` | `rgba(120,120,128, 0.36~0.18)` | Apple HIG 四级自适应半透明填充色（图标按钮、轨道、分割槽） |
-| `--border` / `--border-subtle` | `rgba(120,120,128, 0.15/0.08)` | `rgba(255,255,255, 0.12/0.06)` | 标准 1px 描边与细分割线（`prefers-contrast: more` 自动加深） |
+| `--border` / `--border-hover` / `--border-subtle` | `rgba(120,120,128, 0.15/0.28/0.08)` | `rgba(255,255,255, 0.12/0.22/0.06)` | 标准 1px 描边、悬停高亮描边与细分割线（`prefers-contrast: more` 自动加深） |
 
 ### 2.2 材质厚度与高光描边（Apple Materials）
 
@@ -106,9 +106,11 @@
 
 ### 5.3 物理弹簧滑块分段器（`.segmented-control`）与跑道胶囊（`.capsule-switcher`）
 - `aui-core.js` 自动为 `.segmented-control` 注入 `.segment-indicator` 底板，切换选项时按 Apple 弹簧曲线平滑滑动，resize 及页面切换自动重算位置。
+- **跑道胶囊切换器（`.capsule-switcher`）**：外槽 `border-radius: 99px; padding: 2px`，未选中 `.pill-btn` 保留独立胶囊细描边（`border: 1px solid var(--border); background: transparent`），激活项为实心主色（`.pill-btn.accent`）。
 
-### 5.4 Adaptive Bottom Sheet 与 Apple Alert 确认框（`.modal-sheet` & `auiConfirm`）
-- **桌面端**：居中磨砂模态弹窗（`border-radius: 22px`），自动注入 `role="dialog" aria-modal="true"`、Tab 焦点锁定（Focus Trap）与关闭后焦点还原。
+### 5.4 Adaptive Bottom Sheet、标准弹窗骨架与 Apple Alert 确认框（`.modal-sheet` & `auiConfirm`）
+- **桌面端**：居中磨砂模态弹窗（`border-radius: 22px`），自动注入 `role="dialog" aria-modal="true"`、Tab 焦点锁定（Focus Trap）与关闭后焦点还原；支持标准内部骨架 `.modal-header` / `.modal-title` / `.modal-close` / `.modal-body`（配合 `.flex-sheet` 头尾固定中间滚动）与 `.modal-footer`（`.between`）。
+- **弹窗层级阶梯**：常规 `2000` ➔ 子弹窗 `.layer-sub` `2200` ➔ 确认层 `.layer-confirm` `2500` ➔ 强制登录锁屏 `.forced-login` `99999`。
 - **移动端（`≤ 640px`）**：自动变形为从底部贴边滑出的 **iOS Bottom Sheet**，顶部显示 `.sheet-grabber`（`36×5px` 圆角拖拽条），底部贴合安全区。
 - **高危确认（`await auiConfirm(msg, { title, confirmText, cancelText, danger })`）**：始终采用 Apple 经典居中精简 `.alert-sheet`（危险态默认聚焦取消按钮防止误按回车）。
 
@@ -124,6 +126,11 @@
 - `.empty-state` 仅保留图标 + 简短标题 + 单一主动作按钮，严禁大段说明文字；
 - `.live-pill` 展示实时状态与进度；`.copy-chip` 配合 `data-aui-copy="值"` 一键复制并绿态反馈；`.kbd` 展示快捷键微标。
 - `showToast(msg, { type: 'info' | 'success' | 'warning' | 'danger', duration })` 支持语义色点、悬停暂停、`aria-live="polite"` 与最大 3 条防刷屏上限。
+
+### 5.8 复杂表单、嵌套配置面板与高密度数据展示组件
+- **嵌套配置表单**：`.inset-panel` / `.inset-subpanel`（`.inset-panel-header` / `.inset-panel-footer`）、复合输入行 `.input-group`、多列自适应表单栅格 `.form-grid`（`.auto-fit`）、`.form-label-row` + `.form-label-action`、`.form-hint`、`.form-error.active`，以及原生 `.checkbox-group` / `.checkbox-item` / `.checkbox-card` / `.radio-group` / `.radio-item` 与语义提示横幅 `.callout`（`.accent`/`.success`/`.warning`/`.danger`）。
+- **高密度表格与定高子表**：卡片内嵌筛选条 `.table-toolbar` + `.table-toolbar-summary`、双行等宽时间列 `.cell-time-stack`（`formatTimeStack()`）、受控截断列 `.cell-truncate`、操作组 `.cell-actions`、右对齐 `.col-right`、空态行 `.table-empty`、定高滚动子表 `.subtable-box`（`.subtable-header`/`.subtable-scroll`）、通用分页渲染器 `renderPagination()`，以及 `≤600px` / `≤480px` 移动端单元格与 `.card-header .header-action-wrap` 自动压缩折行。
+- **防溢出诊断条、详情 KV 与时间线**：`.diag-row-item` 补全 `.diag-row-left` / `.diag-rank-badge` / `.diag-text-title` / `.diag-count-text`；单对象详情使用 `.kv-panel`（`.kv-panel-head` / `.kv-grid` / `.kv-label` / `.kv-value`）；审计足迹与变更序列使用 `.timeline`（`.timeline-item` / `.timeline-axis` / `.timeline-dot` / `.timeline-line` / `.timeline-card`）。
 
 ---
 

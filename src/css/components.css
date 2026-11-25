@@ -20,6 +20,11 @@
     white-space: nowrap;
 }
 .btn:active { transform: scale(0.97); }
+.btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+}
 .btn.secondary {
     background: var(--fill-tertiary);
     color: var(--text);
@@ -53,8 +58,14 @@
     text-decoration: none;
 }
 .pill-btn:active { transform: scale(0.95); }
+.pill-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+}
 .pill-btn.active,
-.pill-btn.accent {
+.pill-btn.accent,
+.pill-btn.primary {
     background: var(--accent);
     color: #ffffff;
     border-color: var(--accent);
@@ -116,16 +127,22 @@
     white-space: nowrap;
 }
 .action-btn:active { transform: scale(0.96); }
+.action-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+}
 
 /* Desktop-Only Fine Pointer Hover States (Prevents Sticky Hover on Touch) */
 @media (hover: hover) and (pointer: fine) {
     .btn:hover { opacity: 0.92; }
     .pill-btn:hover {
         background: var(--card-hover);
-        border-color: var(--fill-primary);
+        border-color: var(--border-hover);
     }
     .pill-btn.active:hover,
-    .pill-btn.accent:hover {
+    .pill-btn.accent:hover,
+    .pill-btn.primary:hover {
         background: var(--accent-hover);
         border-color: var(--accent-hover);
     }
@@ -249,24 +266,35 @@
     display: inline-flex;
     gap: 2px;
     width: fit-content;
+    flex-shrink: 0;
     max-width: 100%;
     overflow-x: auto;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
 }
 .capsule-switcher .pill-btn {
-    padding: 4px 14px;
+    padding: 4px 12px;
     font-size: 11px;
     border-radius: 99px;
     font-weight: 700;
-    border: none;
+    border: 1px solid var(--border);
     background: transparent;
     box-shadow: none;
 }
 .capsule-switcher .pill-btn.active,
-.capsule-switcher .pill-btn.accent {
+.capsule-switcher .pill-btn.accent,
+.capsule-switcher .pill-btn.primary {
     background: var(--accent);
     color: #ffffff;
+    border-color: var(--accent);
+}
+@media (hover: hover) and (pointer: fine) {
+    .capsule-switcher .pill-btn.active:hover,
+    .capsule-switcher .pill-btn.accent:hover,
+    .capsule-switcher .pill-btn.primary:hover {
+        background: var(--accent-hover);
+        border-color: var(--accent-hover);
+    }
 }
 
 /* Sub-Navigation Tab Bar */
@@ -343,6 +371,153 @@
     box-shadow: 0 0 0 3px var(--accent-bg);
     background: var(--card);
 }
+textarea.input-box,
+textarea.form-control,
+textarea.input-field {
+    resize: vertical;
+    min-height: 88px;
+    line-height: 1.45;
+}
+input[type="file"].form-control,
+input[type="file"].input-field {
+    padding: 6px 10px;
+    cursor: pointer;
+}
+
+/* Compound Input Row, Multi-Column Form Grid & Native Checkbox/Radio Controls */
+.input-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+.input-group > .input-box,
+.input-group > .form-control,
+.input-group > .input-field {
+    flex: 1;
+    min-width: 0;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 12px;
+}
+.form-grid.auto-fit {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+@media (max-width: 640px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.form-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+}
+.form-label-row .form-label {
+    margin-bottom: 0;
+}
+.form-label-action {
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+}
+.form-label-action:hover { text-decoration: underline; }
+
+.form-hint {
+    font-size: 10px;
+    color: var(--text-sec);
+    margin-top: 5px;
+    line-height: 1.4;
+}
+
+.form-error {
+    display: none;
+    color: var(--danger);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 7px 10px;
+    background: var(--danger-bg);
+    border: 1px solid rgba(255, 59, 48, 0.25);
+    border-radius: 8px;
+    line-height: 1.4;
+}
+.form-error.active {
+    display: block;
+}
+
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px 12px;
+    background: var(--card-sec);
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+}
+.checkbox-item,
+.radio-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text);
+    cursor: pointer;
+    line-height: 1.4;
+}
+.checkbox-item input[type="checkbox"],
+.checkbox-card input[type="checkbox"],
+.radio-item input[type="radio"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.checkbox-item.danger input[type="checkbox"],
+.checkbox-card.danger input[type="checkbox"],
+.radio-item.danger input[type="radio"] {
+    accent-color: var(--danger);
+}
+.radio-item.danger {
+    color: var(--danger);
+}
+.checkbox-card {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text);
+    cursor: pointer;
+    background: var(--card-sec);
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+    .checkbox-card:hover {
+        border-color: var(--border-hover);
+        background: var(--card-hover);
+    }
+}
+.radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+}
 
 .search-box {
     position: relative;
@@ -354,6 +529,12 @@
     padding: 0 10px;
     min-width: 200px;
     transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+@media (max-width: 600px) {
+    .search-box {
+        width: 100%;
+        min-width: 0;
+    }
 }
 .search-box:focus-within {
     border-color: var(--accent);
@@ -564,6 +745,23 @@
     padding: 13px 18px;
     border-top: 1px solid var(--border-subtle);
 }
+.pagination-info {
+    font-size: 12px;
+    color: var(--text-sec);
+    font-variant-numeric: tabular-nums;
+}
+.pagination-info b {
+    color: var(--text);
+}
+.pagination-info .page-current {
+    color: var(--accent);
+}
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
 .page-pill {
     position: relative;
     min-width: 30px;
@@ -580,6 +778,7 @@
     align-items: center;
     justify-content: center;
     transition: all 0.15s ease;
+    font-variant-numeric: tabular-nums;
 }
 .page-pill:disabled { opacity: 0.42; cursor: not-allowed; }
 @media (hover: hover) and (pointer: fine) {
@@ -755,6 +954,14 @@
     from { opacity: 0; transform: scale(0.94) translateY(-4px); }
     to { opacity: 1; transform: scale(1) translateY(0); }
 }
+.popover-header {
+    font-size: 11px;
+    color: var(--text-sec);
+    font-weight: 700;
+    padding: 4px 10px 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
 .popover-item {
     display: flex;
     align-items: center;
@@ -779,6 +986,12 @@
 .popover-item:active {
     background: var(--fill-tertiary);
 }
+.popover-item.accent {
+    color: var(--accent);
+}
+.popover-item.accent:hover {
+    background: var(--accent-bg);
+}
 .popover-item.danger {
     color: var(--danger);
 }
@@ -789,6 +1002,56 @@
     height: 1px;
     background: var(--border-subtle);
     margin: 4px 6px;
+}
+
+/* 15.5 Semantic Callout Banner (.callout) */
+.callout {
+    background: var(--card-sec);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--text-sec);
+    margin-bottom: 12px;
+}
+.callout.accent {
+    background: var(--accent-bg);
+    border-color: rgba(0, 122, 255, 0.25);
+    color: var(--text);
+}
+.callout.success {
+    background: var(--success-bg);
+    border-color: rgba(52, 199, 89, 0.30);
+    color: var(--text);
+}
+.callout.warning {
+    background: var(--warning-bg);
+    border-color: rgba(255, 149, 0, 0.30);
+    color: var(--text);
+}
+.callout.danger {
+    background: var(--danger-bg);
+    border-color: rgba(255, 59, 48, 0.28);
+    color: var(--text);
+}
+.callout-title {
+    font-weight: 700;
+    font-size: 12px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+}
+.callout.accent .callout-title { color: var(--accent); }
+.callout.success .callout-title { color: var(--success); }
+.callout.warning .callout-title { color: var(--warning); }
+.callout.danger .callout-title { color: var(--danger); }
+.callout-body {
+    font-size: 11px;
+    color: var(--text-sec);
+    line-height: 1.45;
 }
 
 /* 16. Live Activity Pill, Inline Copy Chip & Keyboard Shortcut Badge */
@@ -861,7 +1124,8 @@
 .page-pill:focus-visible,
 .list-row.interactive:focus-visible,
 .popover-item:focus-visible,
-.copy-chip:focus-visible {
+.copy-chip:focus-visible,
+.modal-close:focus-visible {
     outline: none;
     box-shadow: 0 0 0 3px var(--accent-bg), 0 0 0 1.5px var(--accent);
 }

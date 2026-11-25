@@ -62,6 +62,7 @@
 
     /* Hairline Borders & Dividers */
     --border: rgba(120, 120, 128, 0.15);
+    --border-hover: rgba(120, 120, 128, 0.28);
     --border-subtle: rgba(120, 120, 128, 0.08);
     --dock-border: rgba(255, 255, 255, 0.42);
 
@@ -152,6 +153,7 @@
         --yellow-bg: rgba(255, 214, 10, 0.18);
 
         --border: rgba(255, 255, 255, 0.12);
+        --border-hover: rgba(255, 255, 255, 0.22);
         --border-subtle: rgba(255, 255, 255, 0.06);
         --dock-border: rgba(255, 255, 255, 0.18);
         --glass-rim: inset 0 0.5px 0 rgba(255, 255, 255, 0.16);
@@ -215,6 +217,7 @@
     --yellow-bg: rgba(255, 214, 10, 0.18);
 
     --border: rgba(255, 255, 255, 0.12);
+    --border-hover: rgba(255, 255, 255, 0.22);
     --border-subtle: rgba(255, 255, 255, 0.06);
     --dock-border: rgba(255, 255, 255, 0.18);
     --glass-rim: inset 0 0.5px 0 rgba(255, 255, 255, 0.16);

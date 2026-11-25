@@ -199,7 +199,7 @@
     .card.interactive:hover {
         transform: translateY(-2px);
         box-shadow: var(--shadow-md);
-        border-color: var(--fill-primary);
+        border-color: var(--border-hover);
     }
 }
 
@@ -219,6 +219,65 @@
     align-items: center;
     margin-bottom: 12px;
     gap: 10px;
+}
+
+.card-header .header-action-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    .card-header .header-action-wrap {
+        width: 100%;
+        justify-content: flex-end;
+    }
+    .card-header .header-action-wrap .pill-btn {
+        padding: 6px 14px;
+        font-size: 12px;
+    }
+}
+
+/* Inset Nested Configuration Panels (Inside Primary .card) */
+.inset-panel {
+    background: var(--card-sec);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 12px;
+}
+.inset-panel:last-child {
+    margin-bottom: 0;
+}
+.inset-subpanel {
+    background: var(--bg);
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    padding: 14px;
+    margin-top: 12px;
+}
+.inset-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+.inset-panel-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 12px;
 }
 
 .card-title {
@@ -319,6 +378,16 @@
     gap: 10px;
     flex-wrap: wrap;
     width: 100%;
+}
+@media (max-width: 768px) {
+    .sticky-toolbar-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+    .sticky-toolbar-row > .segmented-control {
+        width: 100%;
+    }
 }
 
 .controls-bar {

@@ -982,6 +982,93 @@
         });
     });
 
+    // --- 9.5 HTML Escaping, Two-Line Time Stack & Universal Pagination Renderer ---
+    function escapeHtml(str) {
+        return String(str == null ? '' : str).replace(/[&<>"']/g, ch => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        }[ch]));
+    }
+
+    function formatTimeStack(timeStr) {
+        const s = timeStr == null ? '' : String(timeStr).trim();
+        if (!s || s === '--' || s === '-') {
+            return '<span class="val-sub">--</span>';
+        }
+        const parts = s.split(/\s+/);
+        if (parts.length >= 2) {
+            return `<div class="cell-time-stack"><span class="time-date">${escapeHtml(parts[0])}</span><span class="time-clock">${escapeHtml(parts.slice(1).join(' '))}</span></div>`;
+        }
+        return `<span class="tabular" style="font-size: 12px;">${escapeHtml(parts[0])}</span>`;
+    }
+
+    function renderPagination(containerOrId, options = {}) {
+        const container = typeof containerOrId === 'string'
+            ? document.getElementById(containerOrId)
+            : containerOrId;
+        if (!container) return;
+
+        const pageSize = Math.max(1, Number(options.pageSize) || 50);
+        const totalItems = Math.max(0, Number(options.totalItems) || 0);
+        const totalPages = Math.max(1, Number(options.totalPages) || Math.ceil(totalItems / pageSize) || 1);
+        const currentPage = Math.min(totalPages, Math.max(1, Number(options.currentPage) || 1));
+        const unitLabel = options.unitLabel || '条记录';
+        const onPageChange = typeof options.onPageChange === 'function' ? options.onPageChange : () => {};
+
+        container.classList.add('pagination-wrapper');
+        container.textContent = '';
+
+        const info = document.createElement('div');
+        info.className = 'pagination-info';
+        info.innerHTML = `共 <b>${totalItems}</b> ${escapeHtml(unitLabel)} · 每页 ${pageSize} 条 · 当前第 <b class="page-current">${currentPage} / ${totalPages}</b> 页`;
+
+        const controls = document.createElement('div');
+        controls.className = 'pagination-controls';
+
+        const makeBtn = (label, page, { active = false, disabled = false, ariaLabel = '' } = {}) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'page-pill' + (active ? ' active' : '');
+            btn.textContent = label;
+            btn.disabled = disabled;
+            if (ariaLabel) btn.setAttribute('aria-label', ariaLabel);
+            if (!disabled && !active) {
+                btn.addEventListener('click', () => onPageChange(page));
+            }
+            return btn;
+        };
+
+        controls.appendChild(makeBtn('‹', currentPage - 1, { disabled: currentPage <= 1, ariaLabel: '上一页' }));
+
+        const pages = [];
+        for (let p = 1; p <= totalPages; p++) {
+            if (p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1) {
+                pages.push(p);
+            } else if (pages[pages.length - 1] !== '...') {
+                pages.push('...');
+            }
+        }
+        pages.forEach(p => {
+            if (p === '...') {
+                const span = document.createElement('span');
+                span.className = 'val-sub';
+                span.style.padding = '0 4px';
+                span.textContent = '…';
+                controls.appendChild(span);
+            } else {
+                controls.appendChild(makeBtn(String(p), p, { active: p === currentPage }));
+            }
+        });
+
+        controls.appendChild(makeBtn('›', currentPage + 1, { disabled: currentPage >= totalPages, ariaLabel: '下一页' }));
+
+        container.appendChild(info);
+        container.appendChild(controls);
+    }
+
     // Expose global AUI API & shorthand functions
     window.AUI = {
         setTheme,
@@ -1002,6 +1089,9 @@
         closePopovers,
         copyText,
         showToast,
+        renderPagination,
+        formatTimeStack,
+        escapeHtml,
         getChartThemeTokens
     };
 
@@ -1013,7 +1103,11 @@
     window.auiConfirm = auiConfirm;
     window.openCommandPalette = openCommandPalette;
     window.togglePopover = togglePopover;
+    window.closePopovers = closePopovers;
     window.copyText = copyText;
     window.showToast = showToast;
+    window.renderPagination = renderPagination;
+    window.formatTimeStack = formatTimeStack;
+    window.escapeHtml = escapeHtml;
 
 })(window);
